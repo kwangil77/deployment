@@ -18,6 +18,7 @@ rules:
   - statefulsets
   - limitranges
   - daemonsets
+  - nodes
   verbs:
   - get
   - list
