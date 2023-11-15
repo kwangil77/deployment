@@ -1,0 +1,15 @@
+sourcegraph:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: ghcr.io/kwangil77/sourcegraph
+    tag: "5.0.6"
+    pullPolicy: Always
+  psql:
+    port: 5432
+    username: sourcegraph
+    password:
+      key: password

@@ -1,0 +1,34 @@
+sourcegraph:
+  fullnameOverride: sourcegraph
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=sourcegraph,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/healthcheck-path: /healthz
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    hosts:
+    - "sourcegraph.example.io"
+  service:
+    type: NodePort
+  env:
+  - name: DISABLE_OBSERVABILITY
+    value: 'true'
+  - name: DISABLE_MINIO
+    value: 'true'
+  - name: REDIS_ENDPOINT
+    value: "redis://....cache.amazonaws.com:6379/7"
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 8Gi
+  psql:
+    host: "....ap-northeast-2.rds.amazonaws.com"
+    database: sourcegraph
+    password:
+      secret: sourcegraph-postgres

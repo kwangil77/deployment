@@ -1,0 +1,24 @@
+backstage:
+  backstage:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      registry: ghcr.io
+      repository: kwangil77/backstage
+  serviceAccount:
+    create: true
+  metrics:
+    serviceMonitor:
+      enabled: true
+oauth2-proxy:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: quay.io/oauth2-proxy/oauth2-proxy
+  metrics:
+    servicemonitor:
+      enabled: true

@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+spec:
+  args:
+  - name: service-name
+  metrics:
+  - failureLimit: 3
+    interval: 1m
+    name: success-rate
+    provider:
+      prometheus:
+        address: http://vmselect-vmcluster.observability:8481/select/0/prometheus
+        query: |
+          sum(irate(
+            http_server_requests_seconds_count{service=~"{{ args.service-name }}",status!~"5.*"}[1m]
+          )) /
+          sum(irate(
+            http_server_requests_seconds_count{service=~"{{ args.service-name }}"}[1m]
+          ))
+          or
+          sum(irate(
+            http_request_duration_seconds_count{service=~"{{ args.service-name }}",status_code!~"5.*"}[1m]
+          )) /
+          sum(irate(
+            http_request_duration_seconds_count{service=~"{{ args.service-name }}"}[1m]
+          ))
+    successCondition: result[0] >= 0.95

@@ -1,0 +1,33 @@
+rundeck:
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=rundeck,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/healthcheck-path: /user/login
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    paths:
+    - "/"
+    hosts:
+    - "rundeck.example.io"
+  service:
+    type: NodePort
+  persistence:
+    enabled: true
+    existingClaim: rundeck-pvc
+  rundeck:
+    envSecret: rundeck-env-secret
+    env:
+      RUNDECK_GRAILS_URL: "https://rundeck.example.io"
+      RUNDECK_SERVER_FORWARDED: 'true'
+      RUNDECK_LOGGING_STRATEGY: CONSOLE
+      RUNDECK_DATABASE_DRIVER: org.postgresql.Driver
+      RUNDECK_DATABASE_USERNAME: rundeckuser
+      RUNDECK_DATABASE_URL: "jdbc:postgresql://....ap-northeast-2.rds.amazonaws.com/rundeck_ce"
+      RUNDECK_JAAS_MODULES_0: JettyCombinedLdapLoginModule
+      RUNDECK_JAAS_MODULES_1: PropertyFileLoginModule

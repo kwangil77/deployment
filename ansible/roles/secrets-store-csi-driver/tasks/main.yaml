@@ -1,0 +1,22 @@
+---
+- name: Add secrets-store-csi-driver chart repo
+  kubernetes.core.helm_repository:
+    name: secrets-store-csi-driver
+    repo_url: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
+
+- name: Install secrets-store-csi-driver
+  kubernetes.core.helm:
+    name: secrets-store-csi-driver
+    state: present
+    chart_version: 1.3.0
+    chart_ref: secrets-store-csi-driver/secrets-store-csi-driver
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

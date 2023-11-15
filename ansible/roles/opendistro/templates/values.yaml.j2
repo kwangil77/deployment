@@ -1,0 +1,77 @@
+kibana:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image: docker.io/amazon/opendistro-for-elasticsearch-kibana
+{% if certificate_arn is defined %}
+  service:
+    type: NodePort
+{% if kibana_host is defined %}
+  ingress:
+    enabled: true
+    annotations:
+{% if certificate_arn is defined %}
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=kibana,Security_level=moderate,Environment={{ env }}"
+      alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+    path: "/*"
+{% else %}
+      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+    hosts:
+    - "{{ kibana_host }}"
+elasticsearch:
+  initContainer:
+    image: docker.io/library/busybox
+  image: docker.io/amazon/opendistro-for-elasticsearch
+  master:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    persistence:
+      enabled: true
+  data:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    persistence:
+      enabled: true
+  client:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+{% if certificate_arn is defined %}
+    service:
+      type: NodePort
+{% endif %}
+{% if server_host is defined %}
+    ingress:
+      enabled: true
+      annotations:
+{% if certificate_arn is defined %}
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=elasticsearch-client,Security_level=moderate,Environment={{ env }}"
+        alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+      path: "/*"
+{% else %}
+        nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+      hosts:
+      - "{{ server_host }}"
+{% endif %}

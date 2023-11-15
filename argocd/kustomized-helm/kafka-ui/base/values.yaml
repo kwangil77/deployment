@@ -1,0 +1,8 @@
+kafka-ui:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    registry: docker.io
+    tag: "v0.7.1"

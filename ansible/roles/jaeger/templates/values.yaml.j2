@@ -1,0 +1,81 @@
+fullnameOverride: jaeger
+provisionDataStore:
+  cassandra: false
+storage:
+  type: elasticsearch
+  elasticsearch:
+    host: "{{ elasticsearch_host }}"
+    port: 443
+    scheme: https
+    user: ''
+    usePassword: false
+agent:
+  image: docker.io/jaegertracing/jaeger-agent
+  serviceMonitor:
+    enabled: true
+collector:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image: docker.io/jaegertracing/jaeger-collector
+  service:
+    zipkin:
+      port: 9411
+    otlp:
+      grpc:
+        port: 4317
+      http:
+        port: 4318
+  serviceMonitor:
+    enabled: true
+{% if number_of_days is defined %}
+query:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image: docker.io/jaegertracing/jaeger-query
+  serviceMonitor:
+    enabled: true
+spark:
+  enabled: true
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image: docker.io/jaegertracing/spark-dependencies
+  schedule: "0 13 * * *"
+esIndexCleaner:
+  enabled: true
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image: docker.io/jaegertracing/jaeger-es-index-cleaner
+  numberOfDays: {{ number_of_days }}
+  schedule: "0 13 * * *"
+{% else %}
+query:
+  enabled: false
+{% endif %}

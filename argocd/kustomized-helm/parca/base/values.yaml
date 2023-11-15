@@ -1,0 +1,26 @@
+parca:
+  agent:
+    image:
+      repository: ghcr.io/parca-dev/parca-agent
+    serviceMonitor:
+      enabled: true
+  server:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image:
+      repository: ghcr.io/parca-dev/parca
+      tag: "v0.20.0"
+    config:
+      object_storage:
+        bucket:
+          config:
+            directory: null
+    serviceMonitor:
+      enabled: true

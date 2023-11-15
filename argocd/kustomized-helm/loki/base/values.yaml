@@ -1,0 +1,247 @@
+loki-distributed:
+  gateway:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image:
+      registry: docker.io
+    nginxConfig:
+      file: |
+        worker_processes  5;
+        error_log  /dev/stderr;
+        pid        /tmp/nginx.pid;
+        worker_rlimit_nofile 8192;
+        events {
+          worker_connections  4096;
+        }
+        http {
+          client_body_temp_path /tmp/client_temp;
+          proxy_temp_path       /tmp/proxy_temp_path;
+          fastcgi_temp_path     /tmp/fastcgi_temp;
+          uwsgi_temp_path       /tmp/uwsgi_temp;
+          scgi_temp_path        /tmp/scgi_temp;
+          proxy_http_version    1.1;
+          default_type application/octet-stream;
+          log_format   {{ .Values.gateway.nginxConfig.logFormat }}
+          access_log   /dev/stderr  main;
+          sendfile     on;
+          tcp_nopush   on;
+          resolver {{ .Values.global.dnsService }}.{{ .Values.global.dnsNamespace }}.svc.{{ .Values.global.clusterDomain }};
+          client_max_body_size 100M;
+          server {
+            listen             8080;
+            location = / {
+              return 200 'OK';
+              auth_basic off;
+            }
+            location = /ready {
+              return 200 'OK';
+              auth_basic off;
+            }
+            location = /api/prom/push {
+              set $api_prom_push_backend http://{{ include "loki.distributorFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};
+              proxy_pass       $api_prom_push_backend:3100$request_uri;
+              proxy_http_version 1.1;
+            }
+            location = /api/prom/tail {
+              set $api_prom_tail_backend http://{{ include "loki.querierFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};
+              proxy_pass       $api_prom_tail_backend:3100$request_uri;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_http_version 1.1;
+            }
+            location ~ /prometheus/api/v1/alerts.* {
+              proxy_pass       http://{{ include "loki.rulerFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:3100$request_uri;
+            }
+            location ~ /prometheus/api/v1/rules.* {
+              proxy_pass       http://{{ include "loki.rulerFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:3100$request_uri;
+            }
+            location ~ /api/prom/rules.* {
+              proxy_pass       http://{{ include "loki.rulerFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:3100$request_uri;
+            }
+            location ~ /api/prom/alerts.* {
+              proxy_pass       http://{{ include "loki.rulerFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:3100$request_uri;
+            }
+            location ~ /api/prom/.* {
+              set $api_prom_backend http://{{ include "loki.queryFrontendFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};
+              proxy_pass       $api_prom_backend:3100$request_uri;
+              proxy_http_version 1.1;
+            }
+            location = /loki/api/v1/push {
+              set $loki_api_v1_push_backend http://{{ include "loki.distributorFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};
+              proxy_pass       $loki_api_v1_push_backend:3100$request_uri;
+              proxy_http_version 1.1;
+            }
+            location = /loki/api/v1/tail {
+              set $loki_api_v1_tail_backend http://{{ include "loki.querierFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};
+              proxy_pass       $loki_api_v1_tail_backend:3100$request_uri;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_http_version 1.1;
+            }
+            location ~ /loki/api/.* {
+              set $loki_api_backend http://{{ include "loki.queryFrontendFullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};
+              proxy_pass       $loki_api_backend:3100$request_uri;
+              proxy_http_version 1.1;
+            }
+          }
+        }
+  loki:
+    image:
+      registry: docker.io
+    server:
+      grpc_server_max_recv_msg_size: 8388608
+      grpc_server_max_send_msg_size: 8388608
+      grpc_server_min_time_between_pings: 10s
+      grpc_server_ping_without_stream_allowed: true
+  distributor:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  ingester:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    persistence:
+      enabled: true
+  querier:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  queryFrontend:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  queryScheduler:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  ruler:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    persistence:
+      enabled: true
+  compactor:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    persistence:
+      enabled: true
+  indexGateway:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    persistence:
+      enabled: true
+  memcached:
+    image:
+      registry: docker.io/library
+  memcachedExporter:
+    enabled: true
+    image:
+      registry: docker.io
+  memcachedChunks:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  memcachedFrontend:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  memcachedIndexQueries:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  memcachedIndexWrites:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  serviceMonitor:
+    enabled: true

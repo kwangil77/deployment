@@ -1,0 +1,119 @@
+grafana-agent:
+  service:
+    type: NodePort
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=grafana-agent,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/healthcheck-path: /-/ready
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    hosts:
+    - grafana-agent-metrics.example.io
+  controller:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    type: statefulset
+    replicas: 2
+    volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: agent-wal
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+  agent:
+    clustering:
+      enabled: true
+    listenPort: 12347
+    storagePath: /var/lib/agent
+    mounts:
+      extra: 
+      - name: agent-wal
+        mountPath: /var/lib/agent
+    configMap:
+      content: |
+        logging {
+          level = "info"
+          format = "logfmt"
+        }
+        discovery.kubernetes "pods" {
+          role = "pod"
+        }
+        discovery.kubernetes "nodes" {
+          role = "node"
+        }
+        discovery.kubernetes "services" {
+          role = "service"
+        }
+        discovery.kubernetes "endpoints" {
+          role = "endpoints"
+        }
+        discovery.kubernetes "endpointslices" {
+          role = "endpointslice"
+        }
+        discovery.kubernetes "ingresses" {
+          role = "ingress"
+        }
+        prometheus.operator.podmonitors "default" {
+          forward_to = [otelcol.receiver.prometheus.default.receiver]
+          clustering {
+            enabled = true
+          }
+        }
+        prometheus.operator.probes "default" {
+          forward_to = [otelcol.receiver.prometheus.default.receiver]
+          clustering {
+            enabled = true
+          }
+        }
+        prometheus.operator.servicemonitors "default" {
+          forward_to = [otelcol.receiver.prometheus.default.receiver]
+          clustering {
+            enabled = true
+          }
+          selector {
+            match_expression {
+              key = "app.kubernetes.io/name"
+              operator = "NotIn"
+              values = ["prometheus-node-exporter"]
+            }
+          }
+        }
+        otelcol.receiver.prometheus "default" {
+          output {
+            metrics = [otelcol.processor.batch.default.input]
+          }
+        }
+        otelcol.processor.batch "default" {
+          output {
+            metrics = [otelcol.exporter.prometheus.default.input]
+          }
+        }
+        otelcol.exporter.prometheus "default" {
+          forward_to = [prometheus.remote_write.default.receiver]
+        }
+        prometheus.remote_write "default" {
+          endpoint {
+            url = "http://vminsert-vmcluster.observability:8480/insert/0/prometheus/api/v1/write"
+          }
+          external_labels = {
+            "cluster" = "example-dev",
+          }
+        }

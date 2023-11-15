@@ -1,0 +1,32 @@
+spring-cloud-dataflow:
+  global:
+    imageRegistry: docker.io
+  server:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    existingConfigmap: spring-cloud-dataflow-server
+  skipper:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    existingConfigmap: spring-cloud-dataflow-skipper
+  metrics:
+    enabled: true
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    serviceMonitor:
+      enabled: true
+  mariadb:
+    enabled: false
+  rabbitmq:
+    enabled: false
+  externalKafka:
+    enabled: true

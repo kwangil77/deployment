@@ -1,0 +1,22 @@
+opencost:
+  opencost:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    exporter:
+      image:
+        registry: gcr.io
+    cloudCost:
+      enabled: true
+    metrics:
+      serviceMonitor:
+        enabled: true
+    prometheus:
+      external:
+        enabled: true
+      internal:
+        enabled: false
+    ui:
+      image:
+        registry: gcr.io

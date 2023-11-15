@@ -1,0 +1,105 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: opentelemetry
+spec:
+  mode: sidecar
+  image: docker.io/otel/opentelemetry-collector-contrib:0.88.0
+  env:
+  - name: APP_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.labels['app']
+  - name: APP_ENVIRONMENT
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.labels['environment']
+  - name: APP_SERVICE
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.labels['service']
+  - name: K8S_NODE_IP
+    valueFrom:
+      fieldRef:
+        apiVersion: v1
+        fieldPath: status.hostIP
+  - name: K8S_NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: spec.nodeName
+  - name: K8S_POD_IP
+    valueFrom:
+      fieldRef:
+        apiVersion: v1
+        fieldPath: status.podIP
+  - name: K8S_POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: K8S_POD_UID
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.uid
+  - name: K8S_NAMESPACE
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.namespace
+  - name: OTEL_RESOURCE_ATTRIBUTES
+    value: service.name=$(APP_SERVICE),app=$(APP_NAME),environment=$(APP_ENVIRONMENT),namespace=$(K8S_NAMESPACE),node_name=$(K8S_NODE_NAME),pod=$(K8S_POD_NAME)
+  managementState: managed
+  resources:
+    limits:
+      cpu: 256m
+      memory: 512Mi
+    requests:
+      cpu: 128m
+      memory: 256Mi
+  config: |-
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+    processors:
+      batch: {}
+      k8sattributes:
+        pod_association:
+        - sources:
+          - from: resource_attribute
+            name: app
+        - sources:
+          - from: resource_attribute
+            name: environment
+        - sources:
+          - from: resource_attribute
+            name: namespace
+        - sources:
+          - from: resource_attribute
+            name: node_name
+        - sources:
+          - from: resource_attribute
+            name: pod
+      resourcedetection:
+        detectors:
+        - env
+        - eks
+    extensions:
+      health_check:
+    exporters:
+      otlp:
+        endpoint: $K8S_NODE_IP:14317
+        tls:
+          insecure: true
+    service:
+      extensions:
+      - health_check
+      pipelines:
+        traces:
+          receivers:
+          - otlp
+          processors:
+          - resourcedetection
+          - k8sattributes
+          - batch
+          exporters:
+          - otlp

@@ -1,0 +1,34 @@
+---
+- name: Add grafana chart repo
+  kubernetes.core.helm_repository:
+    name: grafana
+    repo_url: https://grafana.github.io/helm-charts
+
+- name: Install promtail
+  kubernetes.core.helm:
+    name: promtail
+    state: present
+    chart_version: 6.15.3
+    chart_ref: grafana/promtail
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output
+
+- name: Install service
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    namespace: "{{ release_namespace }}"
+    definition: "{{ lookup('file', 'service.yaml') }}"
+  register: output
+
+- debug:
+    var: output

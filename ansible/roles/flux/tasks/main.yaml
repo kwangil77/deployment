@@ -1,0 +1,58 @@
+---
+- name: Add fluxcd-community chart repo
+  kubernetes.core.helm_repository:
+    name: fluxcd-community
+    repo_url: https://fluxcd-community.github.io/helm-charts
+
+- name: Install flux
+  kubernetes.core.helm:
+    name: flux
+    state: present
+    chart_version: 0.13.0
+    chart_ref: fluxcd-community/flux2
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output
+
+- name: Install secret
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    namespace: "{{ release_namespace }}"
+    definition: "{{ lookup('template', 'secret.yaml.j2') }}"
+  register: output
+
+- debug:
+    var: output
+
+- name: Install provider
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    namespace: "{{ release_namespace }}"
+    definition: "{{ lookup('template', 'provider.yaml.j2') }}"
+  register: output
+
+- debug:
+    var: output
+
+- name: Install podmonitor
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    namespace: "{{ release_namespace }}"
+    definition: "{{ lookup('file', 'podmonitor.yaml') }}"
+  register: output
+
+- debug:
+    var: output

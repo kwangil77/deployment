@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: example-dev-kustomize
+  namespace: development
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/kwangil77/deployment.git
+      revision: HEAD
+      files:
+      - path: "argocd/kustomize/*/example-dev*/config.json"
+  template:
+    metadata:
+      name: '{{ release_name }}'
+      namespace: development
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/kwangil77/deployment.git
+        targetRevision: HEAD
+        path: '{{ path }}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ release_namespace }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - Validate=false
+          # - CreateNamespace=true

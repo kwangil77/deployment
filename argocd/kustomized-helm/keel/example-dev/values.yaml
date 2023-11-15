@@ -1,0 +1,34 @@
+keel:
+  nameOverride: keel
+  service:
+    enabled: true
+    type: NodePort
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=keel,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    hosts:
+    - host: keel.example.io
+      paths:
+      - /
+  slack:
+    enabled: true
+    botName: example
+    token: <path:kv/data/keel/slack#token>
+    channel: "#devops_alert"
+    approvalsChannel: "#devops_alert"
+  basicauth:
+    enabled: true
+    user: admin
+    password: <path:kv/data/keel/admin#password>
+  resources:
+    limits:
+      cpu: 3000m
+      memory: 2Gi

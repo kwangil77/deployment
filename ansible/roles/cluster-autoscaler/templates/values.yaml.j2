@@ -1,0 +1,13 @@
+fullnameOverride: cluster-autoscaler
+nodeSelector:
+  team: devops
+  service: devops-infra
+  performance_type: standard
+image:
+  repository: k8s.gcr.io/autoscaling/cluster-autoscaler
+autoDiscovery:
+  clusterName: "{{ cluster_arn.split('/')[1] }}"
+awsRegion: ap-northeast-2
+serviceMonitor:
+  enabled: true
+  namespace: ""

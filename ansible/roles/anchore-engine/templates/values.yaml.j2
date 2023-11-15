@@ -1,0 +1,100 @@
+nameOverride: engine
+{% if server_host is defined %}
+ingress:
+  enabled: true
+  annotations:
+{% if certificate_arn is defined %}
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=anchore-api,Security_level=moderate,Environment={{ env }}"
+    alb.ingress.kubernetes.io/healthcheck-path: /v1/health
+    alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+  apiPath: "/v1/"
+  apiHosts:
+    - "{{ server_host }}"
+{% endif %}
+anchoreGlobal:
+  image: docker.io/anchore/anchore-engine:v1.1.0
+  defaultAdminPassword: "{{ admin_pass }}"
+  enableMetrics: true
+anchoreAnalyzer:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  replicaCount: 3
+anchoreApi:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  replicaCount: 1
+{% if certificate_arn is defined %}
+  service:
+    type: NodePort
+{% endif %}
+anchoreCatalog:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  replicaCount: 1
+  analysis_archive:
+    storage_driver:
+      name: s3
+      config:
+        bucket: "{{ s3_bucket }}"
+        prefix: /anchore-data
+        create_bucket: false
+{% if s3_endpoint is defined %}
+        url: "http://{{ s3_endpoint }}"
+        access_key: "{{ s3_accesskey }}"
+        secret_key: "{{ s3_secretkey }}"
+{% else %}
+        region: "ap-northeast-2"
+        iamauto: true
+{% endif %}
+  object_store:
+    storage_driver:
+      name: s3
+      config:
+        bucket: "{{ s3_bucket }}"
+        prefix: /anchore-data
+        create_bucket: false
+{% if s3_endpoint is defined %}
+        url: "http://{{ s3_endpoint }}"
+        access_key: "{{ s3_accesskey }}"
+        secret_key: "{{ s3_secretkey }}"
+{% else %}
+        region: "ap-northeast-2"
+        iamauto: true
+{% endif %}
+anchorePolicyEngine:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  replicaCount: 1
+anchoreSimpleQueue:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  replicaCount: 1
+postgresql:
+  postgresPassword: "{{ database_pass }}"
+  postgresUser: anchore
+  postgresDatabase: anchore
+  enabled: false
+  externalEndpoint: "{{ database_host }}"

@@ -1,0 +1,60 @@
+jenkins:
+  controller:
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=jenkins,Security_level=moderate,Environment=dev"
+        alb.ingress.kubernetes.io/healthcheck-path: /login
+        alb.ingress.kubernetes.io/security-groups: sg-...
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+        # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      path: "/*"
+      hostName: "jenkins.example.io"
+    jenkinsUrl: "https://jenkins.example.io"
+    serviceType: NodePort
+    JCasC:
+      securityRealm: |-
+        oic:
+          clientId: "jenkins"
+          clientSecret: <path:kv/data/jenkins/oidc#client-secret>
+          automanualconfigure: "auto"
+          wellKnownOpenIDConfigurationUrl: "https://keycloak.example.io/realms/master/.well-known/openid-configuration"
+          userNameField: "username"
+          fullNameFieldName: "username"
+          groupsFieldName: "groups"
+      authorizationStrategy: |-
+        projectMatrix:
+          permissions:
+            - "USER:View/Read:anonymous"
+            - "GROUP:View/Delete:authenticated"
+            - "GROUP:View/Read:authenticated"
+            - "GROUP:View/Configure:authenticated"
+            - "GROUP:View/Create:authenticated"
+            - "USER:Job/Read:anonymous"
+            - "GROUP:Job/Read:authenticated"
+            - "GROUP:Job/Build:authenticated"
+            - "GROUP:Job/Configure:authenticated"
+            - "GROUP:Job/Create:authenticated"
+            - "GROUP:Job/Delete:authenticated"
+            - "GROUP:Job/Discover:authenticated"
+            - "GROUP:Job/Move:authenticated"
+            - "GROUP:Job/Workspace:authenticated"
+            - "GROUP:Job/Cancel:authenticated"
+            - "GROUP:Run/Delete:authenticated"
+            - "GROUP:Run/Replay:authenticated"
+            - "GROUP:Run/Update:authenticated"
+            - "GROUP:Credentials/View:authenticated"
+            - "USER:Metrics/View:anonymous"
+            - "GROUP:Metrics/View:authenticated"
+            - "GROUP:Job Import/JobImport:authenticated"
+            - "GROUP:Lockable Resources/View:authenticated"
+            - "USER:Overall/Read:anonymous"
+            - "GROUP:Overall/Read:authenticated"
+            - "USER:Overall/Administer:admin"
+            - "GROUP:Overall/Administer:G_DevOps"
+  persistence:
+    size: 8Gi

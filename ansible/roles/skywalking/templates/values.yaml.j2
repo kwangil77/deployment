@@ -1,0 +1,51 @@
+initContainer:
+  image: docker.io/library/busybox
+oap:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: skywalking.docker.scarf.sh/apache/skywalking-oap-server
+    tag: "9.6.0"
+  storageType: elasticsearch
+  env:
+    SW_STORAGE_ES_HTTP_PROTOCOL: https
+ui:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: skywalking.docker.scarf.sh/apache/skywalking-ui
+    tag: "9.6.0"
+{% if certificate_arn is defined %}
+  service:
+    type: NodePort
+{% endif %}
+{% if server_host is defined %}
+  ingress:
+    enabled: true
+    annotations:
+{% if certificate_arn is defined %}
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=skywalking-ui,Security_level=moderate,Environment={{ env }}"
+      alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+    hosts:
+    - "{{ server_host }}"
+{% endif %}
+elasticsearch:
+  enabled: false
+  config:
+    host: "{{ elasticsearch_host }}"
+    port:
+      http: 443
+    user: ""
+    password: ""

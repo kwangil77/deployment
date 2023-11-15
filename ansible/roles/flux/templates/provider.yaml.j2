@@ -1,0 +1,10 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Provider
+metadata:
+  name: on-call-slack
+spec:
+  channel: "{{ slack_channel }}"
+  secretRef:
+    name: slack-token
+  type: slack
+  username: flux

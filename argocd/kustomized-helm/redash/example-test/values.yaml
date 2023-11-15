@@ -1,0 +1,24 @@
+redash:
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=redash,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/healthcheck-path: /ping
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    hosts:
+    - host: "redash.example.io"
+      paths:
+      - "/"
+  service:
+    type: NodePort
+  externalPostgreSQL: "postgres://redash:<path:kv/data/redash/postgresql#password>@....ap-northeast-2.rds.amazonaws.com/redash"
+  externalRedis: "redis://....cache.amazonaws.com:6379/8"
+  redash:
+    cookieSecret: <path:kv/data/redash/server#cookie-secret>
+    secretKey: <path:kv/data/redash/server#secret-key>

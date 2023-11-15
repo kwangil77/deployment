@@ -1,0 +1,57 @@
+schema-registry:
+  fullnameOverride: schema-registry
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=schema-registry,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/healthcheck-path: /healthz
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    hosts:
+    - "schema-registry.example.io"
+  service:
+    type: NodePort
+  config:
+    registry.yaml: |
+      schemaProviders:
+        - providerClass: "com.hortonworks.registries.schemaregistry.avro.AvroSchemaProvider"
+          defaultSerializerClass: "com.hortonworks.registries.schemaregistry.serdes.avro.AvroSnapshotSerializer"
+          defaultDeserializerClass: "com.hortonworks.registries.schemaregistry.serdes.avro.AvroSnapshotDeserializer"
+      servletFilters:
+        - className: "com.hortonworks.registries.schemaregistry.webservice.RewriteUriFilter"
+          params:
+            forwardPaths: "/api/v1/confluent,/subjects/*,/schemas/ids/*"
+            redirectPaths: "/ui/,/"
+      fileStorageConfiguration:
+        className: "com.hortonworks.registries.common.util.LocalFileSystemStorage"
+        properties:
+          directory: "/tmp/schema-registry/jars"
+      storageProviderConfiguration:
+        providerClass: "com.hortonworks.registries.storage.impl.jdbc.JdbcStorageManager"
+        properties:
+          db.type: "postgresql"
+          queryTimeoutInSecs: 30
+          db.properties:
+            dataSourceClassName: "org.postgresql.ds.PGSimpleDataSource"
+            dataSource.url: "jdbc:postgresql://....ap-northeast-2.rds.amazonaws.com/schema_registry"
+            dataSource.user: "registry_user"
+            dataSource.password: "<path:kv/data/schema-registry/postgresql#password>"
+      swagger:
+        resourcePackage: com.hortonworks.registries.schemaregistry.webservice
+      enableCors: false
+      server:
+        applicationConnectors:
+          - type: http
+            port: 9090
+        adminConnectors:
+          - type: http
+            port: 9091
+      logging:
+        level: INFO
+        loggers:
+          com.hortonworks.registries: INFO

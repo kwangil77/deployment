@@ -1,0 +1,25 @@
+victoria-metrics-operator:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: docker.io/victoriametrics/operator
+    tag: v0.39.1
+  createCRD: false
+  operator:
+    disable_prometheus_converter: true
+    useCustomConfigReloader: true
+  env:
+  - name: VM_CUSTOMCONFIGRELOADERIMAGE
+    value: docker.io/victoriametrics/operator:config-reloader-v0.32.0
+  - name: VM_VMALERTDEFAULT_CONFIGRELOADIMAGE
+    value: docker.io/jimmidyson/configmap-reload:v0.3.0
+  - name: VM_VMAGENTDEFAULT_CONFIGRELOADIMAGE
+    value: quay.io/prometheus-operator/prometheus-config-reloader:v0.68.0
+  admissionWebhooks:
+    enabled: true
+    certManager:
+      enabled: true
+  serviceMonitor:
+    enabled: true

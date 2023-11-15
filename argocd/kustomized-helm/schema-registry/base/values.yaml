@@ -1,0 +1,31 @@
+schema-registry:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: ghcr.io/kwangil77/schema-registry
+    tag: "1.0.0"
+    pullPolicy: Always
+  initContainers:
+  - name: download-extlibs
+    image: docker.io/library/alpine:3.8
+    command:
+    - "bin/sh"
+    - "-c"
+    args:
+    - |
+      wget -O /extlibs/postgresql.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.3/postgresql-42.3.3.jar
+    volumeMounts:
+    - mountPath: /extlibs
+      name: extlibs
+  extraVolumes:
+  - name: extlibs
+    emptyDir: {}
+  extraVolumeMounts:
+  - mountPath: /opt/registry/libs/postgresql.jar
+    name: extlibs
+    subPath: postgresql.jar
+  - mountPath: /opt/registry/bootstrap/lib/postgresql.jar
+    name: extlibs
+    subPath: postgresql.jar

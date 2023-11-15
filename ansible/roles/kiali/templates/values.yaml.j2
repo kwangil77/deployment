@@ -1,0 +1,24 @@
+deployment:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image_name: quay.io/kiali/kiali
+  ingress:
+    enabled: false
+istio_namespace: istio-system
+external_services:
+  tracing:
+    url: "{{ tracing_url }}"
+    in_cluster_url: "{{ tracing_url }}"
+  grafana:
+    auth:
+      type: basic
+      username: admin
+      password: "{{ grafana_pass }}"
+    url: "{{ grafana_url }}"
+    in_cluster_url: "{{ grafana_url }}"
+  prometheus:
+    url: "{{ prometheus_url }}"
+  custom_dashboards:
+    namespace_label: "{{ namespace_label }}"

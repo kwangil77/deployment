@@ -1,0 +1,15 @@
+pilot:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+global:
+  istioNamespace: istio-system
+  hub: docker.io/istio
+{% if remote_pilot_address is defined %}
+  remotePilotAddress: "{{ remote_pilot_address }}"
+{% endif %}
+  tracer:
+    zipkin:
+      address: grafana-agent.observability:19411

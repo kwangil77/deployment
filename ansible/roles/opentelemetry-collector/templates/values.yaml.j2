@@ -1,0 +1,93 @@
+nodeSelector:
+  team: devops
+  service: devops-infra
+  performance_type: standard
+image:
+  repository: docker.io/otel/opentelemetry-collector-contrib
+  tag: "0.88.0"
+mode: "deployment"
+serviceMonitor:
+  enabled: true
+config:
+  exporters:
+    otlphttp:
+      endpoint: "{{ tempo_url }}"
+{% if tempo_tls is defined %}
+{% else %}
+      tls:
+        insecure: true
+{% endif %}
+{% if loki_url is defined %}
+    loki:
+      endpoint: "{{ loki_url }}"
+{% if loki_tls is defined %}
+{% else %}
+      tls:
+        insecure: true
+{% endif %}
+{% endif %}
+    prometheus:
+      endpoint: "0.0.0.0:9090"
+      send_timestamps: true
+      enable_open_metrics: true
+      resource_to_telemetry_conversion:
+        enabled: true
+  processors:
+    attributes:
+      actions:
+      - action: insert
+        key: loki.attribute.labels
+        value: http.status_code
+    resource:
+      attributes:
+      - action: insert
+        key: loki.attribute.labels
+        value: http.status
+      - action: insert
+        key: loki.resource.labels
+        value: host.name, pod.name
+  receivers:
+    jaeger:
+      protocols:
+        thrift_binary:
+          endpoint: 0.0.0.0:6832
+  service:
+    pipelines:
+{% if loki_url is defined %}
+      logs:
+        exporters:
+        - loki
+        processors:
+        - resource
+        - attributes
+        receivers:
+        - otlp
+{% endif %}
+      metrics:
+        exporters:
+        - prometheus
+        processors:
+        - memory_limiter
+        - batch
+        receivers:
+        - otlp
+        - prometheus
+      traces:
+        exporters:
+        - otlphttp
+        processors:
+        - memory_limiter
+        - batch
+        receivers:
+        - otlp
+        - jaeger
+        - zipkin
+ports:
+  jaeger-binary:
+    enabled: true
+    containerPort: 6832
+    servicePort: 6832
+    hostPort: 6832
+    protocol: UDP
+  metrics:
+    enabled: true

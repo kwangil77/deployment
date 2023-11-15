@@ -1,0 +1,22 @@
+---
+- name: Add kwangil77 chart repo
+  kubernetes.core.helm_repository:
+    name: kwangil77
+    repo_url: https://kwangil77.github.io/helm-charts
+
+- name: Install opendistro
+  kubernetes.core.helm:
+    name: opendistro
+    state: present
+    chart_version: 1.13.3
+    chart_ref: kwangil77/opendistro-es
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

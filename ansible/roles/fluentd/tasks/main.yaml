@@ -1,0 +1,22 @@
+---
+- name: Add fluent chart repo
+  kubernetes.core.helm_repository:
+    name: fluent
+    repo_url: https://fluent.github.io/helm-charts
+
+- name: Install fluentd
+  kubernetes.core.helm:
+    name: fluentd
+    state: present
+    chart_version: 0.3.9
+    chart_ref: fluent/fluentd
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

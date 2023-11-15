@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: simple-web
+  labels:
+    app: simple-web
+spec:
+  endpoints:
+  - port: http
+    metricRelabelings:
+    - action: drop
+      regex: '/_next/.*'
+      sourceLabels:
+      - path
+  podTargetLabels:
+  - app
+  selector:
+    matchLabels:
+      app: simple-web
+  namespaceSelector:
+    any: true

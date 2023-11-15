@@ -1,0 +1,10 @@
+apiVersion: v2
+name: tyk-operator
+description: A Helm chart for Kubernetes
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+dependencies:
+- name: tyk-operator
+  version: 0.15.1
+  repository: https://helm.tyk.io/public/helm/charts

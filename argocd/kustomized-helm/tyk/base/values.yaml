@@ -1,0 +1,23 @@
+tyk-oss:
+  global:
+    components:
+      pump: true
+  tyk-gateway:
+    gateway:
+      nodeSelector:
+        team: devops
+        service: devops-infra
+        performance_type: standard
+      image:
+        repository: docker.tyk.io/tyk-gateway/tyk-gateway
+        tag: v5.2.2
+      control:
+        enabled: true
+  tyk-pump:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      repository: docker.tyk.io/tyk-pump/tyk-pump
+      tag: v1.8.3

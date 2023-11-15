@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-client
+  labels:
+    app: simple-client
+spec:
+  selector:
+    app: simple-client
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: NodePort

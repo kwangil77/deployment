@@ -1,0 +1,38 @@
+nodeSelector:
+  kubernetes.io/arch: amd64
+  team: devops
+  service: devops-infra
+  performance_type: standard
+image: docker.elastic.co/apm/apm-server-oss
+apmConfig:
+  apm-server.yml: |
+    apm-server:
+      host: "0.0.0.0:8200"
+    queue: {}
+    output.file:
+      enabled: false
+    output.elasticsearch:
+      hosts: {{ elasticsearch_hosts | to_json }}
+{% if certificate_arn is defined %}
+service:
+  type: NodePort
+{% endif %}
+{% if server_host is defined %}
+ingress:
+  enabled: true
+  annotations:
+{% if certificate_arn is defined %}
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=apm-server,Security_level=moderate,Environment={{ env }}"
+    alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+  path: "/*"
+{% else %}
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+  hosts:
+  - "{{ server_host }}"
+{% endif %}

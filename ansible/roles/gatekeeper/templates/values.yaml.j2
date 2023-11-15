@@ -1,0 +1,17 @@
+image:
+  repository: docker.io/openpolicyagent/gatekeeper
+  crdRepository: docker.io/openpolicyagent/gatekeeper-crds
+postInstall:
+  labelNamespace:
+    image:
+      repository: docker.io/openpolicyagent/gatekeeper-crds
+controllerManager:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+audit:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard

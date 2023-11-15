@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: sonarqube
+  labels:
+    app: sonarqube
+    release: sonarqube
+spec:
+  podMetricsEndpoints:
+  - port: monitoring-ce
+    path: /
+    scheme: http
+  - port: monitoring-web
+    path: /
+    scheme: http
+  - port: http
+    path: /api/monitoring/metrics
+    scheme: http
+    bearerTokenSecret:
+      name: sonarqube-monitoring-passcode
+      key: SONAR_WEB_SYSTEMPASSCODE
+  selector:
+    matchLabels:
+      app: sonarqube
+      release: sonarqube
+  namespaceSelector:
+    any: true

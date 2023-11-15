@@ -1,0 +1,32 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: simple-web
+  labels:
+    app: simple-web
+spec:
+  workloadRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: simple-web
+  strategy:
+    blueGreen:
+      activeService: simple-web
+      previewService: simple-web-preview
+      autoPromotionEnabled: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-web-preview
+  labels:
+    app: simple-web
+spec:
+  selector:
+    app: simple-web
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+  type: NodePort

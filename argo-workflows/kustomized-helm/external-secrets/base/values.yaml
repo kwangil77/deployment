@@ -1,0 +1,15 @@
+external-secrets:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: ghcr.io/external-secrets/external-secrets
+  webhook:
+    image:
+      repository: ghcr.io/external-secrets/external-secrets
+  certController:
+    image:
+      repository: ghcr.io/external-secrets/external-secrets
+  serviceMonitor:
+    enabled: true

@@ -1,0 +1,69 @@
+---
+# - name: Create namespace
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ playbook_dir }}/inventory/config"
+#     context: "{{ cluster_arn }}"
+#     name: "{{ release_namespace }}"
+#     api_version: v1
+#     kind: Namespace
+#     state: present
+#   register: output
+
+# - debug:
+#     var: output
+
+- name: Install secret
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    namespace: "{{ release_namespace }}"
+    definition: "{{ lookup('template', 'secret.yaml.j2') }}"
+  register: output
+  when: s3_bucket is defined
+
+- debug:
+    var: output
+  when: s3_bucket is defined
+
+- name: Install crd
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    definition: "{{ lookup('url', 'https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/crds/' + item, split_lines=false) | from_yaml_all | list }}"
+  with_items:
+    # - crd-alertmanagerconfigs.yaml
+    - crd-alertmanagers.yaml
+    - crd-podmonitors.yaml
+    - crd-probes.yaml
+    - crd-prometheuses.yaml
+    - crd-prometheusrules.yaml
+    - crd-servicemonitors.yaml
+    - crd-thanosrulers.yaml
+  register: output
+
+- debug:
+    var: output
+
+- name: Add prometheus-community chart repo
+  kubernetes.core.helm_repository:
+    name: prometheus-community
+    repo_url: https://prometheus-community.github.io/helm-charts
+
+- name: Install kube-prometheus
+  kubernetes.core.helm:
+    name: prometheus
+    state: present
+    chart_version: 54.0.1
+    chart_ref: prometheus-community/kube-prometheus-stack
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

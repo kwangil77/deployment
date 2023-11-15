@@ -1,0 +1,59 @@
+jenkins:
+  controller:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image: docker.io/jenkins/jenkins/
+    # scriptApproval:
+    #   - "method java.util.Base64$Decoder decode java.lang.String"
+    #   - "new java.lang.String byte[]"
+    #   - "staticMethod java.util.Base64 getDecoder"
+    # podSecurityContextOverride:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   supplementalGroups: [1000]
+    sidecars:
+      configAutoReload:
+        enabled: true
+        image: docker.io/kiwigrid/k8s-sidecar:1.24.4
+    installPlugins:
+    - "kubernetes:3622.va_9dc5592b_10c"
+    - "git"
+    - "configuration-as-code"
+    installLatestPlugins: true
+    additionalPlugins:
+    - "antisamy-markup-formatter"
+    - "oic-auth"
+    - "matrix-auth"
+    - "prometheus"
+    - "job-import-plugin"
+    - "jobConfigHistory"
+    - "junit"
+    - "workflow-aggregator"
+    - "workflow-cps"
+    - "credentials-binding"
+    - "pipeline-model-api"
+    - "google-oauth-plugin"
+    - "lockable-resources"
+    containerEnv:
+    - name: TZ
+      value: "Asia/Seoul"
+    javaOpts: "-Dhudson.model.DirectoryBrowserSupport.CSP="
+    enableRawHtmlMarkupFormatter: true
+    prometheus:
+      enabled: true
+  agent:
+    enabled: false
+  #   maxRequestsPerHostStr: "32"
+  #   volumes:
+  #   - type: Secret
+  #     secretName: jenkins-secrets
+  #     mountPath: /var/run/secrets/jenkins-mysecrets
+  rbac:
+    create: true

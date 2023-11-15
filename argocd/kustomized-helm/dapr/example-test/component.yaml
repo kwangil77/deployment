@@ -1,0 +1,29 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: dapr-statestore
+  labels:
+    app: dapr
+spec:
+  type: state.redis
+  version: v1
+  metadata:
+  - name: redisHost
+    value: ....cache.amazonaws.com:6379/9
+  - name: redisPassword
+    value: ""
+---
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: dapr-messagebus
+  labels:
+    app: dapr
+spec:
+  type: pubsub.redis
+  version: v1
+  metadata:
+  - name: redisHost
+    value: ....cache.amazonaws.com:6379/9
+  - name: redisPassword
+    value: ""

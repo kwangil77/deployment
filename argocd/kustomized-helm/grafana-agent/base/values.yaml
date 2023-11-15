@@ -1,0 +1,8 @@
+grafana-agent:
+  global:
+    image:
+      registry: docker.io
+  image:
+    tag: v0.37.4
+  agent:
+    enableReporting: false

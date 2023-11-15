@@ -1,0 +1,37 @@
+oncall:
+  image:
+    repository: docker.io/grafana/oncall
+    tag: "v1.3.57"
+  engine:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  celery:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  migrate:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  ingress:
+    enabled: false
+  ingress-nginx:
+    enabled: false
+  cert-manager:
+    enabled: false
+  database:
+    type: postgresql
+  mariadb:
+    enabled: false
+  broker:
+    type: redis
+  rabbitmq:
+    enabled: false
+  redis:
+    enabled: false
+  grafana:
+    enabled: false

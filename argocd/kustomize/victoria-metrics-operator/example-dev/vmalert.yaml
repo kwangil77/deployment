@@ -1,0 +1,35 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlert
+metadata:
+  name: vmalert
+spec:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  replicaCount: 1
+  image:
+    repository: docker.io/victoriametrics/vmalert
+    tag: v1.94.0
+  datasource:
+    url: "http://vmselect-vmcluster.observability:8481/select/0/prometheus"
+  notifier:
+    url: "http://alertmanager.observability:9093"
+  evaluationInterval: "30s"
+  selectAllByDefault: true
+  remoteWrite:
+    url: "http://vminsert-vmcluster.observability:8480/insert/0/prometheus"
+  rulePath:
+  - "/etc/vm/configs/vmalert/*.yaml"
+  extraArgs:
+    external.url: "https://vmalert.example.io"
+  configMaps:
+  - vmalert
+  serviceSpec:
+    spec:
+      type: NodePort

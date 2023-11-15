@@ -1,0 +1,33 @@
+tyk-oss:
+  global:
+    secrets:
+      APISecret: <path:kv/data/tyk/api#secret>
+    redis:
+      addrs:
+      - ....cache.amazonaws.com:6379
+      storage:
+        database: 10
+  tyk-gateway:
+    fullnameOverride: tyk-gateway
+    gateway:
+      service:
+        type: ClusterIP
+      extraEnvs:
+      - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEHTTP2
+        value: 'true'
+      - name: TYK_GW_PROXYENABLEHTTP2
+        value: 'true'
+      - name: TYK_GW_TRACER_ENABLED
+        value: 'true'
+      - name: TYK_GW_TRACER_NAME
+        value: zipkin
+      - name: TYK_GW_TRACER_OPTIONS_REPORTER_URL
+        value: http://grafana-agent.observability:19411/api/v2/spans
+  tyk-pump:
+    fullnameOverride: tyk-pump
+    prometheusPump:
+      host: ":9090"
+      prometheusOperator:
+        enabled: true
+        podMonitorSelector:
+          release: tyk

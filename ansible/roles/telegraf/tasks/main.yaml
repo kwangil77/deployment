@@ -1,0 +1,34 @@
+---
+- name: Add influxdata chart repo
+  kubernetes.core.helm_repository:
+    name: influxdata
+    repo_url: https://helm.influxdata.com
+
+- name: Install telegraf
+  kubernetes.core.helm:
+    name: telegraf
+    state: present
+    chart_version: 1.8.20
+    chart_ref: influxdata/telegraf
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output
+
+- name: Install servicemonitor
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    namespace: "{{ release_namespace }}"
+    definition: "{{ lookup('file', 'servicemonitor.yaml') }}"
+  register: output
+
+- debug:
+    var: output

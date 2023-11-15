@@ -1,0 +1,43 @@
+apicurio-registry:
+  fullnameOverride: apicurio-registry
+  registry:
+    sql:
+      url: jdbc:postgresql://....ap-northeast-2.rds.amazonaws.com/apicurio_registry
+      password: <path:kv/data/apicurio-registry/postgresql#password>
+    extraEnv:
+    - name: REGISTRY_UI_CONFIG_APIURL
+      value: "https://apicurio-registry.example.io/apis/registry"
+    - name: REGISTRY_UI_CONFIG_UIURL
+      value: "https://apicurio-registry.example.io/ui"
+    - name: REGISTRY_AUTH_ENABLED
+      value: "true"
+    - name: KEYCLOAK_URL
+      value: "https://keycloak.example.io/"
+    - name: KEYCLOAK_REALM
+      value: "master"
+    - name: KEYCLOAK_API_CLIENT_ID
+      value: registry-api
+    - name: KEYCLOAK_UI_CLIENT_ID
+      value: apicurio-registry
+    - name: REGISTRY_AUTH_RBAC_ENABLED
+      value: "true"
+    - name: REGISTRY_AUTH_ANONYMOUS_READS_ENABLED
+      value: "true"
+    - name: REGISTRY_AUTH_ROLES_ADMIN
+      value: "G_DevOps"
+    service:
+      type: NodePort
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=apicurio-registry,Security_level=moderate,Environment=dev"
+        alb.ingress.kubernetes.io/healthcheck-path: /health/live
+        alb.ingress.kubernetes.io/security-groups: sg-...
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+        # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      host: "apicurio-registry.example.io"
+      pathType: Prefix

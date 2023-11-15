@@ -1,0 +1,48 @@
+temporal:
+  server:
+    config:
+      persistence:
+        default:
+          sql:
+            host: "....ap-northeast-2.rds.amazonaws.com"
+            password: <path:kv/data/temporal/postgresql#password>
+        visibility:
+          sql:
+            host: "....ap-northeast-2.rds.amazonaws.com"
+            password: <path:kv/data/temporal/postgresql#password>
+  web:
+    additionalEnv:
+    - name: TEMPORAL_AUTH_ENABLED
+      value: "true"
+    - name: TEMPORAL_AUTH_LABEL
+      value: Keycloak
+    - name: TEMPORAL_AUTH_PROVIDER_URL
+      value: "https://keycloak.example.io/realms/master"
+    - name: TEMPORAL_AUTH_CLIENT_ID
+      value: temporal
+    - name: TEMPORAL_AUTH_CLIENT_SECRET
+      value: <path:kv/data/temporal/oidc#client-secret>
+    - name: TEMPORAL_AUTH_CALLBACK_URL
+      value: "https://temporal.example.io/auth/sso/callback"
+    - name: TEMPORAL_AUTH_SCOPES
+      value: openid
+    service:
+      type: NodePort
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=temporal,Security_level=moderate,Environment=dev"
+        alb.ingress.kubernetes.io/security-groups: sg-...
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+        # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      hosts:
+      - "temporal.example.io"
+  elasticsearch:
+    external: true
+    host: "....ap-northeast-2.es.amazonaws.com"
+    scheme: https
+    port: 443

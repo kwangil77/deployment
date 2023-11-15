@@ -1,0 +1,10 @@
+opencost:
+  fullnameOverride: opencost
+  service:
+    type: NodePort
+  opencost:
+    exporter:
+      defaultClusterId: example-dev
+    prometheus:
+      external:
+        url: http://vmselect-vmcluster.observability:8481/select/0/prometheus

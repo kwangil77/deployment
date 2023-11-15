@@ -1,0 +1,79 @@
+signoz:
+  clusterName: example-dev
+  externalClickhouse:
+    host: signoz-clickhouse.observability
+    user: default
+    password: <path:kv/data/signoz/clickhouse#password>
+  frontend:
+    service:
+      type: NodePort
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=signoz,Security_level=moderate,Environment=dev"
+        alb.ingress.kubernetes.io/security-groups: sg-...
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+      hosts:
+      - host: signoz.example.io
+        paths:
+        - path: /
+          pathType: Prefix
+          port: 3301
+  auth: {}
+clickhouse:
+  auth:
+    password: <path:kv/data/signoz/clickhouse#password>
+  shards: 1
+  replicaCount: 1
+  extraOverrides: |
+    <clickhouse>
+      <profiles>
+        <default>
+          <allow_experimental_window_functions>1</allow_experimental_window_functions>
+          <allow_nondeterministic_mutations>1</allow_nondeterministic_mutations>
+          <distributed_ddl_task_timeout>900</distributed_ddl_task_timeout>
+        </default>
+      </profiles>
+      <remote_servers>
+        <cluster>
+          <shard>
+            <replica>
+              <host>signoz-clickhouse-shard0-0.signoz-clickhouse-headless.observability.svc.cluster.local</host>
+              <port>9000</port>
+            </replica>
+          </shard>
+        </cluster>
+      </remote_servers>
+      <storage_configuration>
+        <disks>
+          <default>
+            <keep_free_space_bytes>10485760</keep_free_space_bytes>
+          </default>
+          <s3>
+            <type>s3</type>
+            <endpoint>http://minio-hl.management:9000/example-dev-signoz-bucket//</endpoint>
+            <access_key_id><path:kv/data/minio/secret#access-key></access_key_id>
+            <secret_access_key><path:kv/data/minio/secret#secret-key></secret_access_key>
+          </s3>
+        </disks>
+        <policies>
+          <tiered>
+            <volumes>
+              <default>
+                <disk>default</disk>
+              </default>
+              <s3>
+                <disk>s3</disk>
+                <perform_ttl_move_on_insert>0</perform_ttl_move_on_insert>
+              </s3>
+            </volumes>
+          </tiered>
+        </policies>
+      </storage_configuration>
+    </clickhouse>
+  persistence:
+    size: 50Gi

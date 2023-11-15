@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: litmus
+  labels:
+    app: litmus
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=litmus,Security_level=moderate,Environment=dev"
+    alb.ingress.kubernetes.io/security-groups: sg-...
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+spec:
+  rules:
+  - host: litmus.example.io
+    http:
+      paths:
+      - path: /dex
+        pathType: Prefix
+        backend:
+          service:
+            name: litmus-dex
+            port:
+              number: 5556
+      - path: /backend
+        pathType: Prefix
+        backend:
+          service:
+            name: litmus-server-service
+            port:
+              number: 9002
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: litmus-frontend-service
+            port:
+              number: 9091

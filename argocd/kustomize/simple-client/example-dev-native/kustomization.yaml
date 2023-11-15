@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- deployment.yaml
+- service.yaml
+- ingress.yaml
+- hpa.yaml
+- rollout.yaml
+commonLabels:
+  environment: dev
+  service: simple-client-native
+buildMetadata:
+- managedByLabel
+images:
+- name: ghcr.io/kwangil77/simple-client
+  newTag: native-image
+patches:
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: simple-client-native
+  patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 0
+- target:
+    group: autoscaling
+    version: v2
+    kind: HorizontalPodAutoscaler
+    name: simple-client-native
+  patch: |-
+    - op: replace
+      path: /spec/scaleTargetRef/apiVersion
+      value: argoproj.io/v1alpha1
+    - op: replace
+      path: /spec/scaleTargetRef/kind
+      value: Rollout

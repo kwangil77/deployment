@@ -1,0 +1,60 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  replicas: 2
+  image: quay.io/prometheus/prometheus:v2.47.2
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+  enableFeatures:
+  - exemplar-storage
+  - native-histograms
+  enableRemoteWriteReceiver: true
+  additionalAlertManagerConfigs:
+    name: prometheus
+    key: alertmanager.yaml
+  additionalScrapeConfigs:
+    name: prometheus
+    key: scrape.yml
+  externalLabels:
+    cluster: example-dev
+  portName: http-web
+  securityContext:
+    fsGroup: 2000
+    runAsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: prometheus-prometheus
+  serviceMonitorSelector: {}
+  serviceMonitorNamespaceSelector: {}
+  podMonitorSelector: {}
+  podMonitorNamespaceSelector: {}
+  probeSelector: {}
+  probeNamespaceSelector: {}
+  ruleNamespaceSelector: {}
+  ruleSelector: {}
+  remoteWrite:
+  - url: "http://vminsert-vmcluster.observability:8480/insert/0/prometheus/api/v1/write"
+    writeRelabelConfigs:
+    - action: labeldrop
+      regex: "prometheus_replica"
+    sendExemplars: true
+  walCompression: true

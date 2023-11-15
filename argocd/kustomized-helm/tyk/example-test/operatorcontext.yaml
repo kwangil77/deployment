@@ -1,0 +1,11 @@
+apiVersion: tyk.tyk.io/v1alpha1
+kind: OperatorContext
+metadata:
+  name: tyk
+spec:
+  env:
+    mode: ce
+    auth: <path:kv/data/tyk/api#secret>
+    org: '1'
+    url: http://gateway-control-svc-tyk-gateway.management:9696
+    insecureSkipVerify: true

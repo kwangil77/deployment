@@ -1,0 +1,146 @@
+thanos:
+  global:
+    imageRegistry: docker.io
+  query:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    replicaCount: 2
+    replicaLabel:
+    - replica
+    - prometheus_replica
+  queryFrontend:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  compactor:
+    enabled: true
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    persistence:
+      enabled: true
+  storegateway:
+    enabled: true
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    persistence:
+      enabled: true
+  ruler:
+    enabled: true
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    persistence:
+      enabled: true
+  receive:
+    enabled: true
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    replicaCount: 2
+    extraFlags:
+    - "--tsdb.max-exemplars=100000"
+    persistence:
+      enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+memcached-frontend:
+  enabled: true
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  global:
+    imageRegistry: docker.io
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+memcached-index:
+  enabled: true
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  global:
+    imageRegistry: docker.io
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+memcached-bucket:
+  enabled: true
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  global:
+    imageRegistry: docker.io
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true

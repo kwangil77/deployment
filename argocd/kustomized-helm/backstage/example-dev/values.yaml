@@ -1,0 +1,183 @@
+backstage:
+  backstage:
+    annotations:
+      keel.sh/policy: force
+      keel.sh/match-tag: 'true'
+      keel.sh/pollSchedule: '@every 1m'
+      keel.sh/trigger: poll
+    extraEnvVars:
+    - name: POSTGRES_HOST
+      value: ....ap-northeast-2.rds.amazonaws.com
+    - name: POSTGRES_PORT
+      value: "5432"
+    - name: POSTGRES_USER
+      value: backstage
+    - name: NODE_OPTIONS
+      value: '--max-http-header-size=32768'
+    extraEnvVarsSecrets:
+    - backstage-secret
+    appConfig:
+      app:
+        title: Backstage App
+        baseUrl: https://backstage.example.io
+        experimental:
+          packages: all
+      organization:
+        name: Example
+      backend:
+        baseUrl: https://backstage.example.io
+        cors:
+          origin: https://backstage.example.io
+        database:
+          client: pg
+          connection:
+            host: ${POSTGRES_HOST}
+            port: ${POSTGRES_PORT}
+            user: ${POSTGRES_USER}
+            password: ${POSTGRES_PASSWORD}
+        csp:
+          connect-src:
+          - "'self'"
+          - 'http:'
+          - 'https:'
+          img-src:
+          - "'self'"
+          - 'data:'
+          - 'https://avatars.slack-edge.com'
+        reading:
+          allow:
+          - host: apicurio-registry.example.io
+      auth:
+        environment: production
+        providers:
+          oauth2Proxy:
+            production: {}
+      techdocs:
+        builder: external
+        publisher:
+          type: awsS3
+          awsS3:
+            bucketName: example-dev-backstage-bucket
+            s3ForcePathStyle: true
+            endpoint: http://minio-hl.management:9000
+            region: ap-northeast-2
+            credentials:
+              accessKeyId: <path:kv/data/minio/secret#access-key>
+              secretAccessKey: <path:kv/data/minio/secret#secret-key>
+      kubernetes:
+        serviceLocatorMethod:
+          type: multiTenant
+        clusterLocatorMethods:
+        - type: config
+          clusters:
+          - url: https://kubernetes.default
+            name: example-dev
+            authProvider: serviceAccount
+            skipTLSVerify: true
+            caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            customResources:
+            - group: argoproj.io
+              apiVersion: v1alpha1
+              plural: rollouts
+      integrations:
+        bitbucketServer:
+        - host: bitbucket.example.io
+          apiBaseUrl: https://bitbucket.example.io/rest/api/1.0
+          token:
+            $env: BITBUCKET_TOKEN
+      catalog:
+        rules:
+        - allow:
+          - Component
+          - Domain
+          - System
+          - API
+          - Resource
+          - Location
+          - User
+          - Group
+          - Template
+        providers:
+          bitbucketServer:
+            example:
+              host: bitbucket.example.io
+              catalogPath: /catalog-info.yaml
+              filters:
+                projectKey: '^TC$'
+              schedule:
+                frequency:
+                  minutes: 30
+                timeout:
+                  minutes: 3
+      sonarqube:
+        baseUrl: https://sonarqube.example.io
+        apiKey:
+          $env: SONARQUBE_TOKEN
+      vault:
+        baseUrl: https://vault.example.io
+        secretEngine: kv
+        token:
+          $env: VAULT_TOKEN
+      grafana:
+        domain: https://grafana.example.io
+        unifiedAlerting: true
+      explore:
+        tools:
+        - title: Tech Radar
+          description: Tech Radar is a list of technologies, complemented by an assessment result, called ring assignment.
+          url: /tech-radar
+          image: /tech-radar.png
+          tags:
+          - standards
+          - landscape
+        - title: OpenCost
+          description: OpenCost is a vendor-neutral open source project for measuring and allocating cloud infrastructure and container costs in real time.
+          url: /opencost
+          image: /open-cost.png
+          tags:
+          - cloud
+          - finops
+      opencost:
+        baseUrl: https://opencost.example.io
+      proxy:
+        /argocd/api:
+          target: https://argocd.example.io/api/v1/
+          headers:
+            Cookie:
+              $env: ARGOCD_AUTH_TOKEN
+        /grafana/api:
+          target: https://grafana.example.io
+          headers:
+            Authorization:
+              $env: GRAFANA_TOKEN
+oauth2-proxy:
+  config:
+    clientID: backstage
+    clientSecret: <path:kv/data/backstage/oidc#client-secret>
+    cookieSecret: <path:kv/data/backstage/oidc#cookie-secret>
+    configFile: |-
+      email_domains = [ "*" ]
+      upstreams = [ "http://backstage:7007" ]
+      upstream_timeout = "5m"
+      provider = "keycloak-oidc"
+      redirect_url = "https://backstage.example.io/oauth2/callback"
+      oidc_issuer_url = "https://keycloak.example.io/realms/master"
+      insecure_oidc_allow_unverified_email = "true"
+  service:
+    type: NodePort
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=backstage,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/healthcheck-path: /ping
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    hosts:
+    - backstage.example.io
+    path: /
+    pathType: Prefix

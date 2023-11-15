@@ -1,0 +1,84 @@
+global:
+  serverTelemetry:
+    prometheusOperator: true
+injector:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  metrics:
+    enabled: true
+  image:
+    repository: "docker.io/hashicorp/vault-k8s"
+    tag: "1.1.0"
+  agentImage:
+    repository: "docker.io/hashicorp/vault"
+    tag: "1.12.2"
+server:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: "docker.io/hashicorp/vault"
+    tag: "1.12.2"
+  ingress:
+    enabled: true
+    annotations:
+{% if regist_host is defined %}
+      external-dns.alpha.kubernetes.io/hostname: "{{ regist_host }}"
+{% endif %}
+{% if certificate_arn is defined %}
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=vault,Security_level=moderate,Environment={{ env }}"
+      alb.ingress.kubernetes.io/healthcheck-path: /v1/sys/health
+      alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+    hosts:
+    - host: "{{ server_host }}"
+      paths:
+      - "/"
+{% if certificate_arn is defined %}
+  service:
+    type: NodePort
+{% endif %}
+  standalone:
+    enabled: false
+  ha:
+    enabled: true
+    raft:
+      enabled: true
+      setNodeId: true
+      config: |
+        ui = true
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+          telemetry {
+            unauthenticated_metrics_access = true
+          }
+        }
+        telemetry {
+          prometheus_retention_time = "30s"
+          disable_hostname = true
+        }
+        storage "raft" {
+          path = "/vault/data"
+        }
+        seal "awskms" {
+          region = "ap-northeast-2"
+          kms_key_id = "{{ kms_key_id }}"
+        }
+        service_registration "kubernetes" {}
+csi:
+  enabled: true
+  image:
+    repository: "docker.io/hashicorp/vault-csi-provider"
+    tag: "1.2.1"

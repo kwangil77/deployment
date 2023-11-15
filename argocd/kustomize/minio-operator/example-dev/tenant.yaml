@@ -1,0 +1,32 @@
+apiVersion: minio.min.io/v2
+kind: Tenant
+metadata:
+  name: minio
+spec:
+  image: quay.io/minio/minio:RELEASE.2022-12-02T19-19-22Z
+  configuration:
+    name: minio-secret
+  pools:
+  - servers: 3
+    name: pool
+    volumesPerServer: 2
+    volumeClaimTemplate:
+      metadata:
+        name: data
+      spec:
+        storageClassName: null
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Gi
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  mountPath: /export
+  subPath: /data
+  requestAutoCert: false
+  podManagementPolicy: Parallel
+  prometheusOperator: false

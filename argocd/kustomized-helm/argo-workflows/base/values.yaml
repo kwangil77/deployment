@@ -1,0 +1,39 @@
+argo-workflows:
+  images:
+    tag: "v3.5.1"
+  workflow:
+    serviceAccount:
+      create: true
+  controller:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    name: controller
+    image:
+      registry: quay.io
+    metricsConfig:
+      enabled: true
+    persistence:
+      nodeStatusOffLoad: true
+      archive: true
+    serviceMonitor:
+      enabled: true
+  executor:
+    image:
+      registry: quay.io
+  server:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      registry: quay.io
+    extraEnv:
+    - name: SSO_DELEGATE_RBAC_TO_NAMESPACE
+      value: "true"
+    extraArgs:
+    - "--auth-mode=sso"
+  useDefaultArtifactRepo: true
+  artifactRepository:
+    archiveLogs: true

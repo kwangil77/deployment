@@ -1,0 +1,39 @@
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx
+spec:
+  image: quay.io/ansible/awx
+  image_version: latest
+  image_pull_policy: Always
+  ee_images:
+  - name: AWX EE (latest)
+    image: ghcr.io/kwangil77/awx-ee:latest
+  control_plane_ee_image: ghcr.io/kwangil77/awx-ee:latest
+  ingress_type: Ingress
+  ingress_annotations: |
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=awx-web,Security_level=moderate,Environment=dev"
+    alb.ingress.kubernetes.io/healthcheck-path: /api/v2/ping/
+    alb.ingress.kubernetes.io/security-groups: sg-...
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+  hostname: awx.example.io
+  service_type: NodePort
+  nodeport_port: 31080
+  redis_image: docker.io/library/redis
+  redis_image_version: latest
+  init_container_image: ghcr.io/kwangil77/awx-ee
+  init_container_image_version: latest
+  projects_persistence: true
+  projects_storage_access_mode: ReadWriteOnce
+  secret_key_secret: awx-secret-key
+  admin_password_secret: awx-admin-password
+  postgres_configuration_secret: awx-postgres-configuration
+  node_selector: |
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard

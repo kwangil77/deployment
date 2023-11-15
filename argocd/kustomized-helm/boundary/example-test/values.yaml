@@ -1,0 +1,77 @@
+boundary:
+  fullnameOverride: boundary
+  controller:
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=boundary,Security_level=moderate,Environment=dev"
+        alb.ingress.kubernetes.io/security-groups: sg-...
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+        # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      hosts:
+      - "boundary.example.io"
+    service:
+      type: NodePort
+    config:
+      boundary.hcl: |
+        disable_mlock = true
+        controller {
+          name = "kubernetes-controller"
+          description = "A controller for a kubernetes"
+          database {
+              url = "env://BOUNDARY_PG_URL"
+          }
+          public_cluster_addr = "boundary-controller"
+        }
+        listener "tcp" {
+          address = "0.0.0.0"
+          purpose = "api"
+          tls_disable = true
+        }
+        listener "tcp" {
+          address = "0.0.0.0"
+          purpose = "cluster"
+          tls_disable = true
+        }
+        kms "awskms" {
+          purpose = "root"
+          region = "ap-northeast-2"
+          kms_key_id = "arn:aws:kms:ap-northeast-2:..."
+        }
+        kms "awskms" {
+          purpose = "worker-auth"
+          region = "ap-northeast-2"
+          kms_key_id = "arn:aws:kms:ap-northeast-2:..."
+        }
+        kms "awskms" {
+          purpose = "recovery"
+          region = "ap-northeast-2"
+          kms_key_id = "arn:aws:kms:ap-northeast-2:..."
+        }
+    env:
+    - name: BOUNDARY_PG_URL
+      value: "postgres://boundary:<path:kv/data/boundary/postgresql#password>@....ap-northeast-2.rds.amazonaws.com/boundary"
+  worker:
+    config:
+      boundary.hcl: |
+        worker {
+          name = "kubernetes-worker"
+          description = "A worker for a kubernetes"
+          controllers = [
+            "boundary-controller"
+          ]
+        }
+        listener "tcp" {
+          address = "127.0.0.1"
+          purpose = "proxy"
+          tls_disable = true
+        }
+        kms "awskms" {
+          purpose = "worker-auth"
+          region = "ap-northeast-2"
+          kms_key_id = "arn:aws:kms:ap-northeast-2:..."
+        }

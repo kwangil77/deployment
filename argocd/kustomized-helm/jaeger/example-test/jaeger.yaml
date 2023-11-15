@@ -1,0 +1,156 @@
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: jaeger
+spec:
+  # strategy: streaming
+  strategy: production
+  storage:
+    type: grpc-plugin
+    options:
+      grpc-storage-plugin:
+        binary: /plugin/jaeger-clickhouse
+        configuration-file: /plugin-config/config.yaml
+        log-level: debug
+    grpcPlugin:
+      image: ghcr.io/jaegertracing/jaeger-clickhouse:0.13.0
+    # dependencies:
+    #   enabled: true
+    #   image: docker.io/jaegertracing/spark-dependencies
+    #   schedule: "0 13 * * *"
+  agent:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: part
+              operator: In
+              values:
+              - ce
+            - key: service
+              operator: In
+              values:
+              - ce-infra
+            - key: performance_type
+              operator: In
+              values:
+              - memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image: docker.io/jaegertracing/jaeger-agent
+  # ingester:
+  #   affinity:
+  #     nodeAffinity:
+  #       requiredDuringSchedulingIgnoredDuringExecution:
+  #         nodeSelectorTerms:
+  #         - matchExpressions:
+  #           - key: part
+  #             operator: In
+  #             values:
+  #             - ce
+  #           - key: service
+  #             operator: In
+  #             values:
+  #             - ce-infra
+  #           - key: performance_type
+  #             operator: In
+  #             values:
+  #             - memory
+  #   tolerations:
+  #   - key: performance_type
+  #     operator: Equal
+  #     value: mem
+  #     effect: NoSchedule
+  #   image: docker.io/jaegertracing/jaeger-ingester
+  #   options:
+  #     kafka:
+  #       consumer:
+  #         topic: jaeger-spans
+  #         brokers: b-1.....kafka.ap-northeast-2.amazonaws.com:9092,b-2.....kafka.ap-northeast-2.amazonaws.com:9092,b-3.....kafka.ap-northeast-2.amazonaws.com:9092
+  #     ingester:
+  #       deadlockInterval: 5s
+  collector:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: part
+              operator: In
+              values:
+              - ce
+            - key: service
+              operator: In
+              values:
+              - ce-infra
+            - key: performance_type
+              operator: In
+              values:
+              - memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image: docker.io/jaegertracing/jaeger-collector
+    # options:
+    #   kafka:
+    #     producer:
+    #       topic: jaeger-spans
+    #       brokers: b-1.....kafka.ap-northeast-2.amazonaws.com:9092,b-2.....kafka.ap-northeast-2.amazonaws.com:9092,b-3.....kafka.ap-northeast-2.amazonaws.com:9092
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=jaeger-query,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+    hosts:
+    - jaeger-query.example.io
+  query:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: part
+              operator: In
+              values:
+              - ce
+            - key: service
+              operator: In
+              values:
+              - ce-infra
+            - key: performance_type
+              operator: In
+              values:
+              - memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image: docker.io/jaegertracing/jaeger-query
+    options:
+      prometheus:
+        server-url: http://vmselect-vmcluster.observability:8481/select/0/prometheus
+    serviceType: NodePort
+    metricsStorage:
+      type: prometheus
+  ui:
+    options:
+      dependencies:
+        menuEnabled: false
+  volumeMounts:
+  - name: plugin-config
+    mountPath: /plugin-config
+  volumes:
+  - name: plugin-config
+    secret:
+      secretName: jaeger-clickhouse-secret

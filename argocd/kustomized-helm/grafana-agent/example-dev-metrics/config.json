@@ -1,0 +1,4 @@
+{
+  "release_name": "grafana-agent-metrics",
+  "release_namespace": "observability"
+}

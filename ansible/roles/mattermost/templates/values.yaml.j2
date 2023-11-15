@@ -1,0 +1,62 @@
+nameOverride: mattermost
+fullnameOverride: mattermost
+nodeSelector:
+  kubernetes.io/arch: amd64
+  team: devops
+  service: devops-infra
+  performance_type: standard
+image:
+  repository: docker.io/mattermost/mattermost-team-edition
+  tag: "9.1.2"
+initContainerImage:
+  repository: docker.io/appropriate/curl
+{% if certificate_arn is defined %}
+service:
+  type: NodePort
+{% endif %}
+{% if server_host is defined %}
+ingress:
+  enabled: true
+  annotations:
+{% if certificate_arn is defined %}
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=mattermost,Security_level=moderate,Environment={{ env }}"
+    alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+  hosts:
+  - "{{ server_host }}"
+  path: "/"
+{% endif %}
+externalDB:
+  enabled: true
+  externalDriverType: postgres
+  externalConnectionString: "{{ database_url }}"
+mysql:
+  enabled: false
+securityContext:
+  fsGroup: 2000
+  runAsGroup: 2000
+  runAsUser: 2000
+serviceAccount:
+  create: true
+  name: mattermost
+config:
+  MM_SERVICESETTINGS_SITEURL: "https://{{ server_host }}"
+  MM_SERVICESETTINGS_ENABLEAPIUSERDELETION: 'true'
+  MM_FILESETTINGS_DRIVERNAME: amazons3
+  MM_FILESETTINGS_AMAZONS3BUCKET: "{{ s3_bucket }}"
+{% if s3_endpoint is defined %}
+  MM_FILESETTINGS_AMAZONS3ENDPOINT: "{{ s3_endpoint }}"
+  MM_FILESETTINGS_AMAZONS3ACCESSKEYID: "{{ s3_accesskey }}"
+  MM_FILESETTINGS_AMAZONS3SECRETACCESSKEY: "{{ s3_secretkey }}"
+  MM_FILESETTINGS_AMAZONS3SSL: "false"
+{% else %}
+  MM_FILESETTINGS_AMAZONS3ENDPOINT: "s3.amazonaws.com"
+  MM_FILESETTINGS_AMAZONS3REGION: ap-northeast-2
+{% endif %}

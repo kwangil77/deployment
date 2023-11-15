@@ -1,0 +1,52 @@
+rundeck:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: docker.io/rundeck/rundeck
+    tag: "4.8.0"
+  nginxConfOverride: |
+    events {
+      worker_connections  1024;
+    }
+    http {
+        server {
+            location /healthz {
+                return 204;
+                access_log off;
+            }
+            location / {
+                recursive_error_pages on;
+                client_max_body_size 50M;
+                proxy_set_header Host $host;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header User-Agent $http_user_agent;
+                proxy_pass http://localhost:4440;
+            }
+        }
+    }
+  volumes:
+  - name: plugins
+    emptyDir: {}
+  volumeMounts:
+  - name: data
+    mountPath: /home/rundeck/server/data
+  - name: plugins
+    mountPath: /home/rundeck/libext
+  initContainers:
+  - name: download-plugins
+    image: docker.io/library/alpine:3.8
+    command:
+    - "sh"
+    - "-c"
+    args:
+    - |
+      wget https://github.com/rundeck-plugins/kubernetes/releases/download/2.0.8/kubernetes-plugin-2.0.8.zip -O /home/rundeck/libext/kubernetes-plugin-2.0.8.zip
+      wget https://github.com/rundeck-plugins/rundeck-ec2-nodes-plugin/releases/download/v1.7.1/rundeck-ec2-nodes-plugin-1.7.1.jar -O /home/rundeck/libext/rundeck-ec2-nodes-plugin-1.7.1.jar
+      wget https://github.com/rundeck-plugins/rundeck-s3-log-plugin/releases/download/v1.0.13/rundeck-s3-log-plugin-1.0.13.jar -O /home/rundeck/libext/rundeck-s3-log-plugin-1.0.13.jar
+      wget https://github.com/rundeck-plugins/slack-incoming-webhook-plugin/releases/download/v1.2.5/slack-incoming-webhook-plugin-1.2.5.jar -O /home/rundeck/libext/slack-incoming-webhook-plugin-1.2.5.jar
+    volumeMounts:
+    - name: plugins
+      mountPath: /home/rundeck/libext

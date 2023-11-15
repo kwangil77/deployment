@@ -1,0 +1,23 @@
+kong:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  env:
+    database: "postgres"
+    pg_port: "5432"
+    pg_user: "kong"
+  image:
+    repository: docker.io/library/kong
+    tag: "3.5.0"
+  migrations:
+    preUpgrade: false
+    postUpgrade: false
+  ingressController:
+    image:
+      repository: docker.io/kong/kubernetes-ingress-controller
+      tag: "2.12.1"
+    admissionWebhook:
+      enabled: true
+  serviceMonitor:
+    enabled: true

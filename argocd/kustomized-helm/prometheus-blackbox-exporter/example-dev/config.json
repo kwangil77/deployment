@@ -1,0 +1,4 @@
+{
+  "release_name": "prometheus-blackbox-exporter",
+  "release_namespace": "observability"
+}

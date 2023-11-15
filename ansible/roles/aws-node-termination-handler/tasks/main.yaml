@@ -1,0 +1,22 @@
+---
+- name: Add eks chart repo
+  kubernetes.core.helm_repository:
+    name: eks
+    repo_url: https://aws.github.io/eks-charts
+
+- name: Install aws-node-termination-handler
+  kubernetes.core.helm:
+    name: aws-node-termination-handler
+    state: present
+    chart_version: 0.17.0
+    chart_ref: eks/aws-node-termination-handler
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output 

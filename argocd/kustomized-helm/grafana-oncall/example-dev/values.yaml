@@ -1,0 +1,24 @@
+oncall:
+  ingress:
+    enabled: false
+  service:
+    enabled: true
+    type: NodePort
+  base_url: grafana-oncall.example.io
+  env:
+    REDIS_URI: redis://....cache.amazonaws.com:6379/11
+  externalPostgresql:
+    host: ....ap-northeast-2.rds.amazonaws.com
+    port: 5432
+    db_name: oncall
+    user: oncall
+    password: <path:kv/data/grafana-oncall/postgresql#password>
+  externalRabbitmq:
+    host: rabbitmq
+    port: 5672
+    user: user
+  externalRedis:
+    host: redis
+    password: password
+  externalGrafana:
+    url: "https://grafana.example.io"

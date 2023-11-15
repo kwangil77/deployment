@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: simple-api-native
+  labels:
+    app: simple-api
+spec:
+  workloadRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: simple-api-native
+  # strategy:
+  #   canary:
+  #     canaryService: simple-api-native-canary
+  #     stableService: simple-api-native-stable
+  #     trafficRouting:
+  #       alb:
+  #         ingress: simple-api-native
+  #         rootService: simple-api-native
+  #         servicePort: 8080
+  #     steps:
+  #     - setWeight: 20
+  #     - experiment:
+  #         templates:
+  #         - name: canary
+  #           specRef: canary
+  #         analyses:
+  #         - name: success-rate
+  #           templateName: success-rate
+  #           args:
+  #           - name: service-name
+  #             value: simple-api-native
+  #     - pause: {}
+  strategy:
+    blueGreen:
+      activeService: simple-api-native
+      previewService: simple-api-native-preview
+      autoPromotionEnabled: true
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: simple-api-native-canary
+#   labels:
+#     app: simple-api
+# spec:
+#   selector:
+#     app: simple-api
+#   ports:
+#   - name: http
+#     port: 8080
+#     targetPort: 8080
+#   type: NodePort
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: simple-api-native-stable
+#   labels:
+#     app: simple-api
+# spec:
+#   selector:
+#     app: simple-api
+#   ports:
+#   - name: http
+#     port: 8080
+#     targetPort: 8080
+#   type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-api-native-preview
+  labels:
+    app: simple-api
+spec:
+  selector:
+    app: simple-api
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: NodePort

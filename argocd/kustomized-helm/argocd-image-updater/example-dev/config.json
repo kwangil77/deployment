@@ -1,0 +1,4 @@
+{
+  "release_name": "argocd-image-updater",
+  "release_namespace": "development"
+}

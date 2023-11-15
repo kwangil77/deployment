@@ -1,0 +1,22 @@
+---
+- name: Add cortex chart repo
+  kubernetes.core.helm_repository:
+    name: cortex
+    repo_url: https://cortexproject.github.io/cortex-helm-chart
+
+- name: Install cortex
+  kubernetes.core.helm:
+    name: cortex
+    state: present
+    chart_version: 2.1.0
+    chart_ref: cortex/cortex
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

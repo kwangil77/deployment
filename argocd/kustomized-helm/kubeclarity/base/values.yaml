@@ -1,0 +1,35 @@
+kubeclarity:
+  global:
+    docker:
+      registry: ghcr.io/openclarity
+  curl:
+    image:
+      registry: docker.io
+  kubeclarity:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    prometheus:
+      enabled: true
+  kubeclarity-runtime-scan:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  kubeclarity-grype-server:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    docker:
+      imageRepo: gcr.io/eticloud/k8sec
+  kubeclarity-sbom-db:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  kubeclarity-postgresql:
+    enabled: false
+    image:
+      registry: docker.io

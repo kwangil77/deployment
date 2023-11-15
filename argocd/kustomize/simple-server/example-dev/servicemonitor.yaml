@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: simple-server
+  labels:
+    app: simple-server
+spec:
+  endpoints:
+  - port: http
+    path: /actuator/prometheus
+  podTargetLabels:
+  - app
+  selector:
+    matchLabels:
+      app: simple-server
+  namespaceSelector:
+    any: true

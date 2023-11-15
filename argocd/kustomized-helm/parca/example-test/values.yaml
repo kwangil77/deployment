@@ -1,0 +1,34 @@
+parca:
+  server:
+    config:
+      object_storage:
+        bucket:
+          type: S3
+          config:
+            bucket: example-dev-parca-bucket
+            endpoint: minio-hl.management:9000
+            access_key: <path:kv/data/minio/secret#access-key>
+            secret_key: <path:kv/data/minio/secret#secret-key>
+            insecure: true
+            signature_version2: false
+            # endpoint: "s3.amazonaws.com"
+            # region: ap-northeast-2
+            directory: null
+    service:
+      type: NodePort
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=parca,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    hosts:
+    - host: parca.example.io
+      paths:
+      - path: /
+        pathType: Prefix

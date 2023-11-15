@@ -1,0 +1,9 @@
+nodeSelector:
+  team: devops
+  service: devops-infra
+  performance_type: standard
+image:
+  repository: 602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/amazon/aws-load-balancer-controller
+clusterName: "{{ cluster_arn.split('/')[1] }}"
+vpcId: "{{ vpc_id }}"
+region: "ap-northeast-2"

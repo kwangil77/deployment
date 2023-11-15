@@ -1,0 +1,11 @@
+---
+- name: Install ingress-nginx
+  hosts: localhost
+  connection: local
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    release_namespace: kube-system
+  gather_facts: no
+
+  roles:
+    - ingress-nginx

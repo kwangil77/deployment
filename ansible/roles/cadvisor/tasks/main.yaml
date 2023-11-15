@@ -1,0 +1,19 @@
+---
+- name: Add ckotzbauer chart repo
+  kubernetes.core.helm_repository:
+    name: ckotzbauer
+    repo_url: https://ckotzbauer.github.io/helm-charts
+
+- name: Install cadvisor
+  kubernetes.core.helm:
+    name: cadvisor
+    state: present
+    chart_version: 1.4.0
+    chart_ref: ckotzbauer/cadvisor
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output

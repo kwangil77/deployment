@@ -1,0 +1,46 @@
+kafka-ui:
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=kafka-ui,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    host: "kafka-ui.example.io"
+  service:
+    type: NodePort
+  yamlApplicationConfig:
+    kafka:
+      clusters:
+      - name: kafka-dev
+        bootstrapServers: "b-1.....kafka.ap-northeast-2.amazonaws.com:9092,b-2.....kafka.ap-northeast-2.amazonaws.com:9092,b-3.....kafka.ap-northeast-2.amazonaws.com:9092"
+        zookeeper: "z-1.....kafka.ap-northeast-2.amazonaws.com:2181,z-2.....kafka.ap-northeast-2.amazonaws.com:2181,z-3.....kafka.ap-northeast-2.amazonaws.com:2181"
+        schemaRegistry: "http://apicurio-registry.development:8080/apis/ccompat/v6"
+    auth:
+      type: OAUTH2
+      oauth2:
+        client:
+          keycloak:
+            redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+            authorization-grant-type: authorization_code
+            client-id: kafka-ui
+            client-secret: <path:kv/data/kafka-ui/oidc#client-secret>
+            scope:
+            - openid
+            client-name: keycloak
+            provider: keycloak
+            jwk-set-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/certs
+            token-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/token
+            user-info-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/userinfo
+            user-name-attribute: username
+            authorization-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/auth
+            custom-params:
+              type: keycloak
+    management:
+      health:
+        ldap:
+          enabled: false

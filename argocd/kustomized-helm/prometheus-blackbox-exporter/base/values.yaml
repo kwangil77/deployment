@@ -1,0 +1,9 @@
+prometheus-blackbox-exporter:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    registry: quay.io
+  serviceMonitor:
+    enabled: true

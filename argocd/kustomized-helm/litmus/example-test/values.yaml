@@ -1,0 +1,52 @@
+litmus:
+  upgradeAgent:
+    enabled: false
+  portal:
+    frontend:
+      service:
+        type: NodePort
+    server:
+      serviceAccountName: litmus-server-account
+      graphqlServer:
+        service:
+          type: NodePort
+      authServer:
+        env:
+          DEX_ENABLED: 'true'
+          OIDC_ISSUER: https://litmus.example.io/dex
+          DEX_OAUTH_CALLBACK_URL: https://litmus.example.io/auth/dex/callback
+          DEX_OAUTH_CLIENT_ID: LitmusPortalAuthBackend
+          DEX_OAUTH_CLIENT_SECRET: <path:kv/data/litmus/dex#client-secret>
+dex:
+  service:
+    type: NodePort
+    annotations:
+      alb.ingress.kubernetes.io/healthcheck-path: /healthz/live
+      alb.ingress.kubernetes.io/healthcheck-port: telemetry
+  serviceMonitor:
+    enabled: true
+  config:
+    issuer: https://litmus.example.io/dex
+    storage:
+      type: kubernetes
+      config:
+        inCluster: true
+    web:
+      http: 0.0.0.0:5556
+    staticClients:
+    - id: LitmusPortalAuthBackend
+      name: LitmusPortalAuthBackend
+      redirectURIs:
+      - 'https://litmus.example.io/auth/dex/callback'
+      secret: <path:kv/data/litmus/dex#client-secret>
+    oauth2:
+      skipApprovalScreen: true
+    connectors:
+    - type: oidc
+      id: keycloak
+      name: keycloak
+      config:
+        clientID: litmus
+        clientSecret: <path:kv/data/litmus/oidc#client-secret>
+        issuer: https://keycloak.example.io/realms/master
+        redirectURI: https://litmus.example.io/dex/callback

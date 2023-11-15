@@ -1,0 +1,38 @@
+uptrace:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: docker.io/uptrace/uptrace
+    tag: '1.4.7'
+  clickhouse:
+    enabled: false
+  postgresql:
+    enabled: false
+clickhouse:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  global:
+    imageRegistry: docker.io
+  keeper:
+    enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  zookeeper:
+    enabled: false

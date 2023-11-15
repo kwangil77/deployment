@@ -1,0 +1,21 @@
+keycloak:
+  auth:
+    adminPassword: <path:kv/data/keycloak/admin#password>
+  service:
+    type: NodePort
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=keycloak,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    hostname: keycloak.example.io
+    pathType: Prefix
+  externalDatabase:
+    host: ....ap-northeast-2.rds.amazonaws.com
+    password: <path:kv/data/keycloak/postgresql#password>

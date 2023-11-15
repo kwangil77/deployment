@@ -1,0 +1,29 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: thanos-sidecar
+  labels:
+    app: prometheus
+    app.kubernetes.io/subcomponent: thanos
+    component: server
+  annotations:
+    prometheus.io/port: "10902"
+    prometheus.io/scrape: "true"
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Team=devops,Server=etc,Service=prometheus-thanos,Security_level=moderate,Environment={{ env }}"
+spec:
+  ports:
+  - name: grpc
+    port: 10901
+    targetPort: grpc
+    protocol: TCP
+  - name: http
+    port: 10902
+    targetPort: http
+    protocol: TCP
+  selector:
+    app: prometheus
+    component: server
+  type: LoadBalancer

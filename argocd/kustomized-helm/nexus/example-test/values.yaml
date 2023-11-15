@@ -1,0 +1,28 @@
+nexus-repository-manager:
+  fullnameOverride: nexus
+  service:
+    type: NodePort
+  deployment:
+    initContainers:
+    - name: download-plugins
+      image: docker.io/library/alpine:3.8
+      command:
+      - "sh"
+      - "-c"
+      args:
+      - |
+        wget -O /opt/sonatype/nexus/deploy/nexus-repository-composer-bundle.kar https://....s3.ap-northeast-2.amazonaws.com/.../nexus-repository-composer-0.0.29-bundle.kar
+        wget -O /opt/sonatype/nexus/deploy/nexus-repository-terraform-bundle.kar https://....s3.ap-northeast-2.amazonaws.com/.../nexus-repository-terraform-0.0.8-bundle.kar
+      volumeMounts:
+      - name: plugins
+        mountPath: /opt/sonatype/nexus/deploy
+    additionalVolumes:
+    - name: plugins
+      emptyDir: {}
+    additionalVolumeMounts:
+    - name: plugins
+      mountPath: /opt/sonatype/nexus/deploy
+  persistence:
+    enabled: true
+    storageClass: null
+    storageSize: 8Gi

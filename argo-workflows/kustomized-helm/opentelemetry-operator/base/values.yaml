@@ -1,0 +1,21 @@
+opentelemetry-operator:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  manager:
+    image:
+      repository: ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator
+      tag: v0.88.0
+    collectorImage:
+      repository: docker.io/otel/opentelemetry-collector-contrib
+      tag: "0.88.0"
+    serviceMonitor:
+      enabled: true
+  kubeRBACProxy:
+    image:
+      repository: quay.io/brancz/kube-rbac-proxy
+      tag: v0.14.2
+  testFramework:
+    image:
+      repository: docker.io/library/busybox

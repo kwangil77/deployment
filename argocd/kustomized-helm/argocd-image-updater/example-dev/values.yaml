@@ -1,0 +1,9 @@
+argocd-image-updater:
+  config:
+    argocd:
+      serverAddress: http://argocd-server.development
+    registries:
+    - name: GitHub Container Registry
+      prefix: ghcr.io
+      api_url: https://docker.pkg.github.com
+      ping: no

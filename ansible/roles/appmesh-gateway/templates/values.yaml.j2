@@ -1,0 +1,12 @@
+nodeSelector:
+  team: devops
+  service: devops-infra
+  performance_type: standard
+image:
+  repository: 840364872350.dkr.ecr.ap-northeast-2.amazonaws.com/aws-appmesh-envoy
+service:
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Team=devops,Server=etc,Service=appmesh-gateway,Security_level=moderate,Environment={{ env }}"

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-server-native
+  labels:
+    app: simple-server
+spec:
+  selector:
+    app: simple-server
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-server-native-grpc
+  annotations:
+    alb.ingress.kubernetes.io/backend-protocol-version: HTTP2
+  labels:
+    app: simple-server
+spec:
+  selector:
+    app: simple-server
+  ports:
+  - name: grpc
+    port: 9090
+    targetPort: 9090
+  type: NodePort

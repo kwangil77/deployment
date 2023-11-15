@@ -1,0 +1,117 @@
+argo-workflows:
+  controller:
+    persistence:
+      postgresql:
+        host: ....ap-northeast-2.rds.amazonaws.com
+        port: 5432
+        database: argo
+        tableName: argo_workflows
+        userNameSecret:
+          name: argo-workflows-postgres
+          key: username
+        passwordSecret:
+          name: argo-workflows-postgres
+          key: password
+    workflowDefaults:
+      spec:
+        onExit: exit-handler
+        templates:
+        - name: exit-handler
+          serviceAccountName: argo-workflow
+          container:
+            image: ghcr.io/kwangil77/slack-handler
+            env:
+            - name: SLACK_USER_NAME
+              value: argo-workflows
+            - name: SLACK_ICON_EMOJI
+              value: ':argo:'
+            - name: SLACK_CHANNEL
+              value: '#devops_alert'
+            envFrom:
+            - secretRef:
+                name: slack-secret
+            command:
+            - "/bin/sh"
+            - "-c"
+            args:
+            - "
+              SLACK_COLOR=`if [ '{{ workflow.status }}' = 'Succeeded' ]; then echo 'good'; else echo 'danger'; fi`
+              && python3 -u /send_message.py
+                --user-email `echo '{{ workflow.labels.json }}' | jq -r '.\"workflows.argoproj.io/creator-email\" // \"\" | gsub(\".at.\"; \"@\")'`
+                --attachment \"{
+                  \\\"pretext\\\": \\\"Workflow {{ workflow.name }} is finished\\\",
+                  \\\"color\\\": \\\"${SLACK_COLOR}\\\",
+                  \\\"title\\\": \\\"{{ workflow.name }}\\\",
+                  \\\"title_link\\\": \\\"https://argo-workflows.example.io/workflows/{{ workflow.namespace }}/{{ workflow.name }}\\\",
+                  \\\"text\\\": \\\"Workflow {{ workflow.name }} is finished\\\",
+                  \\\"fields\\\": [
+                    {
+                      \\\"title\\\": \\\"Status\\\",
+                      \\\"value\\\": \\\"{{ workflow.status }}\\\",
+                      \\\"short\\\": true
+                    },
+                    {
+                      \\\"title\\\": \\\"Duration\\\",
+                      \\\"value\\\": \\\"{{= sprig.duration(sprig.int64(sprig.float64(workflow.duration))) }}\\\",
+                      \\\"short\\\": true
+                    }
+                  ]
+                }\"
+              "
+            workingDir: /
+            resources:
+              requests:
+                memory: 128Mi
+                cpu: 50m
+          nodeSelector:
+            kubernetes.io/arch: amd64
+            team: devops
+            service: devops-infra
+            performance_type: standard
+  server:
+    serviceAccount:
+      annotations:
+        workflows.argoproj.io/rbac-rule: "'G_DevOps' in groups"
+        workflows.argoproj.io/rbac-rule-precedence: "1"
+    serviceType: NodePort
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=argo-workflows,Security_level=moderate,Environment=dev"
+        alb.ingress.kubernetes.io/security-groups: sg-...
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+        # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      hosts:
+      - argo-workflows.example.io
+    sso:
+      enabled: true
+      issuer: https://keycloak.example.io/realms/master
+      clientId:
+        name: argo-workflows-sso
+        key: client-id
+      clientSecret:
+        name: argo-workflows-sso
+        key: client-secret
+      redirectUrl: https://argo-workflows.example.io/oauth2/callback
+      rbac:
+        enabled: true
+      scopes:
+      - openid
+      - profile
+      - email
+      - groups
+  artifactRepository:
+    s3:
+      bucket: example-dev-argo-bucket
+      endpoint: minio-hl.management:9000
+      accessKeySecret:
+        name: argo-workflows-minio
+        key: accesskey
+      secretKeySecret:
+        name: argo-workflows-minio
+        key: secretkey
+      insecure: true

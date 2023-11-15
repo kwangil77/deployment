@@ -1,0 +1,23 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+.idea
+*.iml
+.ipr
+
+.terraform
+.ansible
+.venv
+
+*.tfstate
+.terraform.*
+
+.vscode
+
+### Helm ###
+# Chart dependencies
+**/charts/*.tgz
+Chart.lock

@@ -1,0 +1,40 @@
+nodeSelector:
+  team: devops
+  service: devops-infra
+  performance_type: standard
+image:
+  repository: docker.io/timberio/vector
+  version: "0.34.0-distroless-libc"
+containerPorts:
+- name: fluent
+  containerPort: 24224
+  protocol: TCP
+persistence:
+  enabled: true
+podMonitor:
+  enabled: true
+customConfig:
+  data_dir: /vector-data-dir
+  api:
+    enabled: true
+    address: 127.0.0.1:8686
+    playground: false
+  sources:
+    fluent:
+      type: fluent
+      address: 0.0.0.0:24224
+  sinks:
+    loki:
+      type: loki
+      inputs:
+      - fluent
+      endpoint: "{{ loki_url }}"
+      labels:
+        cluster: "{{ cluster_arn.split('/')[1] }}"
+        namespace: "{{ '{{`{{' }} kubernetes.namespace_name {{ '}}`}}' }}"
+        node_name: "{{ '{{`{{' }} kubernetes.host {{ '}}`}}' }}"
+        pod: "{{ '{{`{{' }} kubernetes.pod_name {{ '}}`}}' }}"
+        container: "{{ '{{`{{' }} kubernetes.container_name {{ '}}`}}' }}"
+        labels_*: "{{ '{{`{{' }} kubernetes.labels {{ '}}`}}' }}"
+      encoding:
+        codec: json

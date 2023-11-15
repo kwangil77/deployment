@@ -1,0 +1,117 @@
+phlare:
+  phlare:
+    image:
+      repository: docker.io/grafana/phlare
+      tag: "0.6.1"
+    components:
+      querier:
+        nodeSelector:
+          team: devops
+          service: devops-infra
+          performance_type: memory
+        tolerations:
+        - key: performance_type
+          operator: Equal
+          value: mem
+          effect: NoSchedule
+        kind: Deployment
+        replicaCount: 3
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            memory: 128Mi
+            cpu: 100m
+      query-frontend:
+        nodeSelector:
+          team: devops
+          service: devops-infra
+          performance_type: memory
+        tolerations:
+        - key: performance_type
+          operator: Equal
+          value: mem
+          effect: NoSchedule
+        kind: Deployment
+        replicaCount: 2
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            memory: 128Mi
+            cpu: 100m
+      query-scheduler:
+        nodeSelector:
+          team: devops
+          service: devops-infra
+          performance_type: memory
+        tolerations:
+        - key: performance_type
+          operator: Equal
+          value: mem
+          effect: NoSchedule
+        kind: Deployment
+        replicaCount: 2
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            memory: 128Mi
+            cpu: 100m
+      distributor:
+        nodeSelector:
+          team: devops
+          service: devops-infra
+          performance_type: memory
+        tolerations:
+        - key: performance_type
+          operator: Equal
+          value: mem
+          effect: NoSchedule
+        kind: Deployment
+        replicaCount: 2
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            memory: 128Mi
+            cpu: 200m
+      agent:
+        nodeSelector:
+          team: devops
+          service: devops-infra
+          performance_type: memory
+        tolerations:
+        - key: performance_type
+          operator: Equal
+          value: mem
+          effect: NoSchedule
+        kind: Deployment
+        replicaCount: 1
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            memory: 64Mi
+            cpu: 50m
+      ingester:
+        nodeSelector:
+          team: devops
+          service: devops-infra
+          performance_type: memory
+        tolerations:
+        - key: performance_type
+          operator: Equal
+          value: mem
+          effect: NoSchedule
+        kind: StatefulSet
+        replicaCount: 3
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            memory: 256Mi
+            cpu: 500m
+        persistence:
+          enabled: true
+          size: 20Gi

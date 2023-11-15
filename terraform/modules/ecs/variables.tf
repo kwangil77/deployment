@@ -1,0 +1,16 @@
+variable "name" {}
+variable "instance_count" {}
+variable "target_group_arn" {}
+variable "container_name" {}
+variable "container_port" {}
+variable "family" {}
+variable "cpu" {}
+variable "memory" {}
+variable "container_definitions" {}
+variable "team" {}
+variable "server" {}
+variable "service" {}
+variable "security_level" {}
+variable "environment" {}
+variable "profile" {}
+variable "part" {}

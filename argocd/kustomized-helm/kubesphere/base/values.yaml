@@ -1,0 +1,23 @@
+ks-installer:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  registry: ghcr.io
+  image:
+    repository: kwangil77/ks-installer
+    tag: "3.2.1"
+  cc:
+    local_registry: docker.io
+    common:
+      core:
+        nodeSelector:
+          kubernetes.io/arch: amd64
+          team: devops
+          service: devops-infra
+          performance_type: standard
+      monitoring:
+        type: external
+    monitoring:
+      enabled: false

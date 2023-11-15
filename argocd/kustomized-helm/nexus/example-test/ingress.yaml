@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nexus
+  labels:
+    app: nexus
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=nexus,Security_level=moderate,Environment=dev"
+    alb.ingress.kubernetes.io/healthcheck-path: /service/rest/v1/status
+    alb.ingress.kubernetes.io/security-groups: sg-...
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    external-dns.alpha.kubernetes.io/hostname: nexus.example.io
+    # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    # nginx.ingress.kubernetes.io/proxy-body-size: '0'
+spec:
+  rules:
+  - http:
+      paths:
+      # - path: /v2/
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: nexut-docker-5000
+      #       port:
+      #         number: 5000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nexus
+            port:
+              number: 8081

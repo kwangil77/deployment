@@ -1,0 +1,418 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules-configmap
+data:
+  jaeger_alerts.yml: |
+    "groups":
+    - "name": "jaeger_alerts"
+      "rules":
+      - "alert": "JaegerHTTPServerErrs"
+        "annotations":
+          "message": |
+            {{ $labels.job }} {{ $labels.instance }} is experiencing {{ printf "%.2f" $value }}% HTTP errors.
+        "expr": "100 * sum(rate(jaeger_agent_http_server_errors_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_agent_http_server_total[1m])) by (instance, job, namespace)> 1"
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "JaegerRPCRequestsErrors"
+        "annotations":
+          "message": |
+            {{ $labels.job }} {{ $labels.instance }} is experiencing {{ printf "%.2f" $value }}% RPC HTTP errors.
+        "expr": "100 * sum(rate(jaeger_client_jaeger_rpc_http_requests{status_code=~\"4xx|5xx\"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_client_jaeger_rpc_http_requests[1m])) by (instance, job, namespace)> 1"
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "JaegerClientSpansDropped"
+        "annotations":
+          "message": |
+            service {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
+        "expr": "100 * sum(rate(jaeger_reporter_spans{result=~\"dropped|err\"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_reporter_spans[1m])) by (instance, job, namespace)> 1"
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "JaegerAgentSpansDropped"
+        "annotations":
+          "message": |
+            agent {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
+        "expr": "100 * sum(rate(jaeger_agent_reporter_batches_failures_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_agent_reporter_batches_submitted_total[1m])) by (instance, job, namespace)> 1"
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "JaegerCollectorDroppingSpans"
+        "annotations":
+          "message": |
+            collector {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
+        "expr": "100 * sum(rate(jaeger_collector_spans_dropped_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_collector_spans_received_total[1m])) by (instance, job, namespace)> 1"
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "JaegerSamplingUpdateFailing"
+        "annotations":
+          "message": |
+            {{ $labels.job }} {{ $labels.instance }} is failing {{ printf "%.2f" $value }}% in updating sampling policies.
+        "expr": "100 * sum(rate(jaeger_sampler_queries{result=\"err\"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_sampler_queries[1m])) by (instance, job, namespace)> 1"
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "JaegerThrottlingUpdateFailing"
+        "annotations":
+          "message": |
+            {{ $labels.job }} {{ $labels.instance }} is failing {{ printf "%.2f" $value }}% in updating throttling policies.
+        "expr": "100 * sum(rate(jaeger_throttler_updates{result=\"err\"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_throttler_updates[1m])) by (instance, job, namespace)> 1"
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "JaegerQueryReqsFailing"
+        "annotations":
+          "message": |
+            {{ $labels.job }} {{ $labels.instance }} is seeing {{ printf "%.2f" $value }}% query errors on {{ $labels.operation }}.
+        "expr": "100 * sum(rate(jaeger_query_requests_total{result=\"err\"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_query_requests_total[1m])) by (instance, job, namespace)> 1"
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+  loki_alerts.yml: |
+    "groups":
+    - "name": "loki_alerts"
+      "rules":
+      - "alert": "LokiRequestErrors"
+        "annotations":
+          "message": |
+            {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}% errors.
+        "expr": |
+          100 * sum(rate(loki_request_duration_seconds_count{status_code=~"5.."}[1m])) by (namespace, job, route)
+            /
+          sum(rate(loki_request_duration_seconds_count[1m])) by (namespace, job, route)
+            > 10
+        "for": "15m"
+        "labels":
+          "severity": "critical"
+      - "alert": "LokiRequestPanics"
+        "annotations":
+          "message": |
+            {{ $labels.job }} is experiencing {{ printf "%.2f" $value }}% increase of panics.
+        "expr": |
+          sum(increase(loki_panic_total[10m])) by (namespace, job) > 0
+        "labels":
+          "severity": "critical"
+      - "alert": "LokiRequestLatency"
+        "annotations":
+          "message": |
+            {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}s 99th percentile latency.
+        "expr": |
+          namespace_job_route:loki_request_duration_seconds:99quantile{route!~"(?i).*tail.*"} > 1
+        "for": "15m"
+        "labels":
+          "severity": "critical"
+  loki_rules.yml: |
+    "groups":
+    - "name": "loki_rules"
+      "rules":
+      - "expr": "histogram_quantile(0.99, sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job))"
+        "record": "job:loki_request_duration_seconds:99quantile"
+      - "expr": "histogram_quantile(0.50, sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job))"
+        "record": "job:loki_request_duration_seconds:50quantile"
+      - "expr": "sum(rate(loki_request_duration_seconds_sum[1m])) by (job) / sum(rate(loki_request_duration_seconds_count[1m])) by (job)"
+        "record": "job:loki_request_duration_seconds:avg"
+      - "expr": "sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job)"
+        "record": "job:loki_request_duration_seconds_bucket:sum_rate"
+      - "expr": "sum(rate(loki_request_duration_seconds_sum[1m])) by (job)"
+        "record": "job:loki_request_duration_seconds_sum:sum_rate"
+      - "expr": "sum(rate(loki_request_duration_seconds_count[1m])) by (job)"
+        "record": "job:loki_request_duration_seconds_count:sum_rate"
+      - "expr": "histogram_quantile(0.99, sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job, route))"
+        "record": "job_route:loki_request_duration_seconds:99quantile"
+      - "expr": "histogram_quantile(0.50, sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job, route))"
+        "record": "job_route:loki_request_duration_seconds:50quantile"
+      - "expr": "sum(rate(loki_request_duration_seconds_sum[1m])) by (job, route) / sum(rate(loki_request_duration_seconds_count[1m])) by (job, route)"
+        "record": "job_route:loki_request_duration_seconds:avg"
+      - "expr": "sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job, route)"
+        "record": "job_route:loki_request_duration_seconds_bucket:sum_rate"
+      - "expr": "sum(rate(loki_request_duration_seconds_sum[1m])) by (job, route)"
+        "record": "job_route:loki_request_duration_seconds_sum:sum_rate"
+      - "expr": "sum(rate(loki_request_duration_seconds_count[1m])) by (job, route)"
+        "record": "job_route:loki_request_duration_seconds_count:sum_rate"
+      - "expr": "histogram_quantile(0.99, sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, namespace, job, route))"
+        "record": "namespace_job_route:loki_request_duration_seconds:99quantile"
+      - "expr": "histogram_quantile(0.50, sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, namespace, job, route))"
+        "record": "namespace_job_route:loki_request_duration_seconds:50quantile"
+      - "expr": "sum(rate(loki_request_duration_seconds_sum[1m])) by (namespace, job, route) / sum(rate(loki_request_duration_seconds_count[1m])) by (namespace, job, route)"
+        "record": "namespace_job_route:loki_request_duration_seconds:avg"
+      - "expr": "sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, namespace, job, route)"
+        "record": "namespace_job_route:loki_request_duration_seconds_bucket:sum_rate"
+      - "expr": "sum(rate(loki_request_duration_seconds_sum[1m])) by (namespace, job, route)"
+        "record": "namespace_job_route:loki_request_duration_seconds_sum:sum_rate"
+      - "expr": "sum(rate(loki_request_duration_seconds_count[1m])) by (namespace, job, route)"
+        "record": "namespace_job_route:loki_request_duration_seconds_count:sum_rate"
+  promtail_alerts.yml: |
+    "groups":
+    - "name": "promtail_alerts"
+      "rules":
+      - "alert": "PromtailRequestsErrors"
+        "annotations":
+          "message": |
+            {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}% errors.
+        "expr": |
+          100 * sum(rate(promtail_request_duration_seconds_count{status_code=~"5..|failed"}[1m])) by (namespace, job, route, instance)
+            /
+          sum(rate(promtail_request_duration_seconds_count[1m])) by (namespace, job, route, instance)
+            > 10
+        "for": "15m"
+        "labels":
+          "severity": "critical"
+      - "alert": "PromtailRequestLatency"
+        "annotations":
+          "message": |
+            {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}s 99th percentile latency.
+        "expr": |
+          job_status_code:promtail_request_duration_seconds:99quantile > 1
+        "for": "15m"
+        "labels":
+          "severity": "critical"
+      - "alert": "PromtailFileLagging"
+        "annotations":
+          "message": |
+            {{ $labels.instance }} {{ $labels.job }} {{ $labels.path }} has been lagging by more than 1MB for more than 15m.
+        "expr": |
+          abs(promtail_file_bytes_total - promtail_read_bytes_total) > 1e6
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PromtailFileMissing"
+        "annotations":
+          "message": |
+            {{ $labels.instance }} {{ $labels.job }} {{ $labels.path }} matches the glob but is not being tailed.
+        "expr": |
+          count by (path,instance,job) (promtail_file_bytes_total) unless count by (path,instance,job) (promtail_read_bytes_total)
+        "for": "15m"
+        "labels":
+          "severity": "critical"
+  promtail_rules.yml: |
+    "groups":
+    - "name": "promtail_rules"
+      "rules":
+      - "expr": "histogram_quantile(0.99, sum(rate(promtail_request_duration_seconds_bucket[1m])) by (le, job))"
+        "record": "job:promtail_request_duration_seconds:99quantile"
+      - "expr": "histogram_quantile(0.50, sum(rate(promtail_request_duration_seconds_bucket[1m])) by (le, job))"
+        "record": "job:promtail_request_duration_seconds:50quantile"
+      - "expr": "sum(rate(promtail_request_duration_seconds_sum[1m])) by (job) / sum(rate(promtail_request_duration_seconds_count[1m])) by (job)"
+        "record": "job:promtail_request_duration_seconds:avg"
+      - "expr": "sum(rate(promtail_request_duration_seconds_bucket[1m])) by (le, job)"
+        "record": "job:promtail_request_duration_seconds_bucket:sum_rate"
+      - "expr": "sum(rate(promtail_request_duration_seconds_sum[1m])) by (job)"
+        "record": "job:promtail_request_duration_seconds_sum:sum_rate"
+      - "expr": "sum(rate(promtail_request_duration_seconds_count[1m])) by (job)"
+        "record": "job:promtail_request_duration_seconds_count:sum_rate"
+      - "expr": "histogram_quantile(0.99, sum(rate(promtail_request_duration_seconds_bucket[1m])) by (le, job, status_code))"
+        "record": "job_status_code:promtail_request_duration_seconds:99quantile"
+      - "expr": "histogram_quantile(0.50, sum(rate(promtail_request_duration_seconds_bucket[1m])) by (le, job, status_code))"
+        "record": "job_status_code:promtail_request_duration_seconds:50quantile"
+      - "expr": "sum(rate(promtail_request_duration_seconds_sum[1m])) by (job, status_code) / sum(rate(promtail_request_duration_seconds_count[1m])) by (job, status_code)"
+        "record": "job_status_code:promtail_request_duration_seconds:avg"
+      - "expr": "sum(rate(promtail_request_duration_seconds_bucket[1m])) by (le, job, status_code)"
+        "record": "job_status_code:promtail_request_duration_seconds_bucket:sum_rate"
+      - "expr": "sum(rate(promtail_request_duration_seconds_sum[1m])) by (job, status_code)"
+        "record": "job_status_code:promtail_request_duration_seconds_sum:sum_rate"
+      - "expr": "sum(rate(promtail_request_duration_seconds_count[1m])) by (job, status_code)"
+        "record": "job_status_code:promtail_request_duration_seconds_count:sum_rate"
+  prometheus_alerts.yml: |
+    "groups":
+    - "name": "prometheus"
+      "rules":
+      - "alert": "PrometheusBadConfig"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} has failed to reload its configuration."
+          "summary": "Failed Prometheus configuration reload."
+        "expr": |
+          # Without max_over_time, failed scrapes could create false negatives, see
+          # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+          max_over_time(prometheus_config_last_reload_successful{job="prometheus"}[5m]) == 0
+        "for": "10m"
+        "labels":
+          "severity": "critical"
+      - "alert": "PrometheusNotificationQueueRunningFull"
+        "annotations":
+          "description": "Alert notification queue of Prometheus {{$labels.instance}} is running full."
+          "summary": "Prometheus alert notification queue predicted to run full in less than 30m."
+        "expr": |
+          # Without min_over_time, failed scrapes could create false negatives, see
+          # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+          (
+            predict_linear(prometheus_notifications_queue_length{job="prometheus"}[5m], 60 * 30)
+          >
+            min_over_time(prometheus_notifications_queue_capacity{job="prometheus"}[5m])
+          )
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusErrorSendingAlertsToSomeAlertmanagers"
+        "annotations":
+          "description": "{{ printf \"%.1f\" $value }}% errors while sending alerts from Prometheus {{$labels.instance}} to Alertmanager {{$labels.alertmanager}}."
+          "summary": "Prometheus has encountered more than 1% errors sending alerts to a specific Alertmanager."
+        "expr": |
+          (
+            rate(prometheus_notifications_errors_total{job="prometheus"}[5m])
+          /
+            rate(prometheus_notifications_sent_total{job="prometheus"}[5m])
+          )
+          * 100
+          > 1
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusNotConnectedToAlertmanagers"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} is not connected to any Alertmanagers."
+          "summary": "Prometheus is not connected to any Alertmanagers."
+        "expr": |
+          # Without max_over_time, failed scrapes could create false negatives, see
+          # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+          max_over_time(prometheus_notifications_alertmanagers_discovered{job="prometheus"}[5m]) < 1
+        "for": "10m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusTSDBReloadsFailing"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} has detected {{$value | humanize}} reload failures over the last 3h."
+          "summary": "Prometheus has issues reloading blocks from disk."
+        "expr": |
+          increase(prometheus_tsdb_reloads_failures_total{job="prometheus"}[3h]) > 0
+        "for": "4h"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusTSDBCompactionsFailing"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} has detected {{$value | humanize}} compaction failures over the last 3h."
+          "summary": "Prometheus has issues compacting blocks."
+        "expr": |
+          increase(prometheus_tsdb_compactions_failed_total{job="prometheus"}[3h]) > 0
+        "for": "4h"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusNotIngestingSamples"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} is not ingesting samples."
+          "summary": "Prometheus is not ingesting samples."
+        "expr": |
+          (
+            rate(prometheus_tsdb_head_samples_appended_total{job="prometheus"}[5m]) <= 0
+          and
+            (
+              sum without(scrape_job) (prometheus_target_metadata_cache_entries{job="prometheus"}) > 0
+            or
+              sum without(rule_group) (prometheus_rule_group_rules{job="prometheus"}) > 0
+            )
+          )
+        "for": "10m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusDuplicateTimestamps"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} is dropping {{ printf \"%.4g\" $value  }} samples/s with different values but duplicated timestamp."
+          "summary": "Prometheus is dropping samples with duplicate timestamps."
+        "expr": |
+          rate(prometheus_target_scrapes_sample_duplicate_timestamp_total{job="prometheus"}[5m]) > 0
+        "for": "10m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusOutOfOrderTimestamps"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} is dropping {{ printf \"%.4g\" $value  }} samples/s with timestamps arriving out of order."
+          "summary": "Prometheus drops samples with out-of-order timestamps."
+        "expr": |
+          rate(prometheus_target_scrapes_sample_out_of_order_total{job="prometheus"}[5m]) > 0
+        "for": "10m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusRemoteStorageFailures"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} failed to send {{ printf \"%.1f\" $value }}% of the samples to {{ $labels.remote_name}}:{{ $labels.url }}"
+          "summary": "Prometheus fails to send samples to remote storage."
+        "expr": |
+          (
+            rate(prometheus_remote_storage_failed_samples_total{job="prometheus"}[5m])
+          /
+            (
+              rate(prometheus_remote_storage_failed_samples_total{job="prometheus"}[5m])
+            +
+              rate(prometheus_remote_storage_succeeded_samples_total{job="prometheus"}[5m])
+            )
+          )
+          * 100
+          > 1
+        "for": "15m"
+        "labels":
+          "severity": "critical"
+      - "alert": "PrometheusRemoteWriteBehind"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} remote write is {{ printf \"%.1f\" $value }}s behind for {{ $labels.remote_name}}:{{ $labels.url }}."
+          "summary": "Prometheus remote write is behind."
+        "expr": |
+          # Without max_over_time, failed scrapes could create false negatives, see
+          # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+          (
+            max_over_time(prometheus_remote_storage_highest_timestamp_in_seconds{job="prometheus"}[5m])
+          - on(job, instance) group_right
+            max_over_time(prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job="prometheus"}[5m])
+          )
+          > 120
+        "for": "15m"
+        "labels":
+          "severity": "critical"
+      - "alert": "PrometheusRemoteWriteDesiredShards"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} remote write desired shards calculation wants to run {{ $value }} shards for queue {{ $labels.remote_name}}:{{ $labels.url }}, which is more than the max of {{ printf `prometheus_remote_storage_shards_max{instance=\"%s\",job=\"prometheus\"}` $labels.instance | query | first | value }}."
+          "summary": "Prometheus remote write desired shards calculation wants to run more than configured max shards."
+        "expr": |
+          # Without max_over_time, failed scrapes could create false negatives, see
+          # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+          (
+            max_over_time(prometheus_remote_storage_shards_desired{job="prometheus"}[5m])
+          >
+            max_over_time(prometheus_remote_storage_shards_max{job="prometheus"}[5m])
+          )
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusRuleFailures"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} has failed to evaluate {{ printf \"%.0f\" $value }} rules in the last 5m."
+          "summary": "Prometheus is failing rule evaluations."
+        "expr": |
+          increase(prometheus_rule_evaluation_failures_total{job="prometheus"}[5m]) > 0
+        "for": "15m"
+        "labels":
+          "severity": "critical"
+      - "alert": "PrometheusMissingRuleEvaluations"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} has missed {{ printf \"%.0f\" $value }} rule group evaluations in the last 5m."
+          "summary": "Prometheus is missing rule evaluations due to slow rule group evaluation."
+        "expr": |
+          increase(prometheus_rule_group_iterations_missed_total{job="prometheus"}[5m]) > 0
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusTargetLimitHit"
+        "annotations":
+          "description": "Prometheus {{$labels.instance}} has dropped {{ printf \"%.0f\" $value }} targets because the number of targets exceeded the configured target_limit."
+          "summary": "Prometheus has dropped targets because some scrape configs have exceeded the targets limit."
+        "expr": |
+          increase(prometheus_target_scrape_pool_exceeded_target_limit_total{job="prometheus"}[5m]) > 0
+        "for": "15m"
+        "labels":
+          "severity": "warning"
+      - "alert": "PrometheusErrorSendingAlertsToAnyAlertmanager"
+        "annotations":
+          "description": "{{ printf \"%.1f\" $value }}% minimum errors while sending alerts from Prometheus {{$labels.instance}} to any Alertmanager."
+          "summary": "Prometheus encounters more than 3% errors sending alerts to any Alertmanager."
+        "expr": |
+          min without (alertmanager) (
+            rate(prometheus_notifications_errors_total{job="prometheus"}[5m])
+          /
+            rate(prometheus_notifications_sent_total{job="prometheus"}[5m])
+          )
+          * 100
+          > 3
+        "for": "15m"
+        "labels":
+          "severity": "critical"

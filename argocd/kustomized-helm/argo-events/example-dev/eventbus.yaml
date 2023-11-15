@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventBus
+metadata:
+  name: default
+spec:
+  jetstream:
+    version: latest
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    replicas: 3
+    persistence:
+      accessMode: ReadWriteOnce
+      volumeSize: 10Gi
+    streamConfig: |
+      maxAge: 24h
+    settings: |
+      max_file_store: 1GB
+    startArgs:
+      - "-D"

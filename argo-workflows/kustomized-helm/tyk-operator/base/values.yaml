@@ -1,0 +1,14 @@
+tyk-operator:
+  fullnameOverride: tyk-operator
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  envFrom: null
+  image:
+    repository: docker.io/tykio/tyk-operator
+    tag: v0.15.1
+  rbac:
+    image:
+      repository: gcr.io/kubebuilder/kube-rbac-proxy
+      tag: v0.8.0

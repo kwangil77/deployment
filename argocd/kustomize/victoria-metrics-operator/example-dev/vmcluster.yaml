@@ -1,0 +1,74 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMCluster
+metadata:
+  name: vmcluster
+spec:
+  retentionPeriod: "14d"
+  replicationFactor: 2
+  vmstorage:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    replicaCount: 2
+    image:
+      repository: docker.io/victoriametrics/vmstorage
+      tag: v1.94.0-cluster
+    storageDataPath: "/vm-data"
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: null
+          resources:
+            requests:
+              storage: 50Gi
+  vmselect:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    replicaCount: 2
+    image:
+      repository: docker.io/victoriametrics/vmselect
+      tag: v1.94.0-cluster
+    cacheMountPath: "/select-cache"
+    resources:
+      limits:
+        cpu: '1'
+        memory: 1000Mi
+      requests:
+        cpu: 100m
+        memory: 500Mi
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: null
+          resources:
+            requests:
+              storage: 2Gi
+    extraArgs:
+      vmalert.proxyURL: "http://vmalert-vmalert.observability:8080"
+  vminsert:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    replicaCount: 2
+    image:
+      repository: docker.io/victoriametrics/vminsert
+      tag: v1.94.0-cluster

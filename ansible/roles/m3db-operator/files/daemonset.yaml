@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sysctl-setter-ds
+  namespace: observability
+  labels:
+    app: sysctl-setter
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: sysctl-setter
+  template:
+    metadata:
+      labels:
+        app: sysctl-setter
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+      - image: quay.io/m3/sysctl-setter@sha256:e003ee817fa573c38507667ca2e22634a1cb039fdb849f8ac0da98cc254a674e
+        name: sysctl-setter
+        securityContext:
+          privileged: true

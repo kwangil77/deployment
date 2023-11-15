@@ -1,0 +1,152 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pyroscope-distributor
+  labels:
+    app.kubernetes.io/component: distributor
+    app.kubernetes.io/instance: pyroscope
+    app.kubernetes.io/name: pyroscope
+spec:
+  endpoints:
+  - port: http2
+    relabelings:
+    - action: replace
+      replacement: observability/distributor
+      sourceLabels:
+      - job
+      targetLabel: job
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: distributor
+      app.kubernetes.io/instance: pyroscope
+      app.kubernetes.io/name: pyroscope
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pyroscope-ingester
+  labels:
+    app.kubernetes.io/component: ingester
+    app.kubernetes.io/instance: pyroscope
+    app.kubernetes.io/name: pyroscope
+spec:
+  endpoints:
+  - port: http2
+    relabelings:
+    - action: replace
+      replacement: observability/ingester
+      sourceLabels:
+      - job
+      targetLabel: job
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: ingester
+      app.kubernetes.io/instance: pyroscope
+      app.kubernetes.io/name: pyroscope
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pyroscope-querier
+  namespace: observability
+  labels:
+    app.kubernetes.io/component: querier
+    app.kubernetes.io/instance: pyroscope
+    app.kubernetes.io/name: pyroscope
+spec:
+  endpoints:
+  - port: http2
+    relabelings:
+    - action: replace
+      replacement: observability/querier
+      sourceLabels:
+      - job
+      targetLabel: job
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: querier
+      app.kubernetes.io/instance: pyroscope
+      app.kubernetes.io/name: pyroscope
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pyroscope-query-frontend
+  namespace: observability
+  labels:
+    app.kubernetes.io/component: query-frontend
+    app.kubernetes.io/instance: pyroscope
+    app.kubernetes.io/name: pyroscope
+spec:
+  endpoints:
+  - port: http2
+    relabelings:
+    - action: replace
+      replacement: observability/query-frontend
+      sourceLabels:
+      - job
+      targetLabel: job
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: query-frontend
+      app.kubernetes.io/instance: pyroscope
+      app.kubernetes.io/name: pyroscope
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pyroscope-query-scheduler
+  namespace: observability
+  labels:
+    app.kubernetes.io/component: query-scheduler
+    app.kubernetes.io/instance: pyroscope
+    app.kubernetes.io/name: pyroscope
+spec:
+  endpoints:
+  - port: http2
+    relabelings:
+    - action: replace
+      replacement: observability/query-scheduler
+      sourceLabels:
+      - job
+      targetLabel: job
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: query-scheduler
+      app.kubernetes.io/instance: pyroscope
+      app.kubernetes.io/name: pyroscope
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pyroscope-store-gateway
+  labels:
+    app.kubernetes.io/component: store-gateway
+    app.kubernetes.io/instance: pyroscope
+    app.kubernetes.io/name: pyroscope
+spec:
+  endpoints:
+  - port: http2
+    relabelings:
+    - action: replace
+      replacement: observability/store-gateway
+      sourceLabels:
+      - job
+      targetLabel: job
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: store-gateway
+      app.kubernetes.io/instance: pyroscope
+      app.kubernetes.io/name: pyroscope

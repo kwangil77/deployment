@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nexus-pv
+  labels:
+    app: nexus
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 300Gi
+  csi:
+    driver: ebs.csi.aws.com
+    volumeHandle: ""
+  storageClassName: gp3
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: topology.ebs.csi.aws.com/zone
+          operator: In
+          values:
+          - ap-northeast-2a

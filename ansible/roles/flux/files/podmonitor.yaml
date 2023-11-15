@@ -1,0 +1,89 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: helm-controller
+  labels:
+    app.kubernetes.io/part-of: flux
+spec:
+  podMetricsEndpoints:
+  - port: http-prom
+  selector:
+    matchLabels:
+      app: helm-controller
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: source-controller
+  labels:
+    app.kubernetes.io/part-of: flux
+spec:
+  podMetricsEndpoints:
+  - port: http-prom
+  selector:
+    matchLabels:
+      app: source-controller
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: kustomize-controller
+  labels:
+    app.kubernetes.io/part-of: flux
+spec:
+  podMetricsEndpoints:
+  - port: http-prom
+  selector:
+    matchLabels:
+      app: kustomize-controller
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: notification-controller
+  labels:
+    app.kubernetes.io/part-of: flux
+spec:
+  podMetricsEndpoints:
+  - port: http-prom
+  selector:
+    matchLabels:
+      app: notification-controller
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: image-automation-controller
+  labels:
+    app.kubernetes.io/part-of: flux
+spec:
+  podMetricsEndpoints:
+  - port: http-prom
+  selector:
+    matchLabels:
+      app: image-automation-controller
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: image-reflector-controller
+  labels:
+    app.kubernetes.io/part-of: flux
+spec:
+  podMetricsEndpoints:
+  - port: http-prom
+  selector:
+    matchLabels:
+      app: image-reflector-controller
+  namespaceSelector:
+    any: true

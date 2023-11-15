@@ -1,0 +1,59 @@
+controller:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    registry: k8s.gcr.io
+  watchIngressWithoutClass: true
+  ingressClassResource:
+    name: nginx
+    default: true
+  admissionWebhooks:
+    patch:
+      image:
+        registry: k8s.gcr.io
+  extraArgs:
+    enable-ssl-passthrough: ""
+  config:
+    use-proxy-protocol: "true"
+    log-format-escape-json: "true"
+    log-format-upstream: >-
+      {"namespace": "$namespace",
+      "ingressName": "$ingress_name",
+      "serviceName": "$service_name",
+      "servicePort": "$service_port",
+      "timestamp": "$time_iso8601",
+      "requestID": "$req_id",
+      "proxyUpstreamName": "$proxy_upstream_name",
+      "proxyAlternativeUpstreamName": "$proxy_alternative_upstream_name",
+      "upstreamStatus": "$upstream_status",
+      "upstreamAddr": "$upstream_addr",
+      "requestMethod": "$request_method",
+      "requestUrl": "$host$request_uri",
+      "status": $status,
+      "requestSize": "$request_length",
+      "responseSize": "$upstream_response_length",
+      "userAgent": "$http_user_agent",
+      "remoteIp": "$remote_addr",
+      "referer": "$http_referer",
+      "latency": "$upstream_response_time s",
+      "protocol": "$server_protocol"}
+  service:
+    externalTrafficPolicy: Local
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+      service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "{{ certificate_arn }}"
+      service.beta.kubernetes.io/aws-load-balancer-type: external
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+      service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+      service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Team=devops,Server=etc,Service=ingress-nginx,Security_level=moderate,Environment={{ env }}"
+    targetPorts:
+      https: http
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true

@@ -1,0 +1,19 @@
+apicurio-registry:
+  registry:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    sql:
+      username: apicurio
+    image:
+      registry: "quay.io"
+      tag: "2.3.1.Final"
+  sync:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      registry: "quay.io"
+      tag: "d0e2505"

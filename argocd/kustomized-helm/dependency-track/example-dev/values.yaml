@@ -1,0 +1,60 @@
+dependency-track:
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=dependency-track,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/healthcheck-path: /api/version
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      # nginx.ingress.kubernetes.io/proxy-body-size: '0'
+    host: "dependency-track.example.io"
+  frontend:
+    service:
+      type: NodePort
+    env:
+    - name: API_BASE_URL
+      value: ""
+    - name: OIDC_ISSUER
+      value: https://keycloak.example.io/realms/master
+    - name: OIDC_CLIENT_ID
+      value: dependency-track
+  apiserver:
+    service:
+      type: NodePort
+    env:
+    - name: ALPINE_DATABASE_MODE
+      value: external
+    - name: ALPINE_DATABASE_DRIVER
+      value: org.postgresql.Driver
+    - name: ALPINE_DATABASE_URL
+      value: "jdbc:postgresql://....ap-northeast-2.rds.amazonaws.com/dtrack"
+    - name: ALPINE_DATABASE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: dependency-track-postgresql
+          key: postgresql-password
+    - name: ALPINE_DATABASE_USERNAME
+      value: dtrack
+    - name: ALPINE_METRICS_ENABLED
+      value: "true"
+    - name: ALPINE_OIDC_ENABLED
+      value: "true"
+    - name: ALPINE_OIDC_CLIENT_ID
+      value: dependency-track
+    - name: ALPINE_OIDC_ISSUER
+      value: https://keycloak.example.io/realms/master
+    - name: ALPINE_OIDC_USERNAME_CLAIM
+      value: username
+    - name: ALPINE_OIDC_TEAMS_CLAIM
+      value: groups
+    - name: ALPINE_OIDC_USER_PROVISIONING
+      value: "true"
+    - name: ALPINE_OIDC_TEAM_SYNCHRONIZATION
+      value: "true"
+    persistentVolume:
+      size: 8Gi

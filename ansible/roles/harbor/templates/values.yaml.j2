@@ -1,0 +1,165 @@
+{% if server_host is defined %}
+expose:
+  tls:
+    enabled: false
+  ingress:
+{% if regist_host is defined %}
+    hosts:
+      core: ""
+{% else %}
+    hosts:
+      core: "{{ server_host }}"
+{% endif %}
+{% if certificate_arn is defined %}
+    controller: alb
+    annotations:
+{% if regist_host is defined %}
+      external-dns.alpha.kubernetes.io/hostname: "{{ regist_host }}"
+{% endif %}
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=harbor,Security_level=moderate,Environment={{ env }}"
+      alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% endif %}
+externalURL: "https://{{ server_host }}"
+{% endif %}
+harborAdminPassword: "{{ admin_pass }}"
+persistence:
+  imageChartStorage:
+    type: s3
+    s3:
+      bucket: "{{ s3_bucket }}"
+{% if s3_endpoint is defined %}
+      regionendpoint: "http://{{ s3_endpoint }}"
+      accesskey: "{{ s3_accesskey }}"
+      secretkey: "{{ s3_secretkey }}"
+{% endif %}
+      region: "ap-northeast-2"
+      rootdirectory: /harbor-data
+nginx:
+  image:
+    repository: goharbor/nginx-photon
+    tag: "v2.9.1"
+portal:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: goharbor/harbor-portal
+    tag: "v2.9.1"
+core:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: goharbor/harbor-core
+    tag: "v2.9.1"
+jobservice:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: goharbor/harbor-jobservice
+    tag: "v2.9.1"
+registry:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  registry:
+    image:
+      repository: goharbor/registry-photon
+      tag: "v2.9.1"
+  controller:
+    image:
+      repository: goharbor/harbor-registryctl
+      tag: "v2.9.1"
+chartmuseum:
+  enabled: false
+trivy:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: goharbor/trivy-adapter-photon
+    tag: "v2.9.1"
+  replicas: 3
+  timeout: 10m0s
+  resources:
+    limits:
+      cpu: 3000m
+      memory: 1Gi
+notary:
+  enabled: false
+database:
+  type: external
+  external:
+    host: "{{ database_host }}"
+    port: 5432
+    username: harbor
+    password: "{{ database_pass }}"
+    coreDatabase: harbor
+redis:
+  type: external
+  external:
+    addr: "{{ redis_addr }}"
+    coreDatabaseIndex: "{{ redis_dbs[0] }}"
+    jobserviceDatabaseIndex: "{{ redis_dbs[1] }}"
+    registryDatabaseIndex: "{{ redis_dbs[2] }}"
+    chartmuseumDatabaseIndex: "{{ redis_dbs[3] }}"
+    trivyAdapterIndex: "{{ redis_dbs[4] }}"
+exporter:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: goharbor/harbor-exporter
+    tag: "v2.9.1"
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true

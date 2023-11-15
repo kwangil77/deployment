@@ -1,0 +1,46 @@
+apiVersion: operator.m3db.io/v1alpha1
+kind: M3DBCluster
+metadata:
+  name: m3db-cluster
+spec:
+  image: quay.io/m3db/m3dbnode
+  replicationFactor: 3
+  numberOfShards: 64
+  etcdEndpoints:
+  - "{{ etcd_url }}"
+  isolationGroups:
+  - name: group1
+    numInstances: 1
+    nodeAffinityTerms:
+    - key: failure-domain.beta.kubernetes.io/zone
+      values:
+      - ap-northeast-2a
+  - name: group2
+    numInstances: 1
+    nodeAffinityTerms:
+    - key: failure-domain.beta.kubernetes.io/zone
+      values:
+      - ap-northeast-2b
+  - name: group3
+    numInstances: 1
+    nodeAffinityTerms:
+    - key: failure-domain.beta.kubernetes.io/zone
+      values:
+      - ap-northeast-2c
+  podIdentityConfig:
+    sources: []
+  namespaces:
+  - name: default
+    preset: 10s:2d
+  keepEtcdDataOnDelete: true
+  dataDirVolumeClaimTemplate:
+    metadata:
+      name: m3db-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Gi
+        limits:
+          storage: 100Gi

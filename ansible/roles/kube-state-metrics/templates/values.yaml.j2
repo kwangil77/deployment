@@ -1,0 +1,10 @@
+nodeSelector:
+  team: devops
+  service: devops-infra
+  performance_type: standard
+image:
+  repository: k8s.gcr.io/kube-state-metrics/kube-state-metrics
+prometheus:
+  monitor:
+    enabled: true
+    honorLabels: true

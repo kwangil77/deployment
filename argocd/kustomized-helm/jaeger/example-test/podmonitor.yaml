@@ -1,0 +1,56 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: jaeger-collector
+  labels:
+    app.kubernetes.io/component: collector
+    app.kubernetes.io/instance: jaeger
+    app.kubernetes.io/name: jaeger-collector
+spec:
+  podMetricsEndpoints:
+  - port: admin-http
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: collector
+      app.kubernetes.io/instance: jaeger
+      app.kubernetes.io/name: jaeger-collector
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: jaeger-query
+  labels:
+    app.kubernetes.io/component: query
+    app.kubernetes.io/instance: jaeger
+    app.kubernetes.io/name: jaeger-query
+spec:
+  podMetricsEndpoints:
+  - port: admin-http
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: query
+      app.kubernetes.io/instance: jaeger
+      app.kubernetes.io/name: jaeger-query
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: jaeger-ingester
+  labels:
+    app.kubernetes.io/component: ingester
+    app.kubernetes.io/instance: jaeger
+    app.kubernetes.io/name: jaeger-ingester
+spec:
+  podMetricsEndpoints:
+  - port: admin-http
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: ingester
+      app.kubernetes.io/instance: jaeger
+      app.kubernetes.io/name: jaeger-ingester
+  namespaceSelector:
+    any: true

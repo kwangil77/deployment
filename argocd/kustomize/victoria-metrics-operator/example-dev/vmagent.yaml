@@ -1,0 +1,37 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAgent
+metadata:
+  name: vmagent
+spec:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  replicaCount: 1
+  image:
+    repository: docker.io/victoriametrics/vmagent
+    tag: v1.94.0
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 50m
+      memory: 200Mi
+  selectAllByDefault: true
+  vmAgentExternalLabelName: prometheus_replica
+  externalLabels:
+    cluster: example-dev
+  extraArgs:
+    promscrape.streamParse: "true"
+    sortLabels: "true"
+  remoteWrite:
+  - url: "http://vminsert-vmcluster.observability:8480/insert/0/prometheus/api/v1/write"
+    inlineUrlRelabelConfig:
+    - action: labeldrop
+      regex: "prometheus_replica"

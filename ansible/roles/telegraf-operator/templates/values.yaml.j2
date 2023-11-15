@@ -1,0 +1,38 @@
+fullnameOverride: telegraf-operator
+image:
+  repository: quay.io/influxdb/telegraf-operator
+  pullPolicy: Always
+  sidecarImage: docker.io/library/telegraf:1.19
+nodeSelector:
+  team: devops
+  service: devops-infra
+  performance_type: standard
+classes:
+  default: "basic"
+  data:
+    basic: |
+      [agent]
+        interval = "60s"
+        round_interval = true
+        metric_batch_size = 1000
+        metric_buffer_limit = 10000
+        collection_jitter = "0s"
+        flush_interval = "10s"
+        flush_jitter = "0s"
+        precision = ""
+        debug = false
+        quiet = true
+        logfile = ""
+        hostname = "$HOSTNAME"
+        omit_hostname = true
+      [global_tags]
+        hostname = "$HOSTNAME"
+      [[outputs.http]]
+        url = "{{ pushgateway_url }}"
+        data_format = "prometheus"
+      [[inputs.statsd]]
+        service_address = ":8125"
+        percentiles = [90]
+        percentile_limit = 1000
+      [[inputs.prometheus]]
+        urls = ["http://localhost:9209/metrics"]

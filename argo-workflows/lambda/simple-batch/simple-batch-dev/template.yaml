@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: ''
+Resources:
+  simpleBatch:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-batch-dev
+      Description: ''
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: ./src
+      MemorySize: 128
+      Timeout: 3
+      Role: arn:aws:iam::...
+      Events:
+        simpleBatch:
+          Type: Schedule
+          Properties:
+            Schedule: cron(00 01 * * ? *)
+            Name: simple-batch-dev
+            Description: ''
+            Input: '{"method": "GET", "host": "simple-api.example.io", "path": "/hello"}'
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-00cf33f3b48d29b67
+        SubnetIds:
+        - subnet-0794c98e90ab6a2d9
+        - subnet-0bc9767a0e33b58e7
+        - subnet-0ac1c252ad0c4a116
+        - subnet-06080066426a24d53
+      Tags:
+        Team: devops
+        Service: simple-batch
+        Security_level: moderate
+        Environment: dev
+    Metadata:
+      SamResourceId: simpleBatch

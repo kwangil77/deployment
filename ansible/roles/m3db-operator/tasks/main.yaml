@@ -1,0 +1,58 @@
+---
+- name: Add m3db chart repo
+  kubernetes.core.helm_repository:
+    name: m3db
+    repo_url: https://m3-helm-charts.storage.googleapis.com/stable
+
+- name: Install m3db-operator
+  kubernetes.core.helm:
+    name: m3db
+    state: present
+    chart_version: 0.13.0
+    chart_ref: m3db/m3db-operator
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output
+
+- name: Install daemonset
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    namespace: "{{ release_namespace }}"
+    definition: "{{ lookup('file', 'daemonset.yaml') }}"
+  register: output
+
+- debug:
+    var: output
+
+- name: Install m3db-cluster
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    namespace: "{{ release_namespace }}"
+    definition: "{{ lookup('template', 'cluster.yaml.j2') }}"
+  register: output
+
+- debug:
+    var: output
+
+- name: Install servicemonitor
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    namespace: "{{ release_namespace }}"
+    definition: "{{ lookup('file', 'servicemonitor.yaml') }}"
+  register: output
+
+- debug:
+    var: output

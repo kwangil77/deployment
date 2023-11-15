@@ -1,0 +1,15 @@
+---
+- name: Install kibana
+  hosts: localhost
+  connection: local
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    release_namespace: observability
+  gather_facts: no
+
+  pre_tasks:
+    - name: Prepare namespace
+      import_tasks: namespace.yaml
+
+  roles:
+    - kibana

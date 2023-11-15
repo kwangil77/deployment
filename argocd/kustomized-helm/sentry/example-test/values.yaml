@@ -1,0 +1,88 @@
+sentry:
+  user:
+    email: admin@example.com
+    password: <path:kv/data/sentry/admin#password>
+  system:
+    url: https://sentry.example.io
+    adminEmail: admin@example.com
+  nginx:
+    service:
+      type: NodePort
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=sentry,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+    regexPathStyle: aws-alb
+    pathType: Prefix
+    alb:
+      httpRedirect: true
+    hostname: sentry.example.io
+  filestore:
+    backend: s3
+    s3:
+      bucketName: example-dev-sentry-bucket
+      endpointUrl: minio-hl.management:9000
+      accessKey: <path:kv/data/minio/secret#access-key>
+      secretKey: <path:kv/data/minio/secret#secret-key>
+      useSsl: false
+  externalClickhouse:
+    host: sentry-clickhouse.observability
+    username: default
+    password: <path:kv/data/sentry/clickhouse#password>
+    database: default
+  externalKafka:
+  - host: b-1.....kafka.ap-northeast-2.amazonaws.com
+    port: 9092
+  - host: b-2.....kafka.ap-northeast-2.amazonaws.com
+    port: 9092
+  - host: b-3.....kafka.ap-northeast-2.amazonaws.com
+    port: 9092
+  externalRedis:
+    host: ....cache.amazonaws.com
+  externalPostgresql:
+    host: ....ap-northeast-2.rds.amazonaws.com
+    username: sentry
+    password: <path:kv/data/sentry/postgresql#password>
+    database: sentry
+clickhouse:
+  auth:
+    password: <path:kv/data/sentry/clickhouse#password>
+  shards: 1
+  replicaCount: 1
+  extraOverrides: |
+    <clickhouse>
+      <storage_configuration>
+        <disks>
+          <default>
+            <keep_free_space_bytes>10485760</keep_free_space_bytes>
+          </default>
+          <s3>
+            <type>s3</type>
+            <endpoint>http://minio-hl.management:9000/example-dev-jaeger-bucket//</endpoint>
+            <access_key_id><path:kv/data/minio/secret#access-key></access_key_id>
+            <secret_access_key><path:kv/data/minio/secret#secret-key></secret_access_key>
+          </s3>
+        </disks>
+        <policies>
+          <tiered>
+            <volumes>
+              <default>
+                <disk>default</disk>
+              </default>
+              <s3>
+                <disk>s3</disk>
+                <perform_ttl_move_on_insert>0</perform_ttl_move_on_insert>
+              </s3>
+            </volumes>
+          </tiered>
+        </policies>
+      </storage_configuration>
+    </clickhouse>
+  persistence:
+    size: 20Gi

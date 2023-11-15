@@ -1,0 +1,175 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-cloud-dataflow-server
+  labels:
+    app: spring-cloud-dataflow
+data:
+  application.yaml: |-
+    management:
+      metrics:
+        export:
+            prometheus:
+              enabled: true
+              rsocket:
+                enabled: true
+                host: spring-cloud-dataflow-prometheus-proxy
+                port: 7001
+    spring:
+      cloud:
+        dataflow:
+          security:
+            authorization:
+              provider-role-mappings:
+                keycloak:
+                  map-oauth-scopes: true
+                  role-mappings:
+                    ROLE_VIEW: openid
+                    ROLE_CREATE: openid
+                    ROLE_MANAGE: openid
+                    ROLE_DEPLOY: openid
+                    ROLE_DESTROY: openid
+                    ROLE_MODIFY: openid
+                    ROLE_SCHEDULE: openid
+          task:
+            platform:
+              kubernetes:
+                accounts:
+                  default:
+                    limits:
+                      cpu: 500m
+                      memory: 1024Mi
+                    readinessProbeDelay: 120
+                    livenessProbeDelay: 90
+                    podSecurityContext:
+                      runAsUser: 1001
+                    entryPointStyle: exec
+          metrics.dashboard:
+            url: https://grafana.example.io
+        task:
+          closecontextEnabled: true
+      jpa:
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQL95Dialect
+      datasource:
+        url: 'jdbc:postgresql://....ap-northeast-2.rds.amazonaws.com:5432/dataflow'
+        driverClassName: org.postgresql.Driver
+        username: dataflow
+        password: <path:kv/data/spring-cloud-dataflow/postgresql#password>
+        testOnBorrow: true
+        validationQuery: "SELECT 1"
+      flyway:
+        enabled: true
+      security:
+        oauth2:
+          client:
+            registration:
+              keycloak:
+                redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+                authorization-grant-type: authorization_code
+                client-id: spring-cloud-dataflow
+                client-secret: <path:kv/data/spring-cloud-dataflow/oidc#client-secret>
+                scope:
+                - openid
+            provider:
+              keycloak:
+                jwk-set-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/certs
+                token-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/token
+                user-info-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/userinfo
+                user-name-attribute: username
+                authorization-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/auth
+          resourceserver:
+            opaquetoken:
+              introspection-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/token/introspect
+              client-id: spring-cloud-dataflow
+              client-secret: <path:kv/data/spring-cloud-dataflow/oidc#client-secret>
+          authorization:
+            check-token-access: isAuthenticated()
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-cloud-dataflow-skipper
+  labels:
+    app: spring-cloud-dataflow
+data:
+  application.yaml: |-
+    management:
+      metrics:
+        export:
+            prometheus:
+              enabled: true
+              rsocket:
+                enabled: true
+                host: spring-cloud-dataflow-prometheus-proxy
+                port: 7001
+    spring:
+      cloud:
+        skipper:
+          security:
+            authorization:
+              provider-role-mappings:
+                keycloak:
+                  map-oauth-scopes: true
+                  role-mappings:
+                    ROLE_VIEW: openid
+                    ROLE_CREATE: openid
+                    ROLE_MANAGE: openid
+                    ROLE_DEPLOY: openid
+                    ROLE_DESTROY: openid
+                    ROLE_MODIFY: openid
+                    ROLE_SCHEDULE: openid
+          server:
+            platform:
+              kubernetes:
+                accounts:
+                  default:
+                    environmentVariables:
+                      - SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=b-1.....kafka.ap-northeast-2.amazonaws.com:9092,b-2.....kafka.ap-northeast-2.amazonaws.com:9092,b-3.....kafka.ap-northeast-2.amazonaws.com:9092
+                      - SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=z-1.....kafka.ap-northeast-2.amazonaws.com:2181,z-2.....kafka.ap-northeast-2.amazonaws.com:2181,z-3.....kafka.ap-northeast-2.amazonaws.com:2181
+                    limits:
+                      cpu: 500m
+                      memory: 1024Mi
+                    readinessProbeDelay: 120
+                    livenessProbeDelay: 90
+                    podSecurityContext:
+                      runAsUser: 1001
+                    entryPointStyle: exec
+                    imagePullPolicy: IfNotPresent
+      jpa:
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQL95Dialect
+      datasource:
+        url: 'jdbc:postgresql://....ap-northeast-2.rds.amazonaws.com:5432/skipper'
+        driverClassName: org.postgresql.Driver
+        username: skipper
+        password: <path:kv/data/spring-cloud-dataflow/postgresql#password>
+        testOnBorrow: true
+        validationQuery: "SELECT 1"
+      flyway:
+        enabled: true
+      security:
+        oauth2:
+          client:
+            registration:
+              keycloak:
+                redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+                authorization-grant-type: authorization_code
+                client-id: spring-cloud-dataflow
+                client-secret: <path:kv/data/spring-cloud-dataflow/oidc#client-secret>
+                scope:
+                - openid
+            provider:
+              keycloak:
+                jwk-set-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/certs
+                token-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/token
+                user-info-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/userinfo
+                user-name-attribute: username
+                authorization-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/auth
+          resourceserver:
+            opaquetoken:
+              introspection-uri: https://keycloak.example.io/realms/master/protocol/openid-connect/token/introspect
+              client-id: spring-cloud-dataflow
+              client-secret: <path:kv/data/spring-cloud-dataflow/oidc#client-secret>

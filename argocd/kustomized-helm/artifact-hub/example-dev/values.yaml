@@ -1,0 +1,41 @@
+artifact-hub:
+  fullnameOverride: artifact-hub
+  db:
+    host: ....ap-northeast-2.rds.amazonaws.com
+    database: artifacthub
+    user: artifacthub
+    password: <path:kv/data/artifact-hub/postgresql#password>
+  hub:
+    ingress:
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=artifact-hub,Security_level=moderate,Environment=dev"
+        alb.ingress.kubernetes.io/security-groups: sg-...
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+        # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      defaultBackendEnabled: false
+      rules:
+      - host: artifact-hub.example.io
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: artifact-hub-hub
+                port:
+                  number: 80
+    service:
+      type: NodePort
+    server:
+      baseURL: artifact-hub.example.io
+      oauth:
+        oidc:
+          enabled: true
+          issuerURL: https://keycloak.example.io/realms/master
+          clientID: artifact-hub
+          clientSecret: <path:kv/data/artifact-hub/oidc#client-secret>
+          redirectURL: https://artifact-hub.example.io/oauth/oidc/callback

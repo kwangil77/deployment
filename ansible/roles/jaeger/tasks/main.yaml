@@ -1,0 +1,22 @@
+---
+- name: Add jaegertracing chart repo
+  kubernetes.core.helm_repository:
+    name: jaegertracing
+    repo_url: https://jaegertracing.github.io/helm-charts
+
+- name: Install jaeger
+  kubernetes.core.helm:
+    name: jaeger
+    state: present
+    chart_version: 0.71.6
+    chart_ref: jaegertracing/jaeger
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: simple-client
+  labels:
+    app: simple-client
+spec:
+  workloadRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: simple-client
+  # strategy:
+  #   canary:
+  #     maxSurge: 1
+  #     maxUnavailable: 1
+  strategy:
+    blueGreen:
+      activeService: simple-client
+      previewService: simple-client-preview
+      autoPromotionEnabled: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-client-preview
+  labels:
+    app: simple-client
+spec:
+  selector:
+    app: simple-client
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: NodePort

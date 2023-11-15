@@ -1,0 +1,31 @@
+nodeSelector:
+  team: devops
+  service: devops-infra
+  performance_type: standard
+{% if certificate_arn is defined %}
+service:
+  type: NodePort
+{% endif %}
+{% if server_host is defined %}
+ingress:
+  enabled: true
+  annotations:
+{% if certificate_arn is defined %}
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=sealed-secrets,Security_level=moderate,Environment={{ env }}"
+    alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+  hostname: "{{ server_host }}"
+  pathType: Prefix
+{% endif %}
+image:
+  registry: quay.io
+metrics:
+  serviceMonitor:
+    enabled: true

@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- https://raw.githubusercontent.com/Kong/charts/main/charts/kong/crds/custom-resource-definitions.yaml
+- ingress.yaml
+- ingressclass.yaml
+- service.yaml
+- servicemonitor.yaml
+helmGlobals:
+  chartHome: ../
+helmCharts:
+- name: base
+  namespace: management
+  releaseName: kong
+  valuesFile: ./values.yaml

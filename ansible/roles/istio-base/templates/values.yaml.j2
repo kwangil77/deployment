@@ -1,0 +1,8 @@
+global:
+  istioNamespace: istio-system
+{% if remote_pilot_address is defined %}
+  externalIstiod: true
+  remotePilotAddress: "{{ remote_pilot_address }}"
+base:
+  validationURL: "https://{{ remote_pilot_address }}:15017/validate"
+{% endif %}

@@ -1,0 +1,22 @@
+---
+- name: Add istio chart repo
+  kubernetes.core.helm_repository:
+    name: istio
+    repo_url: https://istio-release.storage.googleapis.com/charts
+
+- name: Install istio-gateway
+  kubernetes.core.helm:
+    name: istio-ingressgateway
+    state: present
+    chart_version: 1.13.1
+    chart_ref: istio/gateway
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

@@ -1,0 +1,209 @@
+grafana-agent:
+  service:
+    type: NodePort
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=grafana-agent,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/healthcheck-path: /-/ready
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    hosts:
+    - grafana-agent.example.io
+  controller:
+    nodeSelector:
+      team: devops
+      service: devops-service
+      performance_type: standard
+    hostPID: true
+    hostNetwork: true
+    dnsPolicy: ClusterFirstWithHostNet
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    volumes:
+      extra:
+      - name: rootfs
+        hostPath:
+          path: /
+      - name: sysfs
+        hostPath:
+          path: /sys
+      - name: procfs
+        hostPath:
+          path: /proc
+  agent:
+    listenPort: 12347
+    extraPorts:
+    - name: otlp-grpc
+      port: 14317
+      targetPort: 14317
+      protocol: TCP
+    - name: otlp-http
+      port: 14318
+      targetPort: 14318
+      protocol: TCP
+    - name: zipkin
+      port: 19411
+      targetPort: 19411
+      protocol: TCP
+    mounts:
+      extra: 
+      - name: rootfs
+        mountPath: /host/root
+        readOnly: true
+      - name: sysfs
+        mountPath: /host/sys
+        readOnly: true
+      - name: procfs
+        mountPath: /host/proc
+        readOnly: true
+    configMap:
+      content: |
+        logging {
+          level = "info"
+          format = "logfmt"
+        }
+        discovery.kubernetes "pods" {
+          role = "pod"
+        }
+        discovery.kubernetes "nodes" {
+          role = "node"
+        }
+        discovery.kubernetes "services" {
+          role = "service"
+        }
+        discovery.kubernetes "endpoints" {
+          role = "endpoints"
+        }
+        discovery.kubernetes "endpointslices" {
+          role = "endpointslice"
+        }
+        discovery.kubernetes "ingresses" {
+          role = "ingress"
+        }
+        prometheus.exporter.unix "nodes" {
+          procfs_path = "/host/proc"
+          sysfs_path = "/host/sys"
+          rootfs_path = "/host/root"
+        }
+        prometheus.scrape "nodes" {
+          targets = prometheus.exporter.unix.nodes.targets
+          forward_to = [prometheus.relabel.nodes.receiver]
+        }
+        prometheus.relabel "nodes" {
+          rule {
+            action = "replace"
+            target_label = "job"
+            replacement = "node-exporter"
+          }
+          forward_to = [otelcol.receiver.prometheus.default.receiver]
+        }
+        discovery.relabel "pods" {
+          targets = discovery.kubernetes.pods.targets
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_app"]
+            target_label = "app"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_node_name"]
+            target_label = "node_name"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_name"]
+            target_label = "pod"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_container_name"]
+            target_label = "container"
+          }
+        }
+        loki.source.kubernetes "pods" {
+          targets = discovery.relabel.pods.output
+          forward_to = [otelcol.receiver.loki.default.receiver]
+        }
+        otelcol.receiver.prometheus "default" {
+          output {
+            metrics = [otelcol.processor.batch.default.input]
+          }
+        }
+        otelcol.receiver.loki "default" {
+          output {
+            logs = [otelcol.processor.batch.default.input]
+          }
+        }
+        otelcol.receiver.otlp "default" {
+          grpc {
+            endpoint = "0.0.0.0:14317"
+          }
+          http {
+            endpoint = "0.0.0.0:14318"
+          }
+          output {
+            metrics = [otelcol.processor.batch.default.input]
+            logs = [otelcol.processor.batch.default.input]
+            traces = [otelcol.processor.batch.default.input]
+          }
+        }
+        otelcol.receiver.zipkin "default" {
+          endpoint = "0.0.0.0:19411"
+          output {
+            traces = [otelcol.processor.batch.default.input]
+          }
+        }
+        otelcol.processor.batch "default" {
+          output {
+            metrics = [otelcol.exporter.prometheus.default.input]
+            logs = [otelcol.exporter.loki.default.input]
+            traces = [otelcol.exporter.otlp.default.input]
+          }
+        }
+        otelcol.exporter.prometheus "default" {
+          forward_to = [prometheus.remote_write.default.receiver]
+        }
+        loki.process "default" {
+          stage.json {
+            expressions = {body = "body"}
+          }
+          stage.output {
+            source = "body"
+          }
+          forward_to = [loki.write.default.receiver]
+        }
+        otelcol.exporter.loki "default" {
+          forward_to = [loki.process.default.receiver]
+        }
+        otelcol.exporter.otlp "default" {
+          client {
+            endpoint = "tempo-distributor.observability:4317"
+            tls {
+              insecure = true
+              insecure_skip_verify = true
+            }
+          }
+        }
+        prometheus.remote_write "default" {
+          endpoint {
+            url = "http://vminsert-vmcluster.observability:8480/insert/0/prometheus/api/v1/write"
+          }
+          external_labels = {
+            "cluster" = "example-dev",
+          }
+        }
+        loki.write "default" {
+          endpoint {
+            url = "http://loki-distributor.observability:3100/loki/api/v1/push"
+          }
+          external_labels = {
+            "cluster" = "example-dev",
+          }
+        }

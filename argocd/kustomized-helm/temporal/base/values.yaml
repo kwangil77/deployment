@@ -1,0 +1,101 @@
+temporal:
+  server:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      repository: docker.io/temporalio/server
+      tag: "1.20.2"
+    metrics:
+      serviceMonitor:
+        enabled: true
+    config:
+      persistence:
+        defaultStore: default
+        default:
+          driver: "sql"
+          sql:
+            driver: "postgres"
+            port: 5432
+        visibility:
+          driver: "sql"
+          sql:
+            driver: "postgres"
+            port: 5432
+    dynamicConfig:
+      frontend.keepAliveMaxConnectionAge:
+      - value: 600s
+        constraints: {}
+    frontend:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: standard
+      metrics:
+        serviceMonitor:
+          enabled: true
+    history:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: standard
+      metrics:
+        serviceMonitor:
+          enabled: true
+    matching:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: standard
+      metrics:
+        serviceMonitor:
+          enabled: true
+    worker:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: standard
+      metrics:
+        serviceMonitor:
+          enabled: true
+  admintools:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      repository: docker.io/temporalio/admin-tools
+      tag: "1.20.2"
+  web:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      repository: docker.io/temporalio/ui
+      tag: "2.14.0"
+  schema:
+    setup:
+      enabled: false
+    update:
+      enabled: false
+  elasticsearch:
+    enabled: false
+  prometheus:
+    enabled: false
+  grafana:
+    enabled: false
+  cassandra:
+    enabled: false
+  mysql:
+    enabled: false
+  postgresql:
+    enabled: true

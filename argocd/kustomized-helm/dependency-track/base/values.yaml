@@ -1,0 +1,30 @@
+dependency-track:
+  global:
+    imageRegistry: docker.io
+  frontend:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    replicaCount: 1
+    image:
+      tag: "4.9.0"
+  apiserver:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image:
+      tag: "4.9.0"
+  postgresql:
+    enabled: false

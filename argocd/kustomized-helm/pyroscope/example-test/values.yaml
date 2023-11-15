@@ -1,0 +1,13 @@
+pyroscope:
+  pyroscope:
+    config: |
+      storage:
+        backend: s3
+        s3:
+          bucket_name: example-dev-pyroscope-bucket
+          endpoint: minio-hl.management:9000
+          access_key_id: <path:kv/data/minio/secret#access-key>
+          secret_access_key: <path:kv/data/minio/secret#secret-key>
+          insecure: true
+          # endpoint: "s3.amazonaws.com"
+          # region: ap-northeast-2

@@ -1,0 +1,58 @@
+litmus:
+  image:
+    imageRegistryName: docker.io/litmuschaos
+  portal:
+    frontend:
+      nodeSelector:
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+      service:
+        type: NodePort
+    server:
+      nodeSelector:
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+  mongodb:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    global:
+      imageRegistry: docker.io
+    auth:
+      rootPassword: <path:kv/data/litmus/mongodb#password>
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+dex:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: ghcr.io/dexidp/dex
+  serviceMonitor:
+    enabled: true

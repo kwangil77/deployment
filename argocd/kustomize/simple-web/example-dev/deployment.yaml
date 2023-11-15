@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-web
+  labels:
+    app: simple-web
+  annotations:
+    keel.sh/policy: force
+    keel.sh/match-tag: 'true'
+    keel.sh/pollSchedule: '@every 1m'
+    keel.sh/trigger: poll
+spec:
+  selector:
+    matchLabels:
+      app: simple-web
+  template:
+    metadata:
+      labels:
+        app: simple-web
+      annotations:
+        sidecar.opentelemetry.io/inject: 'true'
+    spec:
+      serviceAccountName: simple
+      containers:
+      - name: app
+        image: ghcr.io/kwangil77/simple-web
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+        env:
+        - name: APP_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['app']
+        - name: APP_ENVIRONMENT
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['environment']
+        - name: APP_SERVICE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['service']
+        - name: REST_SIMPLE_API_URL
+          value: https://kong.example.io/simple-api
+        - name: GRPC_SIMPLE_API_ADDR
+          value: kong.example.io:443
+        - name: GRPC_SIMPLE_API_TLS_ENABLED
+          value: 'true'
+        - name: GRAPHQL_SIMPLE_API_URL
+          value: https://kong.example.io/simple-api/graphql
+        # - name: REST_SIMPLE_API_URL
+        #   value: http://gateway-svc-tyk-gateway.management:8080/simple-api
+        # - name: GRPC_SIMPLE_API_ADDR
+        #   value: gateway-svc-tyk-gateway.management:8080
+        # - name: GRAPHQL_SIMPLE_API_URL
+        #   value: http://gateway-svc-tyk-gateway.management:8080/simple-api/graphql
+        - name: NODE_OPTIONS
+          value: "--require @opentelemetry/auto-instrumentations-node/register"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1024Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-service
+        performance_type: standard

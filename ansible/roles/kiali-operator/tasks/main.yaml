@@ -1,0 +1,33 @@
+---
+- name: Install crd
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    context: "{{ cluster_arn }}"
+    state: present
+    definition: "{{ lookup('url', 'https://raw.githubusercontent.com/kiali/helm-charts/master/kiali-operator/crds/crds.yaml', split_lines=false) | from_yaml_all | list }}"
+  register: output
+
+- debug:
+    var: output
+
+- name: Add kiali chart repo
+  kubernetes.core.helm_repository:
+    name: kiali
+    repo_url: https://kiali.org/helm-charts
+
+- name: Install kiali-operator
+  kubernetes.core.helm:
+    name: kiali
+    state: present
+    chart_version: 1.47.0
+    chart_ref: kiali/kiali-operator
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

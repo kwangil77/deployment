@@ -1,0 +1,36 @@
+clickhouse:
+  auth:
+    password: <path:kv/data/jaeger/clickhouse#password>
+  shards: 1
+  replicaCount: 1
+  extraOverrides: |
+    <clickhouse>
+      <storage_configuration>
+        <disks>
+          <default>
+            <keep_free_space_bytes>10485760</keep_free_space_bytes>
+          </default>
+          <s3>
+            <type>s3</type>
+            <endpoint>http://minio-hl.management:9000/example-dev-jaeger-bucket//</endpoint>
+            <access_key_id><path:kv/data/minio/secret#access-key></access_key_id>
+            <secret_access_key><path:kv/data/minio/secret#secret-key></secret_access_key>
+          </s3>
+        </disks>
+        <policies>
+          <tiered>
+            <volumes>
+              <default>
+                <disk>default</disk>
+              </default>
+              <s3>
+                <disk>s3</disk>
+                <perform_ttl_move_on_insert>0</perform_ttl_move_on_insert>
+              </s3>
+            </volumes>
+          </tiered>
+        </policies>
+      </storage_configuration>
+    </clickhouse>
+  persistence:
+    size: 20Gi

@@ -1,0 +1,33 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: opentelemetry-collector
+  labels:
+    app.kubernetes.io/component: opentelemetry-collector
+    app.kubernetes.io/name: opentelemetry-collector-monitoring
+spec:
+  endpoints:
+  - port: monitoring
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: opentelemetry-collector
+      app.kubernetes.io/name: opentelemetry-collector-monitoring
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: opentelemetry-collector-metrics
+  labels:
+    app.kubernetes.io/component: opentelemetry-collector
+    app.kubernetes.io/name: opentelemetry-collector-metrics
+spec:
+  endpoints:
+  - port: http-metrics
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: opentelemetry-collector
+      app.kubernetes.io/name: opentelemetry-collector-metrics

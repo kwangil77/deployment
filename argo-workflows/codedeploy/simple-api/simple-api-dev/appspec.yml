@@ -1,0 +1,32 @@
+version: 0.0
+os: linux
+files:
+- source: docker-container
+  destination: /etc/logrotate.d/docker-container
+- source: .platform
+  destination: /var/app/current/.platform
+- source: .env
+  destination: /var/app/current
+- source: docker-compose.yml
+  destination: /var/app/current
+file_exists_behavior: OVERWRITE
+hooks:
+  BeforeInstall:
+  - location: scripts/00_bootstrap.sh
+    timeout: 300
+    runas: root
+  - location: scripts/01_nginx_install.sh
+    timeout: 300
+    runas: root
+  AfterInstall:
+  - location: scripts/97_merge_env.sh
+    timeout: 300
+    runas: root
+  ApplicationStart:
+  - location: scripts/98_app_start.sh
+    timeout: 300
+    runas: root
+  ApplicationStop:
+  - location: scripts/99_app_stop.sh
+    timeout: 300
+    runas: root

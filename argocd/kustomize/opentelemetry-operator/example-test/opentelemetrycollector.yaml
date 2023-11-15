@@ -1,0 +1,101 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: opentelemetry
+spec:
+  mode: deployment
+  image: docker.io/otel/opentelemetry-collector-contrib:0.88.0
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  managementState: managed
+  config: |-
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+      otlp/spanmetrics:
+        protocols:
+          grpc:
+            endpoint: localhost:12345
+      zipkin:
+        endpoint: 0.0.0.0:9411
+    processors:
+      batch: {}
+      memory_limiter:
+        check_interval: 5s
+        limit_percentage: 80
+        spike_limit_percentage: 25
+      spanmetrics/prometheus:
+        metrics_exporter: prometheus
+        latency_histogram_buckets:
+        - 100us
+        - 1ms
+        - 2ms
+        - 6ms
+        - 10ms
+        - 100ms
+        - 250ms
+        dimensions:
+        - name: http.method
+          default: GET
+        - name: http.status_code
+        dimensions_cache_size: 1000
+        aggregation_temporality: AGGREGATION_TEMPORALITY_CUMULATIVE
+    extensions:
+      health_check: {}
+      memory_ballast:
+        size_in_percentage: 40
+    exporters:
+      logging: {}
+      otlp/tempo:
+        endpoint: tempo-distributor.observability:4317
+        tls:
+          insecure: true
+      otlp/signoz:
+        endpoint: signoz-otel-collector.observability:4317
+        tls:
+          insecure: true
+      prometheus:
+        endpoint: 0.0.0.0:9090
+        send_timestamps: true
+        enable_open_metrics: true
+        resource_to_telemetry_conversion:
+          enabled: true
+    service:
+      telemetry:
+        metrics:
+          address: 0.0.0.0:8888
+      extensions:
+      - health_check
+      - memory_ballast
+      pipelines:
+        metrics:
+          receivers:
+          - otlp
+          processors:
+          - memory_limiter
+          - batch
+          exporters:
+          - prometheus
+        metrics/spanmetrics:
+          receivers:
+          - otlp/spanmetrics
+          exporters:
+          - prometheus
+        traces:
+          receivers:
+          - otlp
+          - zipkin
+          processors:
+          - memory_limiter
+          - spanmetrics/prometheus
+          - batch
+          exporters:
+          - otlp/tempo
+          - otlp/signoz

@@ -1,0 +1,16 @@
+woodpecker-server:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    registry: docker.io
+  persistentVolume:
+    storageClass: gp3
+woodpecker-agent:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    registry: docker.io

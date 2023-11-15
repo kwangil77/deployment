@@ -1,0 +1,71 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: dapr-operator
+  labels:
+    app.kubernetes.io/part-of: dapr
+spec:
+  podMetricsEndpoints:
+  - port: metrics
+    path: /
+  podTargetLabels:
+  - app
+  selector:
+    matchLabels:
+      app: dapr-operator
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: dapr-placement-server
+  labels:
+    app.kubernetes.io/part-of: dapr
+spec:
+  podMetricsEndpoints:
+  - port: metrics
+    path: /
+  podTargetLabels:
+  - app
+  selector:
+    matchLabels:
+      app: dapr-placement-server
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: dapr-sentry
+  labels:
+    app.kubernetes.io/part-of: dapr
+spec:
+  podMetricsEndpoints:
+  - port: metrics
+    path: /
+  podTargetLabels:
+  - app
+  selector:
+    matchLabels:
+      app: dapr-sentry
+  namespaceSelector:
+    any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: dapr-sidecar-injector
+  labels:
+    app.kubernetes.io/part-of: dapr
+spec:
+  podMetricsEndpoints:
+  - port: metrics
+    path: /
+  podTargetLabels:
+  - app
+  selector:
+    matchLabels:
+      app: dapr-sidecar-injector
+  namespaceSelector:
+    any: true

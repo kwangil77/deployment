@@ -1,0 +1,47 @@
+fullnameOverride: consul
+global:
+  enabled: false
+  image: "docker.io/hashicorp/consul:1.14.2"
+  metrics:
+    enabled: true
+    enableAgentMetrics: true
+server:
+  enabled: true
+  nodeSelector: |
+    team: devops
+    service: devops-infra
+    performance_type: standard
+ui:
+  enabled: true
+  service:
+{% if certificate_arn is defined %}
+    type: NodePort
+{% else %}
+    type: ClusterIP
+{% endif %}
+{% if server_host is defined %}
+  ingress:
+    enabled: true
+    annotations: |
+{% if regist_host is defined %}
+      external-dns.alpha.kubernetes.io/hostname: "{{ regist_host }}"
+{% endif %}
+{% if certificate_arn is defined %}
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=consul,Security_level=moderate,Environment={{ env }}"
+      alb.ingress.kubernetes.io/healthcheck-path: /ui/
+      alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+    hosts:
+    - host: "{{ server_host }}"
+      paths:
+      - "/"
+{% endif %}
+  metrics:
+    baseURL: "{{ prometheus_url }}"

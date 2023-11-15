@@ -1,0 +1,11 @@
+nodeSelector:
+  team: devops
+  service: devops-infra
+  performance_type: standard
+image:
+  repository: ghcr.io/fluxcd/flagger
+meshProvider: nginx
+metricsServer: "{{ prometheus_url }}"
+slack.url: "{{ slack_url }}"
+slack.channel: "{{ slack_channel }}"
+slack.user: flagger

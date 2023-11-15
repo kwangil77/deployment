@@ -1,0 +1,22 @@
+---
+- name: Add autoscaler chart repo
+  kubernetes.core.helm_repository:
+    name: autoscaler
+    repo_url: https://kubernetes.github.io/autoscaler
+
+- name: Install cluster-autoscaler
+  kubernetes.core.helm:
+    name: cluster-autoscaler
+    state: present
+    chart_version: 9.16.0
+    chart_ref: autoscaler/cluster-autoscaler
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

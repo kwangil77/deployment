@@ -1,0 +1,4 @@
+{
+  "release_name": "kubesphere",
+  "release_namespace": "kubesphere-system"
+}

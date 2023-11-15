@@ -1,0 +1,92 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kong
+  labels:
+    app: kong
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/conditions.kong-grpc: '[{"field":"http-header","httpHeaderConfig":{"httpHeaderName":"Content-Type","values":["application/grpc"]}}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=kong-proxy,Security_level=moderate,Environment=dev"
+    alb.ingress.kubernetes.io/backend-protocol: HTTPS
+    alb.ingress.kubernetes.io/healthcheck-path: /status
+    alb.ingress.kubernetes.io/healthcheck-port: kong-status
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTPS
+    alb.ingress.kubernetes.io/security-groups: sg-...
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+spec:
+  rules:
+  - host: kong.example.io
+    http:
+      paths:
+      - path: /status
+        pathType: Prefix
+        backend:
+          service:
+            name: kong
+            port:
+              name: kong-status
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kong-grpc
+            port:
+              name: kong-proxy
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kong
+            port:
+              name: kong-proxy
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kong-manager
+  labels:
+    app: kong
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=kong-manager,Security_level=moderate,Environment=dev"
+    alb.ingress.kubernetes.io/backend-protocol: HTTPS
+    alb.ingress.kubernetes.io/healthcheck-path: /status
+    alb.ingress.kubernetes.io/healthcheck-port: kong-status
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTPS
+    alb.ingress.kubernetes.io/security-groups: sg-...
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+spec:
+  rules:
+  - host: kong-manager.example.io
+    http:
+      paths:
+      - path: /status
+        pathType: Prefix
+        backend:
+          service:
+            name: kong
+            port:
+              name: kong-status
+      - path: /manager
+        pathType: Prefix
+        backend:
+          service:
+            name: kong
+            port:
+              name: kong-manager
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kong
+            port:
+              name: kong-admin

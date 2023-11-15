@@ -1,0 +1,157 @@
+{% if external_url is defined %}
+alertmanager:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: quay.io/prometheus/alertmanager
+  baseURL: "{{ external_url }}"
+  statefulSet:
+    enabled: true
+  persistentVolume:
+    enabled: true
+alertmanagerFiles:
+  alertmanager.yml:
+    global:
+      resolve_timeout: 1m
+      slack_api_url: "{{ slack_url }}"
+    route:
+      receiver: slack-notifications
+      group_by:
+      - alertname
+      - app
+    receivers:
+    - name: slack-notifications
+      slack_configs:
+      - channel: "{{ slack_channel }}"
+        send_resolved: true
+        username: alertmanager
+        icon_emoji: ":prometheus:"
+{% else %}
+alertmanager:
+  enabled: false
+{% endif %}
+configmapReload:
+  prometheus:
+    image:
+      repository: docker.io/jimmidyson/configmap-reload
+  alertmanager:
+    image:
+      repository: docker.io/jimmidyson/configmap-reload
+kubeStateMetrics:
+  enabled: false
+nodeExporter:
+  enabled: false
+pushgateway:
+  enabled: false
+server:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: quay.io/prometheus/prometheus
+{% if remote_read_url is defined %}
+  remoteRead:
+  - url: "{{ remote_read_url }}"
+{% endif %}
+{% if remote_write_url is defined %}
+  remoteWrite:
+  - url: "{{ remote_write_url }}"
+{% endif %}
+  persistentVolume:
+    enabled: true
+{% if alertmanager_hosts is defined %}
+  alertmanagers:
+  - static_configs:
+    - targets: {{ alertmanager_hosts }}
+{% endif %}
+{% if external_url is defined or alertmanager_hosts is defined %}
+  extraConfigmapMounts:
+  - name: rules-volume
+    mountPath: /conf/rules
+    subPath: ""
+    readOnly: true
+    configMap: prometheus-rules-configmap
+{% endif %}
+  global:
+    scrape_interval: 15s
+{% if s3_bucket is defined %}
+    external_labels:
+      cluster: ""
+      prometheus: observability/prometheus-server
+      prometheus_replica: '$(POD_NAME)'
+  extraArgs:
+    storage.tsdb.min-block-duration: 2h
+    storage.tsdb.max-block-duration: 2h
+  statefulSet:
+    enabled: true
+  sidecarContainers:
+  - name: thanos-sidecar
+    image: quay.io/thanos/thanos:v0.23.1
+    args:
+    - "sidecar"
+    - "--tsdb.path=/data/"
+    - "--prometheus.url=http://127.0.0.1:9090"
+    - "--grpc-address=0.0.0.0:10901"
+    - "--http-address=0.0.0.0:10902"
+{% if s3_endpoint is defined %}
+    - "--objstore.config={type: S3, config: {bucket: {{ s3_bucket }}, endpoint: {{ s3_endpoint }}, endpoint: {{ s3_endpoint }}, access_key: {{ s3_accesskey }}, secret_key: {{ s3_secretkey }}, insecure: true, signature_version2: false}}"
+{% else %}
+    - "--objstore.config={type: S3, config: {bucket: {{ s3_bucket }}, endpoint: s3.amazonaws.com, region: ap-northeast-2}}"
+{% endif %}
+    - "--reloader.config-file=/etc/config/prometheus.yml"
+    - "--reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yml"
+    - "--reloader.rule-dir=/etc/config/"
+    env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    ports:
+    - name: grpc
+      containerPort: 10901
+      protocol: TCP
+    - name: http
+      containerPort: 10902
+      protocol: TCP
+    volumeMounts:
+    - name: storage-volume
+      mountPath: /data
+    - name: config-volume
+      mountPath: /etc/config
+      readOnly: false
+    - name: prometheus-config-shared
+      mountPath: /etc/prometheus-shared/
+      readOnly: false
+  configPath: /etc/prometheus-shared/prometheus.yml
+  extraVolumes:
+  - name: prometheus-config-shared
+    emptyDir: {}
+  extraVolumeMounts:
+  - name: prometheus-config-shared
+    mountPath: /etc/prometheus-shared/
+configmapReload:
+  prometheus:
+    enabled: false
+{% endif %}
+extraScrapeConfigs: |
+  {{ lookup('file', 'scrape.yml') | indent(2) }}
+{% if external_url is defined or alertmanager_hosts is defined %}
+serverFiles:
+  prometheus.yml:
+    rule_files:
+    - /conf/rules/*_alerts.yml
+    - /conf/rules/*_rules.yml
+{% endif %}

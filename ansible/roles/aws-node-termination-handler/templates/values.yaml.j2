@@ -1,0 +1,6 @@
+image:
+  repository: public.ecr.aws/aws-ec2/aws-node-termination-handler
+webhookURL: "{{ slack_url }}"
+enablePrometheusServer: true
+podMonitor:
+  create: true

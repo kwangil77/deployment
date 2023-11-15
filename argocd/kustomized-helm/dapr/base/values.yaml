@@ -1,0 +1,14 @@
+dapr:
+  global:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    registry: docker.io/daprio
+    ha:
+      enabled: true
+  dapr_config:
+    dapr_config_chart_included: false
+  dapr_dashboard:
+    image:
+      registry: docker.io/daprio

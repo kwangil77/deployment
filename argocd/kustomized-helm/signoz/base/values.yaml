@@ -1,0 +1,135 @@
+signoz:
+  clickhouse:
+    enabled: false
+  queryService:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image:
+      registry: docker.io
+    initContainers:
+      init:
+        enabled: true
+        image:
+          registry: docker.io/library
+  frontend:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image:
+      registry: docker.io
+    initContainers:
+      init:
+        enabled: true
+        image:
+          registry: docker.io/library
+  alertmanager:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image:
+      registry: docker.io
+    initContainers:
+      init:
+        enabled: true
+        image:
+          registry: docker.io/library
+  otelCollector:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image:
+      registry: docker.io
+    initContainers:
+      init:
+        enabled: true
+        image:
+          registry: docker.io/library
+  otelCollectorMetrics:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image:
+      registry: docker.io
+    initContainers:
+      init:
+        enabled: true
+        image:
+          registry: docker.io/library
+  k8s-infra:
+    otelAgent:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-service
+        performance_type: standard
+      image:
+        registry: docker.io
+    otelDeployment:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+      image:
+        registry: docker.io
+clickhouse:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  global:
+    imageRegistry: docker.io
+  keeper:
+    enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  zookeeper:
+    enabled: false

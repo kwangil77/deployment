@@ -1,0 +1,377 @@
+sentry:
+  images:
+    sentry:
+      repository: docker.io/getsentry/sentry
+    snuba:
+      repository: docker.io/getsentry/snuba
+    relay:
+      repository: docker.io/getsentry/relay
+    symbolicator:
+      repository: docker.io/getsentry/symbolicator
+  serviceAccount:
+    enabled: true
+  relay:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  sentry:
+    web:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    worker:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    ingestConsumer:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    ingestMetricsConsumerPerf:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    ingestMetricsConsumerRh:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    billingMetricsConsumer:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    cron:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    subscriptionConsumerEvents:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    subscriptionConsumerTransactions:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    postProcessForward:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    cleanup:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+  snuba:
+    api:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    consumer:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    outcomesConsumer:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    replacer:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    subscriptionConsumerEvents:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    subscriptionConsumerTransactions:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    sessionsConsumer:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    transactionsConsumer:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    cleanupErrors:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    cleanupTransactions:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+  hooks:
+    clickhouseInit:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    dbCheck:
+      image:
+        repository: docker.io/subfuzion/netcat
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    dbInit:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+    snubaInit:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+  symbolicator:
+    enabled: true
+    api:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        team: devops
+        service: devops-infra
+        performance_type: memory
+      tolerations:
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+  nginx:
+    global:
+      imageRegistry: docker.io
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations: |
+      - key: performance_type
+        operator: Equal
+        value: mem
+        effect: NoSchedule
+  clickhouse:
+    enabled: false
+  zookeeper:
+    enabled: false
+  kafka:
+    enabled: false
+  redis:
+    enabled: false
+  postgresql:
+    enabled: false
+  rabbitmq:
+    enabled: false
+  metrics:
+    enabled: true
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    image:
+      repository: docker.io/prom/statsd-exporter
+    serviceMonitor:
+      enabled: true
+clickhouse:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  global:
+    imageRegistry: docker.io
+  keeper:
+    enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  zookeeper:
+    enabled: false

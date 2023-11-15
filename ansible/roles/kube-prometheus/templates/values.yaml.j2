@@ -1,0 +1,225 @@
+fullnameOverride: prometheus
+defaultRules:
+  rules:
+    kubeControllerManager: false
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+prometheusOperator:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  admissionWebhooks:
+    patch:
+      image:
+        registry: k8s.gcr.io
+  image:
+    registry: quay.io
+  prometheusConfigReloader:
+    image:
+      registry: quay.io
+  thanosImage:
+    registry: quay.io
+{% if alertmanager_host is defined %}
+alertmanager:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+{% if certificate_arn is defined %}
+  service:
+    type: NodePort
+{% endif %}
+  ingress:
+    enabled: true
+    annotations:
+{% if certificate_arn is defined %}
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=prometheus-alertmanager,Security_level=moderate,Environment={{ env }}"
+      alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+    hosts:
+    - "{{ alertmanager_host }}"
+    paths:
+    - "/"
+    pathType: Prefix
+  alertmanagerSpec:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    replicas: 3
+    image:
+      registry: quay.io
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+    externalUrl: "https://{{ alertmanager_host }}"
+    configMaps:
+      global:
+        resolve_timeout: 1m
+        slack_api_url: "{{ slack_url }}"
+      route:
+        receiver: slack-notifications
+        group_by:
+        - alertname
+        - app
+        routes: []
+      receivers:
+      - name: slack-notifications
+        slack_configs:
+        - channel: "{{ slack_channel }}"
+          send_resolved: true
+          username: alertmanager
+          icon_emoji: ":prometheus:"
+{% else %}
+alertmanager:
+  enabled: false
+{% endif %}
+grafana:
+  enabled: false
+kubeStateMetrics:
+  enabled: false
+nodeExporter:
+  enabled: false
+kubelet:
+  serviceMonitor:
+    metricRelabelings:
+    - action: replace
+      sourceLabels:
+      - node
+      targetLabel: instance
+{% if server_host is defined %}
+prometheus:
+{% if certificate_arn is defined %}
+  service:
+    type: NodePort
+{% endif %}
+  ingress:
+    enabled: true
+    annotations:
+{% if certificate_arn is defined %}
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=prometheus-server,Security_level=moderate,Environment={{ env }}"
+      alb.ingress.kubernetes.io/healthcheck-path: /graph
+      alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+    hosts:
+    - "{{ server_host }}"
+    paths:
+    - "/"
+    pathType: Prefix
+  prometheusSpec:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    replicas: 3
+    image:
+      registry: quay.io
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+    enableFeatures:
+    - exemplar-storage
+    enableRemoteWriteReceiver: true
+    additionalScrapeConfigsSecret:
+      enabled: true
+      name: prometheus-scrape-secret
+      key: scrape.yml
+    externalLabels:
+      cluster: "{{ cluster_arn.split('/')[1] }}"
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+{% if remote_read_url is defined %}
+    remoteRead:
+    - url: "{{ remote_read_url }}"
+{% endif %}
+{% if remote_write_url is defined %}
+    remoteWrite:
+    - url: "{{ remote_write_url }}"
+      sendExemplars: true
+{% endif %}
+{% if alertmanager_hosts is defined %}
+    additionalAlertManagerConfigs:
+    - static_configs:
+      - targets: {{ alertmanager_hosts }}
+{% endif %}
+{% if s3_bucket is defined %}
+    disableCompaction: true
+    thanos:  
+      objectStorageConfig:
+        secretName: thanos-objstore-secret
+        secretKey: objstore.yml
+  thanosService:
+    enabled: true
+{% if certificate_arn is defined %}
+    type: NodePort
+{% endif %}
+    annotations:
+{% if certificate_arn is defined %}
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=prometheus-thanos,Security_level=moderate,Environment={{ env }}"
+      alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+    hosts:
+    - "{{ thanos_host }}"
+    paths:
+    - "/"
+    pathType: Prefix
+  thanosServiceMonitor:
+    enabled: true
+  thanosIngress:
+    enabled: true
+{% endif %}
+{% endif %}

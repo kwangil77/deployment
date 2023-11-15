@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-web
+  labels:
+    app: simple-web
+spec:
+  selector:
+    app: simple-web
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+  type: NodePort

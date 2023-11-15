@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: dependency-track-apiserver
+  labels:
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/instance: dependency-track
+    app.kubernetes.io/name: dependency-track
+spec:
+  podMetricsEndpoints:
+  - port: api
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: backend
+      app.kubernetes.io/instance: dependency-track
+      app.kubernetes.io/name: dependency-track
+  namespaceSelector:
+    any: true

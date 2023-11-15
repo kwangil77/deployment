@@ -1,0 +1,29 @@
+sonarqube:
+  fullnameOverride: sonarqube
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=sonarqube,Security_level=moderate,Environment=dev"
+      alb.ingress.kubernetes.io/healthcheck-path: /api/system/status
+      alb.ingress.kubernetes.io/security-groups: sg-...
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      # nginx.ingress.kubernetes.io/proxy-body-size: '0'
+    hosts:
+    - name: "sonarqube.example.io"
+      path: "/"
+      pathType: Prefix
+  service:
+    type: NodePort
+  persistence:
+    enabled: true
+    storageClass: null
+    size: 8Gi
+  jdbcOverwrite:
+    jdbcUrl: "jdbc:postgresql://....ap-northeast-2.rds.amazonaws.com/sonar"
+    jdbcPassword: <path:kv/data/sonarqube/postgresql#password>
+  monitoringPasscode: <path:kv/data/sonarqube/monitoring#passcode>

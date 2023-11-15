@@ -1,0 +1,29 @@
+argo-events:
+  createAggregateRoles: true
+  global:
+    image:
+      registry: quay.io/argoproj/argo-events
+      tag: v1.8.1
+  configs:
+    jetstream:
+      versions:
+      - version: latest
+        natsImage: docker.io/library/nats:latest
+        metricsExporterImage: docker.io/natsio/prometheus-nats-exporter:latest
+        configReloaderImage: docker.io/natsio/nats-server-config-reloader:latest
+        startCommand: /nats-server
+  controller:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  webhook:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard

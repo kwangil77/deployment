@@ -1,0 +1,10 @@
+argocd-image-updater:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  replicaCount: 1
+  image:
+    repository: quay.io/argoprojlabs/argocd-image-updater
+    tag: v0.12.2

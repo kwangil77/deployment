@@ -1,0 +1,22 @@
+---
+- name: Add flagger chart repo
+  kubernetes.core.helm_repository:
+    name: flagger
+    repo_url: https://flagger.app
+
+- name: Install flagger-loadtester
+  kubernetes.core.helm:
+    name: flagger-loadtester
+    state: present
+    chart_version: 0.22.0
+    chart_ref: flagger/loadtester
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

@@ -1,0 +1,14 @@
+boundary:
+  image:
+    repository: docker.io/hashicorp/boundary
+    tag: "0.10.3"
+  controller:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  worker:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard

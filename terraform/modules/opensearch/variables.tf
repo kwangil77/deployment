@@ -1,0 +1,13 @@
+variable "domain_name" {}
+variable "engine_version" {}
+variable "ebs_volume_size" {}
+variable "cluster_instance_type" {}
+variable "cluster_instance_count" {}
+variable "dedicated_master_count" {}
+variable "team" {}
+variable "server" {}
+variable "service" {}
+variable "security_level" {}
+variable "environment" {}
+variable "profile" {}
+variable "part" {}

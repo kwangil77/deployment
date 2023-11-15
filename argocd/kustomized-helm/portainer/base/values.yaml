@@ -1,0 +1,8 @@
+portainer:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: docker.io/portainer/portainer-ce
+    tag: "2.16.2"

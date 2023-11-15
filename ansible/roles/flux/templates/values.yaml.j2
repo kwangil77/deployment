@@ -1,0 +1,49 @@
+cli:
+  image: ghcr.io/fluxcd/flux-cli
+  tag: "v0.27.0"
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+helmcontroller:
+  image: ghcr.io/fluxcd/helm-controller
+  tag: "v0.17.0"
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+imageautomationcontroller:
+  image: ghcr.io/fluxcd/image-automation-controller
+  tag: "v0.20.0"
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+imagereflectorcontroller:
+  image: ghcr.io/fluxcd/image-reflector-controller
+  tag: "v0.16.0"
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+kustomizecontroller:
+  image: ghcr.io/fluxcd/kustomize-controller
+  tag: "v0.21.0"
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+notificationcontroller:
+  image: ghcr.io/fluxcd/notification-controller
+  tag: "v0.22.0"
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+sourcecontroller:
+  image: ghcr.io/fluxcd/source-controller
+  tag: "v0.21.2"
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard

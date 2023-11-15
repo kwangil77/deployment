@@ -1,0 +1,23 @@
+keycloak:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  global:
+    imageRegistry: docker.io
+  proxy: edge
+  auth:
+    adminUser: admin
+  extraEnvVars:
+  - name: QUARKUS_HTTP_LIMITS_MAX_INITIAL_LINE_LENGTH
+    value: '8192'
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  postgresql:
+    enabled: false
+  externalDatabase:
+    user: keycloak
+    database: keycloak

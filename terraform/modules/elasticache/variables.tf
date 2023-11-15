@@ -1,0 +1,15 @@
+variable "cluster_id" {}
+variable "engine" {}
+variable "node_type" {}
+variable "num_cache_nodes" {}
+variable "engine_version" {}
+variable "port" {}
+variable "parameter_group" {}
+variable "family" {}
+variable "team" {}
+variable "server" {}
+variable "service" {}
+variable "security_level" {}
+variable "environment" {}
+variable "profile" {}
+variable "part" {}

@@ -1,0 +1,22 @@
+---
+- name: Add sealed-secrets chart repo
+  kubernetes.core.helm_repository:
+    name: sealed-secrets
+    repo_url: https://bitnami-labs.github.io/sealed-secrets
+
+- name: Install sealed-secrets
+  kubernetes.core.helm:
+    name: sealed-secrets
+    state: present
+    chart_version: 2.1.2
+    chart_ref: sealed-secrets/sealed-secrets
+    namespace: "{{ release_namespace }}"
+    # create_namespace: true
+    update_repo_cache: true
+    kubeconfig: "{{ playbook_dir }}/inventory/config"
+    kube_context: "{{ cluster_arn }}"
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+  register: output
+
+- debug:
+    var: output

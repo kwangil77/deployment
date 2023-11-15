@@ -1,0 +1,11 @@
+nodeSelector:
+  kubernetes.io/arch: amd64
+  team: devops
+  service: devops-infra
+  performance_type: standard
+service:
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Team=devops,Server=etc,Service=istio-gateway,Security_level=moderate,Environment={{ env }}"

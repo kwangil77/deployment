@@ -1,0 +1,27 @@
+tempo-distributed:
+  fullnameOverride: tempo
+  gateway:
+    replicas: 2
+  ingester:
+    replicas: 4
+  metricsGenerator:
+    config:
+      storage:
+        remote_write:
+        - url: "http://vminsert-vmcluster.observability:8480/insert/0/prometheus/api/v1/write"
+          send_exemplars: true
+  distributor:
+    replicas: 3
+  querier:
+    replicas: 2
+  storage:
+    trace:
+      backend: s3
+      s3:
+        bucket: example-dev-tempo-bucket
+        endpoint: minio-hl.management:9000
+        access_key: <path:kv/data/minio/secret#access-key>
+        secret_key: <path:kv/data/minio/secret#secret-key>
+        insecure: true
+        # endpoint: "s3.amazonaws.com"
+        # region: ap-northeast-2

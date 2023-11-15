@@ -1,0 +1,302 @@
+image:
+  repository: quay.io/cortexproject/cortex
+  tag: "v1.15.3"
+nginx:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  image:
+    repository: docker.io/library/nginx
+{% if certificate_arn is defined %}
+  service:
+    type: NodePort
+{% endif %}
+  serviceMonitor:
+    enabled: true
+{% if server_host is defined %}
+ingress:
+  enabled: true
+  annotations:
+{% if certificate_arn is defined %}
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: "{{ certificate_arn }}"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=cortex-nginx,Security_level=moderate,Environment={{ env }}"
+    alb.ingress.kubernetes.io/healthcheck-path: /healthz
+    alb.ingress.kubernetes.io/security-groups: "{{ security_group_id }}"
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+{% else %}
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+{% endif %}
+  hosts:
+  - host: "{{ server_host }}"
+    paths:
+    - "/"
+{% endif %}
+config:
+  limits:
+    max_global_series_per_metric: 500000
+    max_label_names_per_series: 300
+    ingestion_rate: 250000
+    accept_ha_samples: true
+    ha_replica_label: prometheus_replica
+  storage:
+    aws:
+      bucketnames: "{{ s3_bucket }}"
+{% if s3_endpoint is defined %}
+      s3forcepathstyle: true
+      endpoint: "{{ s3_endpoint }}"
+      access_key_id: "{{ s3_accesskey }}"
+      secret_access_key: "{{ s3_secretkey }}"
+      insecure: true
+{% else %}
+      endpoint: "s3.amazonaws.com"
+      region: ap-northeast-2
+{% endif %}
+  blocks_storage:
+    s3:
+      bucket_name: "{{ s3_bucket }}"
+{% if s3_endpoint is defined %}
+      endpoint: "{{ s3_endpoint }}"
+      access_key_id: "{{ s3_accesskey }}"
+      secret_access_key: "{{ s3_secretkey }}"
+      insecure: true
+{% else %}
+      endpoint: "s3.amazonaws.com"
+      region: ap-northeast-2
+{% endif %}
+    tsdb:
+      max_exemplars: 100000
+  distributor:
+    ha_tracker:
+      enable_ha_tracker: true
+      kvstore:
+        store: etcd
+        etcd:
+          endpoints:
+          - "{{ etcd_url }}"
+  alertmanager:
+    enable_api: true
+    external_url: "https://{{ server_host }}/api/prom/alertmanager"
+    storage:
+      type: s3
+      s3:
+        bucketnames: "{{ s3_ruler_bucket }}"
+{% if s3_ruler_endpoint is defined %}
+        s3forcepathstyle: true
+        endpoint: "{{ s3_ruler_endpoint }}"
+        access_key_id: "{{ s3_ruler_accesskey }}"
+        secret_access_key: "{{ s3_ruler_secretkey }}"
+        insecure: true
+{% else %}
+        endpoint: "s3.amazonaws.com"
+        region: ap-northeast-2
+{% endif %}
+  alertmanager_storage:
+    s3:
+      bucket_name: "{{ s3_ruler_bucket }}"
+{% if s3_ruler_endpoint is defined %}
+      endpoint: "{{ s3_ruler_endpoint }}"
+      access_key_id: "{{ s3_ruler_accesskey }}"
+      secret_access_key: "{{ s3_ruler_secretkey }}"
+      insecure: true
+{% else %}
+      endpoint: "s3.amazonaws.com"
+      region: ap-northeast-2
+{% endif %}
+  ruler:
+    storage:
+      type: s3
+      s3:
+        bucketnames: "{{ s3_ruler_bucket }}"
+{% if s3_ruler_endpoint is defined %}
+        s3forcepathstyle: true
+        endpoint: "{{ s3_ruler_endpoint }}"
+        access_key_id: "{{ s3_ruler_accesskey }}"
+        secret_access_key: "{{ s3_ruler_secretkey }}"
+        insecure: true
+{% else %}
+        endpoint: "s3.amazonaws.com"
+        region: ap-northeast-2
+{% endif %}
+  ruler_storage:
+    s3:
+      bucket_name: "{{ s3_ruler_bucket }}"
+{% if s3_ruler_endpoint is defined %}
+      endpoint: "{{ s3_ruler_endpoint }}"
+      access_key_id: "{{ s3_ruler_accesskey }}"
+      secret_access_key: "{{ s3_ruler_secretkey }}"
+      insecure: true
+{% else %}
+      endpoint: "s3.amazonaws.com"
+      region: ap-northeast-2
+{% endif %}
+alertmanager:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  statefulSet:
+    enabled: true
+  extraVolumes:
+  - name: tmp
+    emptyDir: {}
+  extraVolumeMounts:
+  - name: tmp
+    mountPath: /tmp
+  persistentVolume:
+    enabled: true
+  startupProbe:
+    failureThreshold: 30
+  serviceMonitor:
+    enabled: true
+distributor:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  resources:
+    limits: null
+  serviceMonitor:
+    enabled: true
+ingester:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  statefulSet:
+    enabled: true
+  persistentVolume:
+    enabled: true
+    size: 20Gi
+  resources:
+    limits: null
+  serviceMonitor:
+    enabled: true
+ruler:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  startupProbe:
+    failureThreshold: 30
+  serviceMonitor:
+    enabled: true
+querier:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  startupProbe:
+    failureThreshold: 30
+  serviceMonitor:
+    enabled: true
+query_frontend:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  serviceMonitor:
+    enabled: true
+query_scheduler:
+  enabled: true
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  serviceMonitor:
+    enabled: true
+overrides_exporter:
+  enabled: true
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  serviceMonitor:
+    enabled: true
+store_gateway:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  persistentVolume:
+    enabled: true
+    size: 10Gi
+  resources:
+    limits: null
+  serviceMonitor:
+    enabled: true
+compactor:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  persistentVolume:
+    enabled: true
+    size: 20Gi
+  resources:
+    limits: null
+  serviceMonitor:
+    enabled: true
