@@ -1,0 +1,24 @@
+opentelemetry-ebpf:
+  image:
+    registry: docker.io/otel
+  kernelCollector:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  cloudCollector:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  k8sCollector:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  reducer:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
