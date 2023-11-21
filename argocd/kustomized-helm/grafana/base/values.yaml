@@ -7,7 +7,7 @@ grafana:
     image:
       registry: docker.io
   image:
-    tag: "10.2.1"
+    tag: "10.2.2"
   grafana.ini:
     remote_cache:
       type: redis
