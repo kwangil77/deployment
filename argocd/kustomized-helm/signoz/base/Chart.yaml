@@ -6,7 +6,7 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: signoz
-  version: 0.30.4
+  version: 0.30.5
   repository: https://charts.signoz.io
 - name: clickhouse
   version: 4.1.7
