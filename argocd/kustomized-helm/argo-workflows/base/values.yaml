@@ -1,6 +1,6 @@
 argo-workflows:
   images:
-    tag: "v3.5.1"
+    tag: "v3.5.2"
   workflow:
     serviceAccount:
       create: true
