@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: kyverno
     state: present
-    chart_version: 3.1.0
+    chart_version: 3.1.1
     chart_ref: kyverno/kyverno
     namespace: "{{ release_namespace }}"
     # create_namespace: true

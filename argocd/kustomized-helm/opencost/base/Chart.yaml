@@ -6,5 +6,5 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: opencost
-  version: 1.26.2
+  version: 1.26.3
   repository: https://opencost.github.io/opencost-helm-chart
