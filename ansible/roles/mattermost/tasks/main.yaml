@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: mattermost
     state: present
-    chart_version: 6.6.43
+    chart_version: 6.6.44
     chart_ref: mattermost/mattermost-team-edition
     namespace: "{{ release_namespace }}"
     # create_namespace: true
