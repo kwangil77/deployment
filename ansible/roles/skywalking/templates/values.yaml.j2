@@ -7,7 +7,7 @@ oap:
     performance_type: standard
   image:
     repository: skywalking.docker.scarf.sh/apache/skywalking-oap-server
-    tag: "9.6.0"
+    tag: "9.7.0"
   storageType: elasticsearch
   env:
     SW_STORAGE_ES_HTTP_PROTOCOL: https
@@ -18,7 +18,7 @@ ui:
     performance_type: standard
   image:
     repository: skywalking.docker.scarf.sh/apache/skywalking-ui
-    tag: "9.6.0"
+    tag: "9.7.0"
 {% if certificate_arn is defined %}
   service:
     type: NodePort
