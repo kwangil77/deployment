@@ -1,7 +1,7 @@
 oncall:
   image:
     repository: docker.io/grafana/oncall
-    tag: "v1.3.68"
+    tag: "v1.3.70"
   engine:
     nodeSelector:
       team: devops
