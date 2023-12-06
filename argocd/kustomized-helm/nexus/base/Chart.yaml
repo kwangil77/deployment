@@ -6,5 +6,5 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: nexus-repository-manager
-  version: 62.0.0
+  version: 63.0.0
   repository: https://kwangil77.github.io/helm-charts
