@@ -220,6 +220,10 @@ spec:
                   from the original deployment name if the original deployment still
                   exists.
                 type: string
+              force_drop_db:
+                default: false
+                description: Force drop the database before restoring. USE WITH CAUTION!
+                type: boolean
               image_pull_policy:
                 default: IfNotPresent
                 description: The image pull policy
@@ -2560,8 +2564,8 @@ spec:
           periodSeconds: 10
         resources:
           limits:
-            cpu: 2000m
-            memory: 4096Mi
+            cpu: 1500m
+            memory: 960Mi
           requests:
             cpu: 50m
             memory: 32Mi
