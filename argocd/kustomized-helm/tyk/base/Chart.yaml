@@ -6,6 +6,6 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: tyk-oss
-  version: 1.1.0
+  version: 1.2.0
   # repository: https://helm.tyk.io/public/helm/charts
   repository: https://kwangil77.github.io/helm-charts
