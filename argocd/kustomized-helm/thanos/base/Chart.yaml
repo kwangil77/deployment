@@ -6,7 +6,7 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: thanos
-  version: 12.16.2
+  version: 12.17.0
   repository: https://charts.bitnami.com/bitnami
 - name: memcached
   version: 6.7.1
