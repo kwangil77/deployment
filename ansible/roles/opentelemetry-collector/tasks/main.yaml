@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: opentelemetry-collector
     state: present
-    chart_version: 0.76.0
+    chart_version: 0.77.0
     chart_ref: opentelemetry/opentelemetry-collector
     namespace: "{{ release_namespace }}"
     # create_namespace: true
