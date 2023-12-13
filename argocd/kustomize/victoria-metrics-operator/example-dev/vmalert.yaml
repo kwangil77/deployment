@@ -15,7 +15,7 @@ spec:
   replicaCount: 1
   image:
     repository: docker.io/victoriametrics/vmalert
-    tag: v1.95.1
+    tag: v1.96.0
   datasource:
     url: "http://vmselect-vmcluster.observability:8481/select/0/prometheus"
   notifier:

@@ -18,7 +18,7 @@ spec:
     replicaCount: 2
     image:
       repository: docker.io/victoriametrics/vmstorage
-      tag: v1.95.1-cluster
+      tag: v1.96.0-cluster
     storageDataPath: "/vm-data"
     storage:
       volumeClaimTemplate:
@@ -40,7 +40,7 @@ spec:
     replicaCount: 2
     image:
       repository: docker.io/victoriametrics/vmselect
-      tag: v1.95.1-cluster
+      tag: v1.96.0-cluster
     cacheMountPath: "/select-cache"
     resources:
       limits:
@@ -71,4 +71,4 @@ spec:
     replicaCount: 2
     image:
       repository: docker.io/victoriametrics/vminsert
-      tag: v1.95.1-cluster
+      tag: v1.96.0-cluster
