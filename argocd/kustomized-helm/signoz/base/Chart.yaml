@@ -9,5 +9,5 @@ dependencies:
   version: 0.31.1
   repository: https://charts.signoz.io
 - name: clickhouse
-  version: 4.1.9
+  version: 4.1.12
   repository: https://charts.bitnami.com/bitnami
