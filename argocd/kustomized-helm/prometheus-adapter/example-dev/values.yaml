@@ -1,0 +1,5 @@
+prometheus-adapter:
+  prometheus:
+    url: http://vmselect-vmcluster.observability
+    port: 8481
+    path: /select/0/prometheus

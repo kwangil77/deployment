@@ -1,0 +1,4 @@
+{
+  "release_name": "prometheus-adapter",
+  "release_namespace": "observability"
+}

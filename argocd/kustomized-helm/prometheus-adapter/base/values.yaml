@@ -1,0 +1,7 @@
+prometheus-adapter:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: registry.k8s.io/prometheus-adapter/prometheus-adapter
