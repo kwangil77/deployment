@@ -42,7 +42,7 @@ persistence:
 nginx:
   image:
     repository: goharbor/nginx-photon
-    tag: "v2.9.1"
+    tag: "v2.10.0"
 portal:
   nodeSelector:
     kubernetes.io/arch: amd64
@@ -56,7 +56,7 @@ portal:
     effect: NoSchedule
   image:
     repository: goharbor/harbor-portal
-    tag: "v2.9.1"
+    tag: "v2.10.0"
 core:
   nodeSelector:
     kubernetes.io/arch: amd64
@@ -70,7 +70,7 @@ core:
     effect: NoSchedule
   image:
     repository: goharbor/harbor-core
-    tag: "v2.9.1"
+    tag: "v2.10.0"
 jobservice:
   nodeSelector:
     kubernetes.io/arch: amd64
@@ -84,7 +84,7 @@ jobservice:
     effect: NoSchedule
   image:
     repository: goharbor/harbor-jobservice
-    tag: "v2.9.1"
+    tag: "v2.10.0"
 registry:
   nodeSelector:
     kubernetes.io/arch: amd64
@@ -99,11 +99,11 @@ registry:
   registry:
     image:
       repository: goharbor/registry-photon
-      tag: "v2.9.1"
+      tag: "v2.10.0"
   controller:
     image:
       repository: goharbor/harbor-registryctl
-      tag: "v2.9.1"
+      tag: "v2.10.0"
 chartmuseum:
   enabled: false
 trivy:
@@ -119,7 +119,7 @@ trivy:
     effect: NoSchedule
   image:
     repository: goharbor/trivy-adapter-photon
-    tag: "v2.9.1"
+    tag: "v2.10.0"
   replicas: 3
   timeout: 10m0s
   resources:
@@ -158,7 +158,7 @@ exporter:
     effect: NoSchedule
   image:
     repository: goharbor/harbor-exporter
-    tag: "v2.9.1"
+    tag: "v2.10.0"
 metrics:
   enabled: true
   serviceMonitor:
