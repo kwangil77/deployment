@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: harbor
     state: present
-    chart_version: 1.13.1
+    chart_version: 1.14.0
     chart_ref: harbor/harbor
     namespace: "{{ release_namespace }}"
     # create_namespace: true

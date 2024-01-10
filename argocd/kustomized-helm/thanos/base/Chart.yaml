@@ -9,17 +9,17 @@ dependencies:
   version: 12.20.1
   repository: https://charts.bitnami.com/bitnami
 - name: memcached
-  version: 6.7.1
+  version: 6.7.2
   repository: https://charts.bitnami.com/bitnami
   alias: memcached-frontend
   condition: memcached-frontend.enabled
 - name: memcached
-  version: 6.7.1
+  version: 6.7.2
   repository: https://charts.bitnami.com/bitnami
   alias: memcached-index
   condition: memcached-index.enabled
 - name: memcached
-  version: 6.7.1
+  version: 6.7.2
   repository: https://charts.bitnami.com/bitnami
   alias: memcached-bucket
   condition: memcached-bucket.enabled
