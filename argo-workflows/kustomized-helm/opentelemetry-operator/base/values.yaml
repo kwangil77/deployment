@@ -6,10 +6,10 @@ opentelemetry-operator:
   manager:
     image:
       repository: ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator
-      tag: v0.90.0
+      tag: v0.91.0
     collectorImage:
       repository: docker.io/otel/opentelemetry-collector-contrib
-      tag: "0.91.0"
+      tag: "0.92.0"
     serviceMonitor:
       enabled: true
   kubeRBACProxy:
