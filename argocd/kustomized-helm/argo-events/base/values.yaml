@@ -3,7 +3,7 @@ argo-events:
   global:
     image:
       registry: quay.io/argoproj/argo-events
-      tag: v1.8.1
+      tag: v1.9.0
   configs:
     jetstream:
       versions:
