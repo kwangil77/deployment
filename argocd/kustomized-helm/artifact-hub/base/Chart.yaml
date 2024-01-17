@@ -6,6 +6,6 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: artifact-hub
-  version: 1.16.0
+  version: 1.17.0
   # repository: https://artifacthub.github.io/helm-charts
   repository: https://kwangil77.github.io/helm-charts
