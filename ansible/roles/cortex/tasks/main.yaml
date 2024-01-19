@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: cortex
     state: present
-    chart_version: 2.1.0
+    chart_version: 2.2.0
     chart_ref: cortex/cortex
     namespace: "{{ release_namespace }}"
     # create_namespace: true
