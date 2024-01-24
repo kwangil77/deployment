@@ -9,5 +9,5 @@ dependencies:
   version: 17.10.1
   repository: https://kwangil77.github.io/helm-charts
 - name: clickhouse
-  version: 4.3.1
+  version: 4.4.0
   repository: https://charts.bitnami.com/bitnami

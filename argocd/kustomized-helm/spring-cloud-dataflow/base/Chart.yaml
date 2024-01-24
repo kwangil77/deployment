@@ -6,5 +6,5 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: spring-cloud-dataflow
-  version: 26.3.1
+  version: 26.4.0
   repository: https://charts.bitnami.com/bitnami
