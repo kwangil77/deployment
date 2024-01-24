@@ -23,7 +23,7 @@ sonarqube:
   #   args:
   #   - |
   #     mkdir -p /opt/sonarqube/extensions/plugins
-  #     wget -O /opt/sonarqube/extensions/plugins/sonarqube-community-branch-plugin.jar https://....s3.ap-northeast-2.amazonaws.com/.../sonarqube-community-branch-plugin-1.14.0.jar
+  #     wget -O /opt/sonarqube/extensions/plugins/sonarqube-community-branch-plugin.jar https://....s3.ap-northeast-2.amazonaws.com/.../sonarqube-community-branch-plugin-1.18.0.jar
   #   volumeMounts:
   #   - mountPath: /opt/sonarqube/extensions
   #     name: sonarqube
