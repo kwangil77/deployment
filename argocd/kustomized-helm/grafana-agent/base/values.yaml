@@ -3,6 +3,6 @@ grafana-agent:
     image:
       registry: docker.io
   image:
-    tag: v0.39.0
+    tag: v0.39.1
   agent:
     enableReporting: false
