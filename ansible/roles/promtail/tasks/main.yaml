@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: promtail
     state: present
-    chart_version: 6.15.4
+    chart_version: 6.15.5
     chart_ref: grafana/promtail
     namespace: "{{ release_namespace }}"
     # create_namespace: true
