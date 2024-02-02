@@ -16,7 +16,7 @@ kong:
   ingressController:
     image:
       repository: docker.io/kong/kubernetes-ingress-controller
-      tag: "2.12.1"
+      tag: "3.0.2"
     admissionWebhook:
       enabled: true
   serviceMonitor:
