@@ -6,20 +6,20 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: thanos
-  version: 12.23.0
+  version: 12.23.1
   repository: https://charts.bitnami.com/bitnami
 - name: memcached
-  version: 6.9.3
+  version: 6.10.1
   repository: https://charts.bitnami.com/bitnami
   alias: memcached-frontend
   condition: memcached-frontend.enabled
 - name: memcached
-  version: 6.9.3
+  version: 6.10.1
   repository: https://charts.bitnami.com/bitnami
   alias: memcached-index
   condition: memcached-index.enabled
 - name: memcached
-  version: 6.9.3
+  version: 6.10.1
   repository: https://charts.bitnami.com/bitnami
   alias: memcached-bucket
   condition: memcached-bucket.enabled
