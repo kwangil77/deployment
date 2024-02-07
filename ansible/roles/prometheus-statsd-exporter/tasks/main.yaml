@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: prometheus-statsd-exporter
     state: present
-    chart_version: 0.12.0
+    chart_version: 0.13.0
     chart_ref: prometheus-community/prometheus-statsd-exporter
     namespace: "{{ release_namespace }}"
     # create_namespace: true
