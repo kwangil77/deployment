@@ -6,6 +6,6 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: operator
-  version: 5.0.10
+  version: 5.0.12
   # repository: https://operator.min.io
   repository: https://kwangil77.github.io/helm-charts
