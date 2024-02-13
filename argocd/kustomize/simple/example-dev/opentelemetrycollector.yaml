@@ -4,7 +4,7 @@ metadata:
   name: opentelemetry
 spec:
   mode: sidecar
-  image: docker.io/otel/opentelemetry-collector-contrib:0.93.0
+  image: docker.io/otel/opentelemetry-collector-contrib:0.94.0
   env:
   - name: APP_NAME
     valueFrom:
