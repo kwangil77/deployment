@@ -9,5 +9,5 @@ dependencies:
   version: 1.8.2
   repository: https://backstage.github.io/charts
 - name: oauth2-proxy
-  version: 6.23.1
+  version: 6.24.1
   repository: https://oauth2-proxy.github.io/manifests
