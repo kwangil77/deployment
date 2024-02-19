@@ -9,5 +9,5 @@ dependencies:
   version: 1.6.1
   repository: https://charts.uptrace.dev
 - name: clickhouse
-  version: 5.0.2
+  version: 5.1.0
   repository: https://charts.bitnami.com/bitnami
