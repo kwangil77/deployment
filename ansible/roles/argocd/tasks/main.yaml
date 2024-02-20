@@ -33,7 +33,7 @@
   kubernetes.core.helm:
     name: argo-cd
     state: present
-    chart_version: 6.2.0
+    chart_version: 6.2.1
     chart_ref: argo/argo-cd
     namespace: "{{ release_namespace }}"
     # create_namespace: true
