@@ -6,8 +6,8 @@ version: 0.0.1
 appVersion: 0.0.1
 dependencies:
 - name: signoz
-  version: 0.35.2
+  version: 0.35.3
   repository: https://charts.signoz.io
 - name: clickhouse
-  version: 5.2.0
+  version: 5.2.2
   repository: https://charts.bitnami.com/bitnami
