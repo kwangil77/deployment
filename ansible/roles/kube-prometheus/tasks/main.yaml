@@ -55,7 +55,7 @@
   kubernetes.core.helm:
     name: prometheus
     state: present
-    chart_version: 56.9.0
+    chart_version: 56.12.0
     chart_ref: prometheus-community/kube-prometheus-stack
     namespace: "{{ release_namespace }}"
     # create_namespace: true
