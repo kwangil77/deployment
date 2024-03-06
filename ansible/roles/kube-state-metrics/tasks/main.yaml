@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: kube-state-metrics
     state: present
-    chart_version: 5.16.2
+    chart_version: 5.16.4
     chart_ref: prometheus-community/kube-state-metrics
     namespace: "{{ release_namespace }}"
     # create_namespace: true
