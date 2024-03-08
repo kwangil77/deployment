@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: mimir
     state: present
-    chart_version: 5.2.1
+    chart_version: 5.2.2
     chart_ref: grafana/mimir-distributed
     namespace: "{{ release_namespace }}"
     # create_namespace: true
