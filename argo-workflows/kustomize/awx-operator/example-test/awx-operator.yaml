@@ -194,6 +194,11 @@ spec:
               external_ipaddress:
                 description: External IP address to use for the Mesh Ingress.
                 type: string
+              image_pull_secrets:
+                description: Image pull secrets for Mesh Ingress containers.
+                items:
+                  type: string
+                type: array
               ingress_annotations:
                 description: Annotations to add to the Ingress Controller
                 type: string
@@ -893,7 +898,7 @@ spec:
                     type: object
                 type: object
               extra_settings:
-                description: Extra settings to specify for the API
+                description: Extra settings to specify for AWX
                 items:
                   properties:
                     setting:
@@ -1047,6 +1052,10 @@ spec:
                 type: string
               ldap_password_secret:
                 description: Secret where can be found the LDAP bind password
+                type: string
+              loadbalancer_class:
+                default: ""
+                description: Class of LoadBalancer to use
                 type: string
               loadbalancer_ip:
                 default: ""
@@ -1763,6 +1772,30 @@ spec:
               task_extra_volume_mounts:
                 description: Specify volume mounts to be added to Task container
                 type: string
+              task_liveness_failure_threshold:
+                default: 3
+                description: Number of consecutive failure events to identify failure
+                  of task pod
+                format: int32
+                type: integer
+              task_liveness_initial_delay:
+                default: 5
+                description: Initial delay before starting liveness checks on task
+                  pod
+                format: int32
+                type: integer
+              task_liveness_period:
+                default: 0
+                description: Time period in seconds between each liveness check for
+                  the task pod
+                format: int32
+                type: integer
+              task_liveness_timeout:
+                default: 1
+                description: Number of seconds to wait for a probe response from task
+                  pod
+                format: int32
+                type: integer
               task_node_selector:
                 description: nodeSelector for the task pods
                 type: string
@@ -1770,6 +1803,30 @@ spec:
                 default: false
                 description: If a privileged security context should be enabled
                 type: boolean
+              task_readiness_failure_threshold:
+                default: 3
+                description: Number of consecutive failure events to identify failure
+                  of task pod
+                format: int32
+                type: integer
+              task_readiness_initial_delay:
+                default: 20
+                description: Initial delay before starting readiness checks on task
+                  pod
+                format: int32
+                type: integer
+              task_readiness_period:
+                default: 0
+                description: Time period in seconds between each readiness check for
+                  the task pod
+                format: int32
+                type: integer
+              task_readiness_timeout:
+                default: 1
+                description: Number of seconds to wait for a probe response from task
+                  pod
+                format: int32
+                type: integer
               task_replicas:
                 description: Number of task instance replicas
                 format: int32
@@ -2206,9 +2263,57 @@ spec:
               web_extra_volume_mounts:
                 description: Specify volume mounts to be added to the Web container
                 type: string
+              web_liveness_failure_threshold:
+                default: 3
+                description: Number of consecutive failure events to identify failure
+                  of web pod
+                format: int32
+                type: integer
+              web_liveness_initial_delay:
+                default: 5
+                description: Initial delay before starting liveness checks on web
+                  pod
+                format: int32
+                type: integer
+              web_liveness_period:
+                default: 0
+                description: Time period in seconds between each liveness check for
+                  the web pod
+                format: int32
+                type: integer
+              web_liveness_timeout:
+                default: 1
+                description: Number of seconds to wait for a probe response from web
+                  pod
+                format: int32
+                type: integer
               web_node_selector:
                 description: nodeSelector for the web pods
                 type: string
+              web_readiness_failure_threshold:
+                default: 3
+                description: Number of consecutive failure events to identify failure
+                  of web pod
+                format: int32
+                type: integer
+              web_readiness_initial_delay:
+                default: 20
+                description: Initial delay before starting readiness checks on web
+                  pod
+                format: int32
+                type: integer
+              web_readiness_period:
+                default: 0
+                description: Time period in seconds between each readiness check for
+                  the web pod
+                format: int32
+                type: integer
+              web_readiness_timeout:
+                default: 1
+                description: Number of seconds to wait for a probe response from web
+                  pod
+                format: int32
+                type: integer
               web_replicas:
                 description: Number of web instance replicas
                 format: int32
@@ -2384,6 +2489,17 @@ rules:
   - list
   - create
   - delete
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - list
+  - create
   - patch
   - update
   - watch
