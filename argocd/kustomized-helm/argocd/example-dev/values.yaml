@@ -19,6 +19,8 @@ argo-cd:
           redirectURIs:
           - https://argo-workflows.example.io/oauth2/callback
           secretEnv: ARGO_WORKFLOWS_SSO_CLIENT_SECRET
+    params:
+      redis.db: "0"
     rbac:
       policy.csv: |
         g, G_DevOps, role:admin
@@ -59,18 +61,7 @@ argo-cd:
       argocdServerAdminPassword: <path:kv/data/awx/admin#password | base64encode>
       extra:
         oidc.keycloak.clientSecret: <path:kv/data/argocd/oidc#client-secret>
-  controller:
-    extraArgs:
-    - --redis
-    - redis://....cache.amazonaws.com:6379
-    - --redisdb
-    - "0"
   server:
-    extraArgs:
-    - --redis
-    - redis://....cache.amazonaws.com:6379
-    - --redisdb
-    - "0"
     service:
       type: NodePort
       annotations:
@@ -97,11 +88,6 @@ argo-cd:
       enabled: true
       isAWSALB: true
   repoServer:
-    extraArgs:
-    - --redis
-    - redis://....cache.amazonaws.com:6379
-    - --redisdb
-    - "0"
     extraContainers:
     - name: avp-kustomize
       image: ghcr.io/kwangil77/helm
@@ -176,6 +162,8 @@ argo-cd:
     #     enabled: true
   redis:
     enabled: false
+  externalRedis:
+    host: ....cache.amazonaws.com
   notifications:
     argocdUrl: "https://argocd.example.io"
     secret:
