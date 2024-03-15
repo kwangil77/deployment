@@ -1,0 +1,4 @@
+{
+  "release_name": "prometheus-statsd-exporter",
+  "release_namespace": "observability"
+}

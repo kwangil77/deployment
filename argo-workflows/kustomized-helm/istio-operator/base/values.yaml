@@ -1,0 +1,8 @@
+istio-operator:
+  defaults:
+    hub: gcr.io/istio-testing
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: standard

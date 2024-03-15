@@ -1,0 +1,4 @@
+{
+  "release_name": "metrics-server",
+  "release_namespace": "kube-system"
+}

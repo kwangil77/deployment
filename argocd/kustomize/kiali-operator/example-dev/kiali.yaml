@@ -1,0 +1,66 @@
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  name: kiali
+spec:
+  deployment:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    service_type: NodePort
+    ingress:
+      enabled: true
+      override_yaml:
+        metadata:
+          annotations:
+            kubernetes.io/ingress.class: alb
+            alb.ingress.kubernetes.io/scheme: internal
+            alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+            alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=kiali,Security_level=moderate,Environment=dev"
+            alb.ingress.kubernetes.io/healthcheck-path: /kiali
+            alb.ingress.kubernetes.io/security-groups: sg-...
+            alb.ingress.kubernetes.io/ssl-redirect: '443'
+            # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+        spec:
+          rules:
+          - host: "kiali.example.io"
+            http:
+              paths:
+              - path: "/"
+                pathType: Prefix
+                backend:
+                  service:
+                    name: kiali
+                    port:
+                      number: 20001
+  istio_namespace: istio-system
+  external_services:
+    istio:
+      component_status:
+        components:
+        - app_label: istiod
+          is_core: true
+          is_proxy: false
+          namespace: ""
+        - app_label: istio-ingressgateway
+          is_core: true
+          is_proxy: true
+          namespace: management
+        - app_label: istio-egressgateway
+          is_core: false
+          is_proxy: true
+          namespace: management
+        enabled: true
+    tracing:
+      enabled: false
+    grafana:
+      auth:
+        type: basic
+        username: admin
+        password: <path:kv/data/grafana/admin#password>
+      url: "https://grafana.example.io"
+      in_cluster_url: "https://grafana.example.io"
+    prometheus:
+      url: "http://vmselect-vmcluster.observability:8481/select/0/prometheus"

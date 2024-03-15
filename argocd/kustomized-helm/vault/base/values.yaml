@@ -1,0 +1,30 @@
+vault:
+  global:
+    serverTelemetry:
+      prometheusOperator: true
+  injector:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    metrics:
+      enabled: true
+    image:
+      repository: "docker.io/hashicorp/vault-k8s"
+      tag: "1.4.0"
+    agentImage:
+      repository: "docker.io/hashicorp/vault"
+      tag: "1.15.6"
+  server:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      repository: "docker.io/hashicorp/vault"
+      tag: "1.15.6"
+  csi:
+    enabled: true
+    image:
+      repository: "docker.io/hashicorp/vault-csi-provider"
+      tag: "1.4.1"

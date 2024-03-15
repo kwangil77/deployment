@@ -1,0 +1,10 @@
+apiVersion: v2
+name: istio-operator
+description: A Helm chart for Kubernetes
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+dependencies:
+- name: istio-operator
+  version: 1.0.0
+  repository: https://kwangil77.github.io/helm-charts

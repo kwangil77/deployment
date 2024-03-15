@@ -1,0 +1,2 @@
+prometheus-statsd-exporter:
+  namespaceOverride: observability

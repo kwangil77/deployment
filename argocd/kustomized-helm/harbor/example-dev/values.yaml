@@ -1,0 +1,45 @@
+harbor:
+  expose:
+    tls:
+      enabled: false
+    ingress:
+      hosts:
+        core: "harbor.example.io"
+      controller: alb
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=harbor,Security_level=moderate,Environment=dev"
+        alb.ingress.kubernetes.io/security-groups: sg-...
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+  externalURL: "https://harbor.example.io"
+  harborAdminPassword: <path:kv/data/harbor/admin#password>
+  persistence:
+    imageChartStorage:
+      type: s3
+      s3:
+        bucket: example-dev-harbor-bucket
+        regionendpoint: "http://minio-hl.management:9000"
+        accesskey: <path:kv/data/minio/secret#access-key>
+        secretkey: <path:kv/data/minio/secret#secret-key>
+        region: "ap-northeast-2"
+        rootdirectory: /harbor-data
+  database:
+    type: external
+    external:
+      host: ....ap-northeast-2.rds.amazonaws.com
+      port: 5432
+      username: harbor
+      password: <path:kv/data/harbor/postgresql#password>
+      coreDatabase: harbor
+  redis:
+    type: external
+    external:
+      addr: redis://....cache.amazonaws.com:6379
+      coreDatabaseIndex: "0"
+      jobserviceDatabaseIndex: "1"
+      registryDatabaseIndex: "2"
+      chartmuseumDatabaseIndex: "3"
+      trivyAdapterIndex: "4"

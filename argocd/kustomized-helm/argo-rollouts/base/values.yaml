@@ -1,0 +1,22 @@
+argo-rollouts:
+  controller:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      registry: quay.io
+      tag: "v1.6.6"
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  dashboard:
+    enabled: true
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+    image:
+      registry: quay.io
+      tag: "v1.6.3"

@@ -1,8 +1,0 @@
-image:
-  registry: docker.io
-config:
-  lokiAddress: "{{ loki_url }}"
-extraArgs:
-- -client.external-labels=cluster={{ cluster_arn.split('/')[1] }}
-serviceMonitor:
-  enabled: true

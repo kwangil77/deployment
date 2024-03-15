@@ -1,0 +1,43 @@
+kube-prometheus-stack:
+  fullnameOverride: prometheus
+  defaultRules:
+    rules:
+      kubeControllerManager: false
+      kubeSchedulerAlerting: false
+      kubeSchedulerRecording: false
+  prometheusOperator:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+    admissionWebhooks:
+      patch:
+        image:
+          registry: k8s.gcr.io
+    image:
+      registry: quay.io
+    prometheusConfigReloader:
+      image:
+        registry: quay.io
+    thanosImage:
+      registry: quay.io
+  alertmanager:
+    enabled: false
+  grafana:
+    enabled: false
+  kubeStateMetrics:
+    enabled: false
+  nodeExporter:
+    enabled: false
+  kubelet:
+    serviceMonitor:
+      metricRelabelings:
+      - action: replace
+        sourceLabels:
+        - node
+        targetLabel: instance

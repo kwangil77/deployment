@@ -1,0 +1,4 @@
+{
+  "release_name": "istio",
+  "release_namespace": "istio-system"
+}

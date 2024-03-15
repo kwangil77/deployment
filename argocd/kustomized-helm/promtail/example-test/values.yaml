@@ -1,0 +1,5 @@
+promtail:
+  config:
+    lokiAddress: "http://loki-distributor.observability:3100"
+  extraArgs:
+  - -client.external-labels=cluster=example-dev

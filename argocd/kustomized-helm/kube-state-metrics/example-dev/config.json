@@ -1,0 +1,4 @@
+{
+  "release_name": "kube-state-metrics",
+  "release_namespace": "observability"
+}

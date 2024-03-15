@@ -1,0 +1,228 @@
+mimir-ditributed:
+  nginx:
+    replicas: 2
+    service:
+      type: NodePort
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:...:certificate/...
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: "Team=devops,Server=etc,Service=tempo,Security_level=moderate,Environment=dev"
+        alb.ingress.kubernetes.io/healthcheck-path: /ready
+        alb.ingress.kubernetes.io/security-groups: sg-...
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+        # nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      hosts:
+      - host: "mimir.example.io"
+        paths:
+        - path: /
+          pathType: Prefix
+      tls: []
+  mimir:
+    config: |
+      usage_stats:
+        installation_mode: helm
+      activity_tracker:
+        filepath: /active-query-tracker/activity.log
+      alertmanager:
+        data_dir: /data
+        enable_api: true
+        external_url: "https://mimir.example.io/alertmanager"
+        {{- if .Values.alertmanager.zoneAwareReplication.enabled }}
+        sharding_ring:
+          zone_awareness_enabled: true
+        {{- end }}
+        {{- if .Values.alertmanager.fallbackConfig }}
+        fallback_config_file: /configs/alertmanager_fallback_config.yaml
+        {{- end }}
+      alertmanager_storage:
+        backend: s3
+        s3:
+          bucket_name: example-dev-mimir-ruler-bucket
+          endpoint: minio-hl.management:9000
+          access_key_id: <path:kv/data/minio/secret#access-key>
+          secret_access_key: <path:kv/data/minio/secret#secret-key>
+          insecure: true
+          # endpoint: "s3.amazonaws.com"
+          # region: ap-northeast-2
+      compactor:
+        compaction_interval: 30m
+        deletion_delay: 2h
+        max_closing_blocks_concurrency: 2
+        max_opening_blocks_concurrency: 4
+        symbols_flushers_concurrency: 4
+        data_dir: "/data"
+        sharding_ring:
+          wait_stability_min_duration: 1m
+      distributor:
+        ha_tracker:
+          enable_ha_tracker: true
+          kvstore:
+            store: etcd
+            etcd:
+              endpoints:
+              - "{{ etcd_url }}"
+      frontend:
+        align_queries_with_step: true
+        log_queries_longer_than: 10s
+        parallelize_shardable_queries: true
+        {{- if index .Values "results-cache" "enabled" }}
+        results_cache:
+          backend: memcached
+          memcached:
+            timeout: 500ms
+            addresses: {{ include "mimir.resultsCacheAddress" . }}
+            max_item_size: {{ mul (index .Values "results-cache").maxItemMemory 1024 1024 }}
+        cache_results: true
+        query_sharding_target_series_per_shard: 2500
+        {{- end }}
+        {{- if .Values.query_scheduler.enabled }}
+        scheduler_address: {{ template "mimir.fullname" . }}-query-scheduler-headless.{{ .Release.Namespace }}.svc:{{ include "mimir.serverGrpcListenPort" . }}
+        {{- end }}
+      frontend_worker:
+        grpc_client_config:
+          max_send_msg_size: 419430400
+        {{- if .Values.query_scheduler.enabled }}
+        scheduler_address: {{ template "mimir.fullname" . }}-query-scheduler-headless.{{ .Release.Namespace }}.svc:{{ include "mimir.serverGrpcListenPort" . }}
+        {{- else }}
+        frontend_address: {{ template "mimir.fullname" . }}-query-frontend-headless.{{ .Release.Namespace }}.svc:{{ include "mimir.serverGrpcListenPort" . }}
+        {{- end }}
+      ingester:
+        ring:
+          final_sleep: 0s
+          num_tokens: 512
+          tokens_file_path: /data/tokens
+          unregister_on_shutdown: false
+          {{- if .Values.ingester.zoneAwareReplication.enabled }}
+          zone_awareness_enabled: true
+          {{- end }}
+      ingester_client:
+        grpc_client_config:
+          max_recv_msg_size: 104857600
+          max_send_msg_size: 104857600
+      limits:
+        max_total_query_length: 12000h
+        max_query_parallelism: 240
+        max_cache_freshness: 10m
+        max_global_series_per_user: 30000000
+        max_global_series_per_metric: 500000
+        max_global_exemplars_per_user: 100000
+        max_label_names_per_series: 300
+        ruler_max_rules_per_rule_group: 40
+        ingestion_rate: 250000
+        accept_ha_samples: true
+        ha_replica_label: prometheus_replica
+      memberlist:
+        abort_if_cluster_join_fails: false
+        compression_enabled: false
+        join_members:
+        - dns+{{ include "mimir.fullname" . }}-gossip-ring.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:{{ include "mimir.memberlistBindPort" . }}
+      querier:
+        max_concurrent: 16
+      query_scheduler:
+        max_outstanding_requests_per_tenant: 1600
+      ruler:
+        alertmanager_url: dnssrvnoa+http://_http-metrics._tcp.{{ template "mimir.fullname" . }}-alertmanager-headless.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}/alertmanager
+        enable_api: true
+        rule_path: /data
+      runtime_config:
+        file: /var/{{ include "mimir.name" . }}/runtime.yaml
+      blocks_storage:
+        backend: s3
+        bucket_store:
+          {{- if index .Values "chunks-cache" "enabled" }}
+          chunks_cache:
+            backend: memcached
+            memcached:
+              addresses: {{ include "mimir.chunksCacheAddress" . }}
+              max_item_size: {{ mul (index .Values "chunks-cache").maxItemMemory 1024 1024 }}
+              timeout: 450ms
+          {{- end }}
+          {{- if index .Values "index-cache" "enabled" }}
+          index_cache:
+            backend: memcached
+            memcached:
+              addresses: {{ include "mimir.indexCacheAddress" . }}
+              max_item_size: {{ mul (index .Values "index-cache").maxItemMemory 1024 1024 }}
+          {{- end }}
+          {{- if index .Values "metadata-cache" "enabled" }}
+          metadata_cache:
+            backend: memcached
+            memcached:
+              addresses: {{ include "mimir.metadataCacheAddress" . }}
+              max_item_size: {{ mul (index .Values "metadata-cache").maxItemMemory 1024 1024 }}
+          {{- end }}
+          sync_dir: /data/tsdb-sync
+        s3:
+          bucket_name: example-dev-mimir-bucket
+          endpoint: minio-hl.management:9000
+          access_key_id: <path:kv/data/minio/secret#access-key>
+          secret_access_key: <path:kv/data/minio/secret#secret-key>
+          insecure: true
+          # endpoint: "s3.amazonaws.com"
+          # region: ap-northeast-2
+        tsdb:
+          dir: /data/tsdb
+      ruler_storage:
+        backend: s3
+        s3:
+          bucket_name: example-dev-mimir-ruler-bucket
+          endpoint: minio-hl.management:9000
+          access_key_id: <path:kv/data/minio/secret#access-key>
+          secret_access_key: <path:kv/data/minio/secret#secret-key>
+          insecure: true
+          # endpoint: "s3.amazonaws.com"
+          # region: ap-northeast-2
+        {{- if index .Values "metadata-cache" "enabled" }}
+        cache:
+          backend: memcached
+          memcached:
+            addresses: {{ include "mimir.metadataCacheAddress" . }}
+            max_item_size: {{ mul (index .Values "metadata-cache").maxItemMemory 1024 1024 }}
+        {{- end }}
+      server:
+        grpc_server_max_concurrent_streams: 1000
+        grpc_server_max_connection_age: 2m
+        grpc_server_max_connection_age_grace: 5m
+        grpc_server_max_connection_idle: 1m
+        grpc_server_max_recv_msg_size: 104857600
+        grpc_server_max_send_msg_size: 104857600
+      store_gateway:
+        sharding_ring:
+          wait_stability_min_duration: 1m
+          {{- if .Values.store_gateway.zoneAwareReplication.enabled }}
+          kvstore:
+            prefix: multi-zone/
+          {{- end }}
+          tokens_file_path: /data/tokens
+          {{- if .Values.store_gateway.zoneAwareReplication.enabled }}
+          zone_awareness_enabled: true
+          {{- end }}
+  alertmanager:
+    replicas: 3
+    readinessProbe:
+      failureThreshold: 30
+  distributor:
+    replicas: 3
+  ingester:
+    replicas: 4
+    persistentVolume:
+      size: 50Gi
+  ruler:
+    readinessProbe:
+      failureThreshold: 30
+  querier:
+    replicas: 2
+    readinessProbe:
+      failureThreshold: 30
+  query_scheduler:
+    replicas: 2
+  store_gateway:
+    persistentVolume:
+      size: 50Gi
+  compactor:
+    persistentVolume:
+      size: 50Gi

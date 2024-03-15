@@ -1,0 +1,11 @@
+prometheus-statsd-exporter:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  image:
+    repository: docker.io/prom/statsd-exporter
+  serviceMonitor:
+    enabled: true
+    namespace: ""
+    honorLabels: true
