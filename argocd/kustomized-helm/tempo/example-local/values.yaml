@@ -1,11 +1,15 @@
 tempo-distributed:
   fullnameOverride: tempo
   ingester:
+    replicas: 1
     extraArgs:
     - -config.expand-env=true
     extraEnvFrom:
     - secretRef:
         name: tempo-env
+    config:
+      replication_factor: 1
+  metricsGenerator:
     config:
       processor:
         service_graphs:
