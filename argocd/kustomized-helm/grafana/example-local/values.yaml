@@ -10,4 +10,5 @@ grafana:
       enabled: true
       org_name: Example
       org_role: Viewer
-  adminPassword: <path:kv/data/grafana/admin#password>
+  admin:
+    existingSecret: grafana
