@@ -18,6 +18,9 @@ tempo-distributed:
     extraEnvFrom:
     - secretRef:
         name: tempo-env
+    config:
+      compaction:
+        block_retention: 24h
   querier:
     extraArgs:
     - -config.expand-env: true
