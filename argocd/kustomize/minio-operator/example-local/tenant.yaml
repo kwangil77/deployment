@@ -1,0 +1,27 @@
+apiVersion: minio.min.io/v2
+kind: Tenant
+metadata:
+  name: minio
+spec:
+  image: quay.io/minio/minio:RELEASE.2022-12-02T19-19-22Z
+  configuration:
+    name: minio-secret
+  pools:
+  - servers: 1
+    name: pool
+    volumesPerServer: 1
+    volumeClaimTemplate:
+      metadata:
+        name: data
+      spec:
+        storageClassName: null
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 30Gi
+  mountPath: /export
+  subPath: /data
+  requestAutoCert: false
+  podManagementPolicy: Parallel
+  prometheusOperator: false
