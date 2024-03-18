@@ -1,3 +1,4 @@
 pgadmin4:
+  existingSecret: pgadmin-pgadmin4
   env:
     email: admin@example.com
