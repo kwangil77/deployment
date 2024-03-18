@@ -11,7 +11,7 @@ nexus-repository-manager:
     effect: NoSchedule
   image:
     repository: docker.io/sonatype/nexus3
-    tag: "3.63.0"
+    tag: "3.66.0"
   nexus:
     env:
     - name: install4jAddVmParams
