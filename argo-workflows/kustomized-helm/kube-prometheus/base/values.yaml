@@ -1,10 +1,5 @@
 kube-prometheus-stack:
   fullnameOverride: prometheus
-  defaultRules:
-    rules:
-      kubeControllerManager: false
-      kubeSchedulerAlerting: false
-      kubeSchedulerRecording: false
   prometheusOperator:
     admissionWebhooks:
       patch:

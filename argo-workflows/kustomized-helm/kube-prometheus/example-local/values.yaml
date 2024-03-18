@@ -1,0 +1,5 @@
+kube-prometheus-stack:
+  defaultRules:
+    disabled: 
+      Watchdog: false
+      KubeProxyDown: false

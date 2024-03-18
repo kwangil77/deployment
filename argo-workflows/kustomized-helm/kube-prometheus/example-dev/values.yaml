@@ -1,4 +1,9 @@
 kube-prometheus-stack:
+  defaultRules:
+    rules:
+      kubeControllerManager: false
+      kubeSchedulerAlerting: false
+      kubeSchedulerRecording: false
   prometheusOperator:
     nodeSelector:
       team: devops
