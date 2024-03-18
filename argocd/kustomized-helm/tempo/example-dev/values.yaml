@@ -1,19 +1,84 @@
 tempo-distributed:
   fullnameOverride: tempo
   gateway:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 2
   ingester:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 4
   metricsGenerator:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     config:
       storage:
         remote_write:
         - url: "http://vminsert-vmcluster.observability:8480/insert/0/prometheus/api/v1/write"
           send_exemplars: true
   distributor:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 3
+  compactor:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
   querier:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 2
+  queryFrontend:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
   storage:
     trace:
       backend: s3
@@ -25,3 +90,13 @@ tempo-distributed:
         insecure: true
         # endpoint: "s3.amazonaws.com"
         # region: ap-northeast-2
+  memcached:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule

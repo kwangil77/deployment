@@ -1,0 +1,37 @@
+tempo-distributed:
+  fullnameOverride: tempo
+  ingester:
+    replicas: 1
+    extraArgs:
+    - -config.expand-env: true
+    extraEnvFrom:
+    - secretRef:
+        name: tempo-env
+    config:
+      storage:
+        remote_write:
+        - url: "http://prometheus-prometheus.observability:9090/api/v1/write"
+          send_exemplars: true
+  compactor:
+    extraArgs:
+    - -config.expand-env: true
+    extraEnvFrom:
+    - secretRef:
+        name: tempo-env
+  querier:
+    extraArgs:
+    - -config.expand-env: true
+    extraEnvFrom:
+    - secretRef:
+        name: tempo-env
+  storage:
+    trace:
+      backend: s3
+      s3:
+        bucket: example-dev-tempo-bucket
+        endpoint: minio-hl.management:9000
+        access_key: ${MINIO_ACCESS_KEY}
+        secret_key: ${MINIO_SECRET_KEY}
+        insecure: true
+        # endpoint: "s3.amazonaws.com"
+        # region: ap-northeast-2
