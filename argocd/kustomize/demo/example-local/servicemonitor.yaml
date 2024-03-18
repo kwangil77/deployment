@@ -1,0 +1,36 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: demo
+  labels:
+    app: demo
+spec:
+  endpoints:
+  - port: metrics
+    interval: 15s
+    path: /metrics
+    relabelings:
+    - action: replace
+      replacement: $1
+      regex: ([^:]+):.+
+      sourceLabels:
+      - __address__
+      targetLabel: instance
+    - sourceLabels:
+      - __meta_kubernetes_pod_label_app
+      targetLabel: app
+    metricRelabelings:
+    - action: drop
+      regex: (/actuator/health|/actuator/prometheus)
+      sourceLabels:
+      - http_route
+    - action: drop
+      regex: (/actuator/health|/actuator/prometheus)
+      sourceLabels:
+      - uri
+    - action: labeldrop
+      regex: (otel_scope_name|otel_scope_version|job)
+    # - action: keep
+    #   sourceLabels: [__name__]
+    #   # regex: istio_agent_.*|istiod_.*|istio_build|citadel_.*|galley_.*|pilot_[^p].*|envoy_.*
+    #   regex: http_server_requests_.*|logback_events_total|resilience4j_circuitbreaker_.*|jvm_.*
