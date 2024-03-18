@@ -1,0 +1,112 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: opentelemetry
+spec:
+  mode: deployment
+  image: docker.io/otel/opentelemetry-collector-contrib:0.96.0
+  managementState: managed
+  config: |-
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+      otlp/spanmetrics:
+        protocols:
+          grpc:
+            endpoint: localhost:12345
+      zipkin:
+        endpoint: 0.0.0.0:9411
+    processors:
+      batch: {}
+      memory_limiter:
+        check_interval: 5s
+        limit_percentage: 80
+        spike_limit_percentage: 25
+      filter/traces:
+        traces:
+          span:
+          - 'attributes["user_agent"] == "ELB-HealthChecker/2.0"'
+          - 'attributes["http.route"] == "/actuator/health"'
+          - 'attributes["http.route"] == "/actuator/health/liveness"'
+          - 'attributes["http.route"] == "/actuator/health/readiness"'
+          - 'attributes["db.operation"] == "PING"'
+          - 'name == "operationhandler.handle"'
+          - 'name == "info"'
+          - 'name == "hello"'
+          - 'name == "quit"'
+          - 'name == "readoperationhandler.handle"'
+      attributes/traces:
+        actions:
+        - key: environment
+          action: upsert
+          value: local
+        - key: X-SampleRatio
+          action: upsert
+          value: 0.1
+      resource/traces:
+        attributes:
+        - key: service.name
+          from_attribute: service_name
+          action: upsert
+      k8sattributes:
+        auth_type: serviceAccount
+        passthrough: false
+        extract:
+          labels:
+          - tag_name: service_name
+            key: app
+            from: pod
+    extensions:
+      health_check: {}
+      memory_ballast:
+        size_in_percentage: 40
+    exporters:
+      logging: {}
+      otlp:
+        endpoint: tempo-distributor.observability:4317
+        tls:
+          insecure: true
+      prometheus:
+        endpoint: 0.0.0.0:9090
+        send_timestamps: true
+        enable_open_metrics: true
+        resource_to_telemetry_conversion:
+          enabled: true
+    service:
+      telemetry:
+        metrics:
+          address: 0.0.0.0:8888
+      extensions:
+      - health_check
+      - memory_ballast
+      pipelines:
+        metrics:
+          receivers:
+          - otlp
+          processors:
+          - memory_limiter
+          - batch
+          exporters:
+          - prometheus
+        metrics/spanmetrics:
+          receivers:
+          - otlp/spanmetrics
+          exporters:
+          - prometheus
+        traces:
+          receivers:
+          - otlp
+          - zipkin
+          processors:
+          - memory_limiter
+          - filter/traces
+          - k8sattributes
+          - resource/traces
+          - attributes/traces
+          - batch
+          exporters:
+          - otlp
