@@ -1,6 +1,6 @@
 prometheus-node-exporter:
   image:
-    repository: quay.io/prometheus/node-exporter
+    registry: quay.io
   prometheus:
     monitor:
       enabled: true
