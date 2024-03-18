@@ -5,6 +5,11 @@ metadata:
   labels:
     app: demo
 spec:
+  selector:
+    matchLabels:
+      app: demo
+  namespaceSelector:
+    any: true
   endpoints:
   - port: metrics
     interval: 15s
