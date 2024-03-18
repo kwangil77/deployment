@@ -15,3 +15,4 @@ helmCharts:
 - name: base
   namespace: observability
   releaseName: prometheus
+  valuesFile: ./values.yaml

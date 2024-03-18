@@ -6,15 +6,6 @@ kube-prometheus-stack:
       kubeSchedulerAlerting: false
       kubeSchedulerRecording: false
   prometheusOperator:
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
     admissionWebhooks:
       patch:
         image:
@@ -27,6 +18,8 @@ kube-prometheus-stack:
     thanosImage:
       registry: quay.io
   alertmanager:
+    enabled: false
+  prometheus:
     enabled: false
   grafana:
     enabled: false
