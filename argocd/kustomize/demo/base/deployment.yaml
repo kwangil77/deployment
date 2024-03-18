@@ -13,7 +13,7 @@ spec:
       labels:
         app: demo
       annotations:
-        instrumentation.opentelemetry.io/inject-java: "true"
+        instrumentation.opentelemetry.io/inject-java: 'true'
         instrumentation.opentelemetry.io/container-names: app
     spec:
       serviceAccountName: demo

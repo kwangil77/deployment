@@ -8,7 +8,7 @@ resources:
 - rollout.yaml
 - secret.yaml
 - servicemonitor.yaml
-commonLabels:
+labels:
   environment: dev
   service: simple-server
 buildMetadata:

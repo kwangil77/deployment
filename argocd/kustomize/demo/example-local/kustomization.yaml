@@ -5,7 +5,7 @@ resources:
 - externalsecret.yaml
 - instrumentation.yaml
 - servicemonitor.yaml
-commonLabels:
+labels:
   environment: local
 buildMetadata:
 - managedByLabel
