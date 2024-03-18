@@ -94,7 +94,7 @@ spec:
           - zipkin
           processors:
           - memory_limiter
-          - filter/traces
+          # - filter/traces
           - k8sattributes
           - resource/traces
           - attributes/traces
