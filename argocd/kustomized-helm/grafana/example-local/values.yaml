@@ -1,7 +1,6 @@
 grafana:
+  envFromSecret: grafana-env
   grafana.ini:
-    database:
-      url: "postgres://grafana:@postgresql-hl.development:5432/grafana"
     remote_cache:
       connstr: "addr=redis-headless.development:6379,pool_size=10,db=1"
     users:
