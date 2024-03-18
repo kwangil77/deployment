@@ -15,6 +15,5 @@ grafana:
       enabled: false
     feature_toggles:
       traceToMetrics: true
-      traceQLStreaming: true
   imageRenderer:
     enabled: true
