@@ -24,6 +24,12 @@ tempo-distributed:
     extraEnvFrom:
     - secretRef:
         name: tempo-env
+  queryFrontend:
+    extraArgs:
+    - -config.expand-env: true
+    extraEnvFrom:
+    - secretRef:
+        name: tempo-env
   storage:
     trace:
       backend: s3
