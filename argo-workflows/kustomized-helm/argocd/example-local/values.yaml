@@ -1,0 +1,95 @@
+argo-cd:
+  configs:
+    cm:
+      accounts.deploy: apiKey,login
+    params:
+      redis.db: "0"
+    cmp:
+      create: true
+      plugins:
+        avp-kustomize:
+          generate:
+            command:
+            - "sh"
+            - "-c"
+            - "kustomize build ."
+          discover:
+            find:
+              command:
+              - "sh"
+              - "-c"
+              - "find . -name kustomization.yaml | xargs -I {} grep -L helmCharts {}"
+        avp-kustomized-helm:
+          init:
+            command:
+            - "sh"
+            - "-c"
+            - "helm dependency build $ARGOCD_ENV_HELM_DIR"
+          generate:
+            command:
+            - "sh"
+            - "-c"
+            - "kustomize build . --enable-helm --load-restrictor=LoadRestrictionsNone"
+          discover:
+            find:
+              command:
+              - "sh"
+              - "-c"
+              - "find . -name kustomization.yaml | xargs -I {} grep helmCharts {}"
+    secret:
+      createSecret: false
+  repoServer:
+    extraContainers:
+    - name: avp-kustomize
+      image: docker.io/alpine/k8s:1.29.2
+      command:
+      - "/var/run/argocd/argocd-cmp-server"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+      volumeMounts:
+      - name: var-files
+        mountPath: /var/run/argocd
+      - name: plugins
+        mountPath: /home/argocd/cmp-server/plugins
+      - name: cmp-tmp
+        mountPath: /tmp
+      - name: argocd-cmp-cm
+        subPath: avp-kustomize.yaml
+        mountPath: /home/argocd/cmp-server/config/plugin.yaml
+    - name: avp-kustomized-helm
+      image: docker.io/alpine/k8s:1.29.2
+      command:
+      - "/var/run/argocd/argocd-cmp-server"
+      env:
+      - name: HELM_CACHE_HOME
+        value: /tmp
+      - name: HELM_CONFIG_HOME
+        value: /tmp
+      - name: HELM_DATA_HOME
+        value: /tmp
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+      volumeMounts:
+      - name: var-files
+        mountPath: /var/run/argocd
+      - name: plugins
+        mountPath: /home/argocd/cmp-server/plugins
+      - name: cmp-tmp
+        mountPath: /tmp
+      - name: argocd-cmp-cm
+        subPath: avp-kustomized-helm.yaml
+        mountPath: /home/argocd/cmp-server/config/plugin.yaml
+    volumes:
+    - name: cmp-tmp
+      emptyDir: {}
+    - name: argocd-cmp-cm
+      configMap:
+        name: argocd-cmp-cm
+  dex:
+    enabled: false
+  redis:
+    enabled: false
+  externalRedis:
+    host: redis-headless.development
