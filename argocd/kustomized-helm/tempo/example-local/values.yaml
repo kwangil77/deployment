@@ -10,6 +10,7 @@ tempo-distributed:
     config:
       replication_factor: 1
   metricsGenerator:
+    replicas: 0
     config:
       processor:
         service_graphs:
@@ -34,6 +35,8 @@ tempo-distributed:
         remote_write:
         - url: "http://prometheus-prometheus.observability:9090/api/v1/write"
           send_exemplars: true
+  distributor:
+    replicas: 0
   compactor:
     extraArgs:
     - -config.expand-env=true
