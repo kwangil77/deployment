@@ -16,7 +16,7 @@ spec:
           requests:
             storage: 10Gi
   exemplars: 
-    maxSize: 100000
+    maxSize: 10000
   enableFeatures:
   - exemplar-storage
   - native-histograms
