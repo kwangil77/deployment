@@ -1,5 +1,5 @@
 apiVersion: monitoring.coreos.com/v1
-kind: Prometheus
+kind: PrometheusAgent
 metadata:
   name: prometheus
   labels:
@@ -25,22 +25,12 @@ spec:
         resources:
           requests:
             storage: 10Gi
-  exemplars: 
-    maxSize: 100000
   enableFeatures:
   - exemplar-storage
   - native-histograms
   enableRemoteWriteReceiver: true
   prometheusExternalLabelName: ""
   replicaExternalLabelName: ""
-  additionalAlertManagerConfigs:
-    name: prometheus
-    key: alertmanager.yaml
-  additionalScrapeConfigs:
-    name: prometheus
-    key: scrape.yml
-  externalLabels:
-    cluster: example-dev
   portName: http-web
   securityContext:
     fsGroup: 2000
@@ -54,12 +44,7 @@ spec:
   podMonitorNamespaceSelector: {}
   probeSelector: {}
   probeNamespaceSelector: {}
-  ruleNamespaceSelector: {}
-  ruleSelector: {}
   remoteWrite:
-  - url: "http://vminsert-vmcluster.observability:8480/insert/0/prometheus/api/v1/write"
-    writeRelabelConfigs:
-    - action: labeldrop
-      regex: "prometheus_replica"
+  - url: "http://mimir-gateway.observability/api/v1/push"
     sendExemplars: true
   walCompression: true

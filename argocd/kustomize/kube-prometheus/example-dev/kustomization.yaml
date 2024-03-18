@@ -5,4 +5,5 @@ resources:
 - secret.yaml
 - service.yaml
 # - prometheus.yaml
+# - prometheusagent.yaml
 - alertmanager.yaml

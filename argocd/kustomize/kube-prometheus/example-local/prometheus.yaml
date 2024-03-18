@@ -5,17 +5,7 @@ metadata:
   labels:
     app: prometheus
 spec:
-  nodeSelector:
-    team: devops
-    service: devops-infra
-    performance_type: memory
-  tolerations:
-  - key: performance_type
-    operator: Equal
-    value: mem
-    effect: NoSchedule
-  replicas: 2
-  shards: 2
+  replicas: 1
   image: quay.io/prometheus/prometheus:v2.50.1
   storage:
     volumeClaimTemplate:
@@ -33,14 +23,6 @@ spec:
   enableRemoteWriteReceiver: true
   prometheusExternalLabelName: ""
   replicaExternalLabelName: ""
-  additionalAlertManagerConfigs:
-    name: prometheus
-    key: alertmanager.yaml
-  additionalScrapeConfigs:
-    name: prometheus
-    key: scrape.yml
-  externalLabels:
-    cluster: example-dev
   portName: http-web
   securityContext:
     fsGroup: 2000
@@ -57,9 +39,6 @@ spec:
   ruleNamespaceSelector: {}
   ruleSelector: {}
   remoteWrite:
-  - url: "http://vminsert-vmcluster.observability:8480/insert/0/prometheus/api/v1/write"
-    writeRelabelConfigs:
-    - action: labeldrop
-      regex: "prometheus_replica"
+  - url: "http://mimir-gateway.observability/api/v1/push"
     sendExemplars: true
   walCompression: true
