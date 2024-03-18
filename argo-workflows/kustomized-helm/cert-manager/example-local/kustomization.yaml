@@ -8,4 +8,3 @@ helmCharts:
 - name: base
   namespace: provisioning
   releaseName: cert-manager
-  valuesFile: ./values.yaml

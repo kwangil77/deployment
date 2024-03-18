@@ -2,10 +2,6 @@ cert-manager:
   global:
     leaderElection:
       namespace: provisioning
-  nodeSelector:
-    team: devops
-    service: devops-infra
-    performance_type: standard
   image:
     repository: quay.io/jetstack/cert-manager-controller
   prometheus:
@@ -13,23 +9,11 @@ cert-manager:
     servicemonitor:
       enabled: true
   webhook:
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: standard
     image:
       repository: quay.io/jetstack/cert-manager-webhook
   cainjector:
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: standard
     image:
       repository: quay.io/jetstack/cert-manager-cainjector
   startupapicheck:
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: standard
     image:
       repository: quay.io/jetstack/cert-manager-ctl

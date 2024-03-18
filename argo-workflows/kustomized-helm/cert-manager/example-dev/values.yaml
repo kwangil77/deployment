@@ -1,0 +1,20 @@
+cert-manager:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  webhook:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  cainjector:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
+  startupapicheck:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
