@@ -1,5 +1,6 @@
 kube-prometheus-stack:
   defaultRules:
+    rules:
+      kubeProxy: false
     disabled: 
       Watchdog: true
-      KubeProxyDown: true
