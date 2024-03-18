@@ -1,7 +1,6 @@
 tempo-distributed:
   fullnameOverride: tempo
   ingester:
-    replicas: 1
     extraArgs:
     - -config.expand-env=true
     extraEnvFrom:
