@@ -24,6 +24,7 @@ spec:
   prometheusExternalLabelName: ""
   replicaExternalLabelName: ""
   portName: http-web
+  retention: 24h
   securityContext:
     fsGroup: 2000
     runAsGroup: 2000
