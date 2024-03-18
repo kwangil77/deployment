@@ -3,7 +3,7 @@ tempo-distributed:
   ingester:
     replicas: 1
     extraArgs:
-    - -config.expand-env: true
+    - -config.expand-env=true
     extraEnvFrom:
     - secretRef:
         name: tempo-env
@@ -14,7 +14,7 @@ tempo-distributed:
           send_exemplars: true
   compactor:
     extraArgs:
-    - -config.expand-env: true
+    - -config.expand-env=true
     extraEnvFrom:
     - secretRef:
         name: tempo-env
@@ -23,13 +23,13 @@ tempo-distributed:
         block_retention: 24h
   querier:
     extraArgs:
-    - -config.expand-env: true
+    - -config.expand-env=true
     extraEnvFrom:
     - secretRef:
         name: tempo-env
   queryFrontend:
     extraArgs:
-    - -config.expand-env: true
+    - -config.expand-env=true
     extraEnvFrom:
     - secretRef:
         name: tempo-env
