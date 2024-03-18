@@ -39,7 +39,4 @@ spec:
   probeNamespaceSelector: {}
   ruleNamespaceSelector: {}
   ruleSelector: {}
-  remoteWrite:
-  - url: "http://mimir-gateway.observability/api/v1/push"
-    sendExemplars: true
   walCompression: true
