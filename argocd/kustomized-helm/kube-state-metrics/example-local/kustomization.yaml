@@ -6,4 +6,3 @@ helmCharts:
 - name: base
   namespace: observability
   releaseName: kube-state-metrics
-  valuesFile: ./values.yaml
