@@ -1,0 +1,5 @@
+opentelemetry-operator:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard

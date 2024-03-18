@@ -1,8 +1,4 @@
 opentelemetry-operator:
-  nodeSelector:
-    team: devops
-    service: devops-infra
-    performance_type: standard
   manager:
     image:
       repository: ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator

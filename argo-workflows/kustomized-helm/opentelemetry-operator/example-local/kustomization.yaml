@@ -11,4 +11,3 @@ helmCharts:
 - name: base
   namespace: observability
   releaseName: opentelemetry-operator
-  valuesFile: ./values.yaml
