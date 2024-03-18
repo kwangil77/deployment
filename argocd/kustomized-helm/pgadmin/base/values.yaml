@@ -1,9 +1,7 @@
 pgadmin4:
-  nodeSelector:
-    team: devops
-    service: devops-infra
-    performance_type: standard
   image:
     registry: docker.io
   serviceAccount:
     create: true
+  persistentVolume:
+    enabled: true

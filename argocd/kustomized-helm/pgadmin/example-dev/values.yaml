@@ -1,4 +1,8 @@
 pgadmin4:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
   service:
     type: NodePort
   ingress:
@@ -21,5 +25,3 @@ pgadmin4:
   env:
     email: admin@example.com
     password: <path:kv/data/pgadmin/admin#password>
-  persistentVolume:
-    enabled: true
