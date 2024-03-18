@@ -1,0 +1,13 @@
+grafana:
+  grafana.ini:
+    database:
+      url: "postgres://grafana:@postgresql-hl.development:5432/grafana"
+    remote_cache:
+      connstr: "addr=redis-headless.development:6379,pool_size=10,db=1"
+    users:
+      auto_assign_org_role: Editor
+    auth.anonymous:
+      enabled: true
+      org_name: Example
+      org_role: Viewer
+  adminPassword: <path:kv/data/grafana/admin#password>

@@ -1,8 +1,4 @@
 grafana:
-  nodeSelector:
-    team: devops
-    service: devops-infra
-    performance_type: standard
   global:
     image:
       registry: docker.io
@@ -11,14 +7,8 @@ grafana:
   grafana.ini:
     remote_cache:
       type: redis
-    users:
-      auto_assign_org_role: Editor
     auth:
       sigv4_auth_enabled: true
-    auth.anonymous:
-      enabled: true
-      org_name: Example
-      org_role: Viewer
     unified_alerting:
       enabled: true
     alerting:
@@ -26,15 +16,5 @@ grafana:
     feature_toggles:
       traceToMetrics: true
       traceQLStreaming: true
-    auth.generic_oauth:
-      enabled: true
-      name: Keycloak
-      allow_sign_up: true
-      scopes: openid,email,profile,groups
   imageRenderer:
     enabled: true
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: standard
