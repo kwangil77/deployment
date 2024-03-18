@@ -1,5 +1,14 @@
 vault:
+  injector:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
   server:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
     ingress:
       enabled: true
       annotations:

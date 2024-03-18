@@ -3,10 +3,6 @@ vault:
     serverTelemetry:
       prometheusOperator: true
   injector:
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: standard
     metrics:
       enabled: true
     image:
@@ -16,10 +12,6 @@ vault:
       repository: "docker.io/hashicorp/vault"
       tag: "1.15.6"
   server:
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: standard
     image:
       repository: "docker.io/hashicorp/vault"
       tag: "1.15.6"
