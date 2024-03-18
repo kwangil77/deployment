@@ -1,5 +1,14 @@
 operator:
+  operator:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
   console:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
     service:
       type: NodePort
     ingress:
