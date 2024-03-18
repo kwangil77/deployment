@@ -27,8 +27,6 @@ spec:
           span:
           - 'attributes["user_agent"] == "ELB-HealthChecker/2.0"'
           - 'attributes["http.route"] == "/actuator/health"'
-          - 'attributes["http.route"] == "/actuator/health/liveness"'
-          - 'attributes["http.route"] == "/actuator/health/readiness"'
           - 'attributes["db.operation"] == "PING"'
           - 'name == "operationhandler.handle"'
           - 'name == "info"'
@@ -94,7 +92,7 @@ spec:
           - zipkin
           processors:
           - memory_limiter
-          # - filter/traces
+          - filter/traces
           - k8sattributes
           - resource/traces
           - attributes/traces

@@ -32,7 +32,7 @@ tempo-distributed:
           span_multiplier_key: "X-SampleRatio"
       storage:
         remote_write:
-        - url: "http://prometheus-prometheus.observability:9090/api/v1/write"
+        - url: "http://prometheus.observability:9090/api/v1/write"
           send_exemplars: true
   compactor:
     extraArgs:
