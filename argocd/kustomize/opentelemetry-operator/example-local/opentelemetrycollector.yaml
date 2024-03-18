@@ -28,6 +28,7 @@ spec:
           - 'attributes["user_agent"] == "ELB-HealthChecker/2.0"'
           - 'attributes["http.route"] == "/actuator/health"'
           - 'attributes["db.operation"] == "PING"'
+          - 'attributes["upstream_cluster.name"] == "inbound|9464||"'
           - 'name == "operationhandler.handle"'
           - 'name == "info"'
           - 'name == "hello"'
