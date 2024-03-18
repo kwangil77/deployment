@@ -9,8 +9,10 @@ resources:
 - secret.yaml
 - servicemonitor.yaml
 labels:
-  environment: dev
-  service: simple-api
+- includeSelectors: true
+  pairs:
+    environment: dev
+    service: simple-api
 buildMetadata:
 - managedByLabel
 images:

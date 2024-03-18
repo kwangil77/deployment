@@ -8,8 +8,10 @@ resources:
 - rollout.yaml
 - servicemonitor.yaml
 labels:
-  environment: dev
-  service: simple-web
+- includeSelectors: true
+  pairs:
+    environment: dev
+    service: simple-web
 buildMetadata:
 - managedByLabel
 images:

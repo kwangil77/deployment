@@ -6,7 +6,9 @@ resources:
 - instrumentation.yaml
 - servicemonitor.yaml
 labels:
-  environment: local
+- includeSelectors: true
+  pairs:
+    environment: local
 buildMetadata:
 - managedByLabel
 images:

@@ -7,8 +7,10 @@ resources:
 - hpa.yaml
 - rollout.yaml
 labels:
-  environment: dev
-  service: simple-server-native
+- includeSelectors: true
+  pairs:
+    environment: dev
+    service: simple-server-native
 buildMetadata:
 - managedByLabel
 images:
