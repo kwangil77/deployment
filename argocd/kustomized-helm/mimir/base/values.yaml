@@ -1,6 +1,4 @@
 mimir-distributed:
-  nameOverride: mimir
-  fullnameOverride: mimir
   image:
     repository: docker.io/grafana/mimir
   nginx:

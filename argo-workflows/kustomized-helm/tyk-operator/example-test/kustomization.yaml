@@ -6,3 +6,4 @@ helmCharts:
 - name: base
   namespace: management
   releaseName: tyk-operator
+  valuesFile: ./values.yaml

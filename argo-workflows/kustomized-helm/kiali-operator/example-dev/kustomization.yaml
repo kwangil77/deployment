@@ -8,3 +8,4 @@ helmCharts:
 - name: base
   namespace: observability
   releaseName: kiali-operator
+  valuesFile: ./values.yaml

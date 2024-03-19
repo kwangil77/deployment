@@ -1,4 +1,5 @@
 argo-cd:
+  fullnameOverride: argocd
   configs:
     cm:
       accounts.deploy: apiKey,login

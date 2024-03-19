@@ -1,5 +1,4 @@
 argo-cd:
-  fullnameOverride: argocd
   global:
     image:
       repository: quay.io/argoproj/argocd

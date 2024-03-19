@@ -1,5 +1,4 @@
 tyk-operator:
-  fullnameOverride: tyk-operator
   nodeSelector:
     team: devops
     service: devops-infra

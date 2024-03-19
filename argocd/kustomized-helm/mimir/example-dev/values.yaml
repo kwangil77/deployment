@@ -1,4 +1,6 @@
 mimir-ditributed:
+  nameOverride: mimir
+  fullnameOverride: mimir
   nginx:
     replicas: 2
     service:
