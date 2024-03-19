@@ -1,4 +1,4 @@
-mimir-ditributed:
+mimir-distributed:
   nameOverride: mimir
   fullnameOverride: mimir
   structuredConfig:
