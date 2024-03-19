@@ -32,7 +32,7 @@ tempo-distributed:
           span_multiplier_key: "X-SampleRatio"
       storage:
         remote_write:
-        - url: "http://mimir-gateway.observability/api/v1/push"
+        - url: "http://mimir-nginx.observability/api/v1/push"
           send_exemplars: true
   compactor:
     extraArgs:
