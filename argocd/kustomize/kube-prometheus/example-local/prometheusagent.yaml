@@ -8,14 +8,6 @@ spec:
   replicas: 1
   shards: 1
   image: quay.io/prometheus/prometheus:v2.50.1
-  storage:
-    volumeClaimTemplate:
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 10Gi
   prometheusExternalLabelName: ""
   replicaExternalLabelName: ""
   portName: http-web
