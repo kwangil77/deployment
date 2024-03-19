@@ -31,19 +31,71 @@ mimir-distributed:
         insecure: true
         # endpoint: "s3.amazonaws.com"
         # region: ap-northeast-2
+  alertmanager:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 8Mi
+  distributor:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
   ingester:
     replicas: 1
-    extraArgs:
-    - -config.expand-env=true
     extraEnvFrom:
     - secretRef:
         name: mimir-env
     zoneAwareReplication:
       enabled: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  overrides_exporter:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 32Mi
+  ruler:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 32Mi
   querier:
     replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 32Mi
+  query_frontend:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 32Mi
   query_scheduler:
     replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 32Mi
   store_gateway:
     zoneAwareReplication:
       enabled: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  compactor:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  chunks-cache:
+    allocatedMemory: 2048
+  index-cache:
+    allocatedMemory: 512
+  metadata-cache:
+    allocatedMemory: 128
+  results-cache:
+    allocatedMemory: 128
