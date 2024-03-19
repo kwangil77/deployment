@@ -1,11 +1,12 @@
 apiVersion: monitoring.coreos.com/v1
-kind: Prometheus
+kind: PrometheusAgent
 metadata:
   name: prometheus
   labels:
     app: prometheus
 spec:
   replicas: 1
+  shards: 1
   image: quay.io/prometheus/prometheus:v2.50.1
   storage:
     volumeClaimTemplate:
@@ -15,16 +16,9 @@ spec:
         resources:
           requests:
             storage: 10Gi
-  exemplars: 
-    maxSize: 10000
-  enableFeatures:
-  - exemplar-storage
-  - native-histograms
-  enableRemoteWriteReceiver: true
   prometheusExternalLabelName: ""
   replicaExternalLabelName: ""
   portName: http-web
-  retention: 24h
   securityContext:
     fsGroup: 2000
     runAsGroup: 2000
@@ -37,6 +31,7 @@ spec:
   podMonitorNamespaceSelector: {}
   probeSelector: {}
   probeNamespaceSelector: {}
-  ruleNamespaceSelector: {}
-  ruleSelector: {}
+  remoteWrite:
+  - url: "http://mimir-distributor.observability:8080/api/v1/push"
+    sendExemplars: true
   walCompression: true

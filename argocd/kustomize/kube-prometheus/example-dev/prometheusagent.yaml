@@ -25,10 +25,6 @@ spec:
         resources:
           requests:
             storage: 10Gi
-  enableFeatures:
-  - exemplar-storage
-  - native-histograms
-  enableRemoteWriteReceiver: true
   prometheusExternalLabelName: ""
   replicaExternalLabelName: ""
   portName: http-web
