@@ -33,6 +33,9 @@ mimir-distributed:
           # endpoint: "s3.amazonaws.com"
           # region: ap-northeast-2
   alertmanager:
+    extraEnvFrom:
+    - secretRef:
+        name: mimir-env
     resources:
       requests:
         cpu: 5m
