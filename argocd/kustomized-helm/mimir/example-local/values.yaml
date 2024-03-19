@@ -58,11 +58,17 @@ mimir-distributed:
         cpu: 100m
         memory: 32Mi
   ruler:
+    extraEnvFrom:
+    - secretRef:
+        name: mimir-env
     resources:
       requests:
         cpu: 100m
         memory: 32Mi
   querier:
+    extraEnvFrom:
+    - secretRef:
+        name: mimir-env
     replicas: 1
     resources:
       requests:
@@ -80,6 +86,9 @@ mimir-distributed:
         cpu: 100m
         memory: 32Mi
   store_gateway:
+    extraEnvFrom:
+    - secretRef:
+        name: mimir-env
     zoneAwareReplication:
       enabled: false
     resources:
@@ -87,6 +96,9 @@ mimir-distributed:
         cpu: 100m
         memory: 128Mi
   compactor:
+    extraEnvFrom:
+    - secretRef:
+        name: mimir-env
     resources:
       requests:
         cpu: 100m
