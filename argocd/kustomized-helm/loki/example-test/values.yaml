@@ -1,0 +1,65 @@
+loki-distributed:
+  fullnameOverride: loki
+  gateway:
+    schemaConfig:
+      configs:
+      - from: "2020-09-07"
+        store: tsdb
+        object_store: s3
+        schema: v11
+        index:
+          prefix: loki_index_
+          period: 24h
+    storageConfig:
+      aws:
+        bucketnames: example-dev-loki-bucket
+        s3forcepathstyle: true
+        endpoint: minio-hl.management:9000
+        access_key_id: ${MINIO_ACCESS_KEY}
+        secret_access_key: ${MINIO_SECRET_KEY}
+        insecure: true
+        # endpoint: "s3.amazonaws.com"
+        # region: ap-northeast-2
+      tsdb_shipper:
+        active_index_directory: /var/loki/index
+        cache_location: /var/loki/cache
+        cache_ttl: 168h
+        shared_store: s3
+    structuredConfig:
+      querier:
+        multi_tenant_queries_enabled: true
+      ruler:
+        enable_api: true
+        storage:
+          type: s3
+          s3:
+            bucketnames: example-dev-loki-ruler-bucket
+            s3forcepathstyle: true
+            endpoint: minio-hl.management:9000
+            access_key_id: ${MINIO_ACCESS_KEY}
+            secret_access_key: ${MINIO_SECRET_KEY}
+            insecure: true
+            # s3: "s3://ap-northeast-2/example-dev-loki-ruler-bucket"
+      compactor:
+        shared_store: s3
+        retention_enabled: true
+  ingester:
+    extraArgs:
+    - -config.expand-env=true
+    extraEnvFrom:
+    - secretRef:
+        name: loki-env
+  queryScheduler:
+    replicas: 1
+  ruler:
+    extraArgs:
+    - -config.expand-env=true
+    extraEnvFrom:
+    - secretRef:
+        name: loki-env
+  compactor:
+    extraArgs:
+    - -config.expand-env=true
+    extraEnvFrom:
+    - secretRef:
+        name: loki-env
