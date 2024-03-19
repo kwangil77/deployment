@@ -5,6 +5,7 @@ mimir-distributed:
     structuredConfig:
       limits:
         max_label_names_per_series: 300
+        ingestion_rate: 100000
       ingester:
         ring:
           replication_factor: 1
