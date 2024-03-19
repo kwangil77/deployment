@@ -1,0 +1,2 @@
+tyk-operator:
+  fullnameOverride: tyk-operator
