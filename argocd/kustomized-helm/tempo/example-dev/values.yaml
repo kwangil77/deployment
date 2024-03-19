@@ -1,5 +1,7 @@
 tempo-distributed:
   fullnameOverride: tempo
+  reportingEnabled: false
+  multitenancyEnabled: false
   gateway:
     nodeSelector:
       team: devops

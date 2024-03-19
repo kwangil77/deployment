@@ -17,7 +17,6 @@ tempo-distributed:
         enabled: true
       grpc:
         enabled: true
-  reportingEnabled: false
   global_overrides:
     metrics_generator_processors:
     - service-graphs
