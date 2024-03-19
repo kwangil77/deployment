@@ -2,127 +2,8 @@ mimir-distributed:
   image:
     repository: docker.io/grafana/mimir
   nginx:
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
     image:
       registry: docker.io
-  alertmanager:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
-  distributor:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
-  ingester:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
-  overrides_exporter:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
-  ruler:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
-  querier:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
-  query_frontend:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
-  query_scheduler:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
-  store_gateway:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
-  compactor:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
   memcached:
     image:
       repository: docker.io/library/memcached
@@ -131,48 +12,12 @@ mimir-distributed:
       repository: docker.io/prom/memcached-exporter
   chunks-cache:
     enabled: true
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
   index-cache:
     enabled: true
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
   metadata-cache:
     enabled: true
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
   results-cache:
     enabled: true
-    nodeSelector:
-      team: devops
-      service: devops-infra
-      performance_type: memory
-    tolerations:
-    - key: performance_type
-      operator: Equal
-      value: mem
-      effect: NoSchedule
   minio:
     enabled: false
   metaMonitoring:

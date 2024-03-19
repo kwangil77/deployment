@@ -2,6 +2,15 @@ mimir-ditributed:
   nameOverride: mimir
   fullnameOverride: mimir
   nginx:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 2
     service:
       type: NodePort
@@ -204,27 +213,169 @@ mimir-ditributed:
           zone_awareness_enabled: true
           {{- end }}
   alertmanager:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 3
     readinessProbe:
       failureThreshold: 30
   distributor:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 3
   ingester:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 4
     persistentVolume:
       size: 50Gi
+  overrides_exporter:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
   ruler:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     readinessProbe:
       failureThreshold: 30
   querier:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 2
     readinessProbe:
       failureThreshold: 30
+  query_frontend:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
   query_scheduler:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     replicas: 2
   store_gateway:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     persistentVolume:
       size: 50Gi
   compactor:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
     persistentVolume:
       size: 50Gi
+  chunks-cache:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  index-cache:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  metadata-cache:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
+  results-cache:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: memory
+    tolerations:
+    - key: performance_type
+      operator: Equal
+      value: mem
+      effect: NoSchedule
