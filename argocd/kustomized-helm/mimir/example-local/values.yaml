@@ -1,36 +1,37 @@
 mimir-distributed:
   nameOverride: mimir
   fullnameOverride: mimir
-  structuredConfig:
-    alertmanager_storage:
-      backend: s3
-      s3:
-        bucket_name: example-dev-mimir-ruler-bucket
-        endpoint: minio-hl.management:9000
-        access_key_id: ${MINIO_ACCESS_KEY}
-        secret_access_key: ${MINIO_SECRET_KEY}
-        insecure: true
-        # endpoint: "s3.amazonaws.com"
-        # region: ap-northeast-2
-    blocks_storage:
-      s3:
-        bucket_name: example-dev-mimir-bucket
-        endpoint: minio-hl.management:9000
-        access_key_id: ${MINIO_ACCESS_KEY}
-        secret_access_key: ${MINIO_SECRET_KEY}
-        insecure: true
-        # endpoint: "s3.amazonaws.com"
-        # region: ap-northeast-2
-    ruler_storage:
-      backend: s3
-      s3:
-        bucket_name: example-dev-mimir-ruler-bucket
-        endpoint: minio-hl.management:9000
-        access_key_id: ${MINIO_ACCESS_KEY}
-        secret_access_key: ${MINIO_SECRET_KEY}
-        insecure: true
-        # endpoint: "s3.amazonaws.com"
-        # region: ap-northeast-2
+  mimir:
+    structuredConfig:
+      alertmanager_storage:
+        backend: s3
+        s3:
+          bucket_name: example-dev-mimir-ruler-bucket
+          endpoint: minio-hl.management:9000
+          access_key_id: ${MINIO_ACCESS_KEY}
+          secret_access_key: ${MINIO_SECRET_KEY}
+          insecure: true
+          # endpoint: "s3.amazonaws.com"
+          # region: ap-northeast-2
+      blocks_storage:
+        s3:
+          bucket_name: example-dev-mimir-bucket
+          endpoint: minio-hl.management:9000
+          access_key_id: ${MINIO_ACCESS_KEY}
+          secret_access_key: ${MINIO_SECRET_KEY}
+          insecure: true
+          # endpoint: "s3.amazonaws.com"
+          # region: ap-northeast-2
+      ruler_storage:
+        backend: s3
+        s3:
+          bucket_name: example-dev-mimir-ruler-bucket
+          endpoint: minio-hl.management:9000
+          access_key_id: ${MINIO_ACCESS_KEY}
+          secret_access_key: ${MINIO_SECRET_KEY}
+          insecure: true
+          # endpoint: "s3.amazonaws.com"
+          # region: ap-northeast-2
   alertmanager:
     resources:
       requests:
