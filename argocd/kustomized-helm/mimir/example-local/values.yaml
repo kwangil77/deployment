@@ -34,12 +34,12 @@ mimir-distributed:
   alertmanager:
     resources:
       requests:
-        cpu: 10m
+        cpu: 5m
         memory: 8Mi
   distributor:
     resources:
       requests:
-        cpu: 100m
+        cpu: 20m
         memory: 128Mi
   ingester:
     replicas: 1
@@ -50,12 +50,12 @@ mimir-distributed:
       enabled: false
     resources:
       requests:
-        cpu: 100m
+        cpu: 20m
         memory: 128Mi
   overrides_exporter:
     resources:
       requests:
-        cpu: 100m
+        cpu: 20m
         memory: 32Mi
   ruler:
     extraEnvFrom:
@@ -63,7 +63,7 @@ mimir-distributed:
         name: mimir-env
     resources:
       requests:
-        cpu: 100m
+        cpu: 20m
         memory: 32Mi
   querier:
     extraEnvFrom:
@@ -72,18 +72,18 @@ mimir-distributed:
     replicas: 1
     resources:
       requests:
-        cpu: 100m
+        cpu: 20m
         memory: 32Mi
   query_frontend:
     resources:
       requests:
-        cpu: 100m
+        cpu: 20m
         memory: 32Mi
   query_scheduler:
     replicas: 1
     resources:
       requests:
-        cpu: 100m
+        cpu: 20m
         memory: 32Mi
   store_gateway:
     extraEnvFrom:
@@ -93,7 +93,7 @@ mimir-distributed:
       enabled: false
     resources:
       requests:
-        cpu: 100m
+        cpu: 20m
         memory: 128Mi
   compactor:
     extraEnvFrom:
@@ -101,7 +101,7 @@ mimir-distributed:
         name: mimir-env
     resources:
       requests:
-        cpu: 100m
+        cpu: 20m
         memory: 128Mi
   chunks-cache:
     allocatedMemory: 2048
