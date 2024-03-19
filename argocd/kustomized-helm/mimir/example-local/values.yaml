@@ -1,0 +1,49 @@
+mimir-ditributed:
+  nameOverride: mimir
+  fullnameOverride: mimir
+  structuredConfig:
+    alertmanager_storage:
+      backend: s3
+      s3:
+        bucket_name: example-dev-mimir-ruler-bucket
+        endpoint: minio-hl.management:9000
+        access_key_id: ${MINIO_ACCESS_KEY}
+        secret_access_key: ${MINIO_SECRET_KEY}
+        insecure: true
+        # endpoint: "s3.amazonaws.com"
+        # region: ap-northeast-2
+    blocks_storage:
+      s3:
+        bucket_name: example-dev-mimir-bucket
+        endpoint: minio-hl.management:9000
+        access_key_id: ${MINIO_ACCESS_KEY}
+        secret_access_key: ${MINIO_SECRET_KEY}
+        insecure: true
+        # endpoint: "s3.amazonaws.com"
+        # region: ap-northeast-2
+    ruler_storage:
+      backend: s3
+      s3:
+        bucket_name: example-dev-mimir-ruler-bucket
+        endpoint: minio-hl.management:9000
+        access_key_id: ${MINIO_ACCESS_KEY}
+        secret_access_key: ${MINIO_SECRET_KEY}
+        insecure: true
+        # endpoint: "s3.amazonaws.com"
+        # region: ap-northeast-2
+  ingester:
+    replicas: 1
+    extraArgs:
+    - -config.expand-env=true
+    extraEnvFrom:
+    - secretRef:
+        name: mimir-env
+    zoneAwareReplication:
+      enabled: false
+  querier:
+    replicas: 1
+  query_scheduler:
+    replicas: 1
+  store_gateway:
+    zoneAwareReplication:
+      enabled: false
