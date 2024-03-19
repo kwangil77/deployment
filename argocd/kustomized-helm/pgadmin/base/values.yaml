@@ -3,5 +3,3 @@ pgadmin4:
     registry: docker.io
   serviceAccount:
     create: true
-  persistentVolume:
-    enabled: true
