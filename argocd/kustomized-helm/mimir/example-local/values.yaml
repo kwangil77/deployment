@@ -3,6 +3,9 @@ mimir-distributed:
   fullnameOverride: mimir
   mimir:
     structuredConfig:
+      ingester:
+        ring:
+          replication_factor: 1
       alertmanager_storage:
         backend: s3
         s3:
