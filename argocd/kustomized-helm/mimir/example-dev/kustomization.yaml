@@ -5,5 +5,5 @@ helmGlobals:
 helmCharts:
 - name: base
   namespace: observability
-  releaseName: mimir-distributed
+  releaseName: mimir
   valuesFile: ./values.yaml
