@@ -1,0 +1,3 @@
+postgresql:
+  global:
+    imageRegistry: docker.io
