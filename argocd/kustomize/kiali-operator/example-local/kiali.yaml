@@ -1,0 +1,56 @@
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  name: kiali
+spec:
+  auth:
+    strategy: anonymous
+  api:
+    namespaces:
+      label_selector_include: "environment=local"
+  deployment:
+    accessible_namespaces:
+    - '**'
+    service_type: ClusterIP
+    view_only_mode: true
+  external_services:
+    custom_dashboards:
+      enabled: true
+      discovery_enabled: auto
+      prometheus:
+        url: https://mimir-nginx.observability/prometheus   
+        custom_headers:
+          X-Scope-OrgID: example
+        query_scope:
+          environment: local
+    grafana:
+      auth:
+        type: basic
+        username: admin
+        password: <path:kv/data/grafana/admin#password>
+      url: http://grafana.observability
+      in_cluster_url: http://grafana.observability
+    istio:
+      component_status:
+        components:
+        - app_label: istiod
+          is_core: true
+          is_proxy: false
+          namespace: istio-system
+        - app_label: istio-ingressgateway
+          is_core: false
+          is_proxy: true
+          namespace: istio-system
+        enabled: true
+      config_map_name: istio
+    tracing:
+      enabled: false
+      in_cluster_url: http://tempo-query-frontend.observability:3100/jaeger
+      use_grpc: false
+    prometheus:
+      url: https://mimir-nginx.observability/prometheus  
+      custom_headers:
+        X-Scope-OrgID: example
+      query_scope:
+        environment: local
+  istio_namespace: istio-system
