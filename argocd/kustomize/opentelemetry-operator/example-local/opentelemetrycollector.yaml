@@ -64,7 +64,7 @@ spec:
       otlphttp:
         endpoint: http://tempo-distributor.observability:4318
         headers:
-          X-Scope-OrgID: ""
+          X-Scope-OrgID: example
         tls:
           insecure: true
       prometheus:
