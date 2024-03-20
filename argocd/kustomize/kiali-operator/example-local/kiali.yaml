@@ -43,7 +43,7 @@ spec:
     prometheus:
       url: http://mimir-nginx.observability/prometheus
       custom_headers:
-        X-Scope-OrgID: ""
+        X-Scope-OrgID: example
       health_check_url: http://mimir-nginx.observability
       # query_scope:
       #   environment: local
