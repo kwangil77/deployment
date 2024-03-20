@@ -1,0 +1,4 @@
+{
+  "release_name": "kiali-operator",
+  "release_namespace": "observability"
+}
