@@ -27,7 +27,7 @@ spec:
     extensionProviders: 
     - name: opentelemetry
       opentelemetry:
-        service: opentelemetry-collector.observability
+        service: opentelemetry-collector.observability.svc.cluster.local
         port: 4317
     enableTracing: true
     trustDomain: cluster.local
