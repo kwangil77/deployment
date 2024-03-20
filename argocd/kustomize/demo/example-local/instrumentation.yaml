@@ -19,7 +19,7 @@ spec:
       value: "none"
     - name: OTEL_TRACES_EXPORTER
       value: "otlp"
-    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
       value: "http://opentelemetry-collector.observability:4317"
     - name: OTEL_INSTRUMENTATION_HTTP_SERVER_CAPTURE_REQUEST_HEADERS
       value: "content-type"
