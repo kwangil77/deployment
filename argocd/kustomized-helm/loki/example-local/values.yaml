@@ -1,6 +1,6 @@
 loki-distributed:
   fullnameOverride: loki
-  gateway:
+  loki:
     schemaConfig:
       configs:
       - from: "2020-09-07"
