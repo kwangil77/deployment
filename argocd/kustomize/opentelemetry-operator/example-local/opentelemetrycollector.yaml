@@ -61,7 +61,7 @@ spec:
         size_in_percentage: 40
     exporters:
       logging: {}
-      otlp:
+      otlphttp:
         endpoint: tempo-distributor.observability:4318
         headers:
           X-Scope-OrgID: ""
@@ -101,4 +101,4 @@ spec:
           - attributes/traces
           - batch
           exporters:
-          - otlp
+          - otlphttp
