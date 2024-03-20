@@ -5,9 +5,6 @@ metadata:
 spec:
   auth:
     strategy: anonymous
-  api:
-    namespaces:
-      label_selector_include: "environment=local"
   deployment:
     accessible_namespaces:
     - '**'
@@ -18,11 +15,9 @@ spec:
       enabled: true
       discovery_enabled: auto
       prometheus:
-        url: https://mimir-nginx.observability/prometheus   
+        url: http://mimir-nginx.observability/prometheus
         custom_headers:
           X-Scope-OrgID: example
-        query_scope:
-          environment: local
     grafana:
       auth:
         type: basic
@@ -42,7 +37,6 @@ spec:
           is_proxy: true
           namespace: istio-system
         enabled: true
-      config_map_name: istio
     tracing:
       enabled: true
       url: http://tempo-query-frontend.observability:3100
@@ -50,9 +44,7 @@ spec:
       provider: tempo
       use_grpc: false
     prometheus:
-      url: http://mimir-nginx.observability/prometheus  
+      url: http://mimir-nginx.observability/prometheus
       custom_headers:
         X-Scope-OrgID: example
-      query_scope:
-        environment: local
   istio_namespace: istio-system
