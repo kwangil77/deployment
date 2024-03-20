@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: istio-ingressgateway
     state: present
-    chart_version: 1.13.1
+    chart_version: 1.21.0
     chart_ref: istio/gateway
     namespace: "{{ release_namespace }}"
     # create_namespace: true

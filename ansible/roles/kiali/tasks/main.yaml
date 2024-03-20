@@ -8,7 +8,7 @@
   kubernetes.core.helm:
     name: kiali
     state: present
-    chart_version: 1.47.0
+    chart_version: 1.81.0
     chart_ref: kiali/kiali-server
     namespace: "{{ release_namespace }}"
     # create_namespace: true
