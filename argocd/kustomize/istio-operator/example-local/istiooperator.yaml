@@ -26,7 +26,7 @@ spec:
       - prometheus
     extensionProviders: 
     - name: opentelemetry
-      zipkin:
+      opentelemetry:
         service: opentelemetry-collector.observability
         port: 4317
     enableTracing: true
