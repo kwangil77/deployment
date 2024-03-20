@@ -4,6 +4,14 @@ metadata:
   name: istio
 spec:
   profile: minimal
+  components:
+    pilot:
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
   meshConfig:
     accessLogFile: "/dev/stdout"
     accessLogEncoding: JSON
