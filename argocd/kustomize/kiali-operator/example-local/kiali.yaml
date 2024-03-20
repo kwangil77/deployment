@@ -14,15 +14,6 @@ spec:
     service_type: ClusterIP
     view_only_mode: true
   external_services:
-    custom_dashboards:
-      enabled: true
-      discovery_enabled: auto
-      prometheus:
-        url: http://mimir-nginx.observability/prometheus
-        custom_headers:
-          X-Scope-OrgID: example
-        # query_scope:
-        #   environment: local
     grafana:
       auth:
         type: basic

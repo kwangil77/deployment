@@ -1,6 +1,13 @@
 mimir-distributed:
   nameOverride: mimir
   fullnameOverride: mimir
+  nginx:
+    nginxConfig:
+      serverSnippet: |
+        location = /api/v1/status/config {
+          set $query_frontend {{ template "mimir.fullname" . }}-query-frontend.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};
+          proxy_pass      http://$query_frontend:{{ include "mimir.serverHttpListenPort" . }}$request_uri;
+        }
   mimir:
     structuredConfig:
       limits:
