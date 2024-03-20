@@ -16,8 +16,6 @@ spec:
     accessLogFile: "/dev/stdout"
     accessLogEncoding: JSON
     defaultProviders:
-      accessLogging:
-      - envoy
       metrics:
       - prometheus
     extensionProviders: 
@@ -27,5 +25,3 @@ spec:
         port: 9411
     enableTracing: true
     trustDomain: cluster.local
-    defaultConfig:
-      holdApplicationUntilProxyStarts: true
