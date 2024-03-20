@@ -3,3 +3,5 @@ kind: Kustomization
 resources:
 - istiooperator.yaml
 - telemetry.yaml
+- podmonitor.yaml
+- servicemonitor.yaml

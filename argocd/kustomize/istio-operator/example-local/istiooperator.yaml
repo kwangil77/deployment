@@ -12,6 +12,9 @@ spec:
           requests:
             cpu: 100m
             memory: 500Mi
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
   meshConfig:
     accessLogFile: "/dev/stdout"
     accessLogEncoding: JSON
