@@ -7,7 +7,7 @@ spec:
   - b3
   sampler:
     type: parentbased_traceidratio
-    argument: "0.1"
+    argument: "0.5"
   java:
     image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.1.0
     env:
@@ -20,7 +20,7 @@ spec:
     - name: OTEL_TRACES_EXPORTER
       value: "otlp"
     - name: OTEL_EXPORTER_OTLP_ENDPOINT
-      value: "http://opentelemetry-collector.observability:4317"
+      value: "opentelemetry-collector.observability:4317"
     - name: OTEL_INSTRUMENTATION_HTTP_SERVER_CAPTURE_REQUEST_HEADERS
       value: "content-type"
     - name: OTEL_INSTRUMENTATION_HTTP_SERVER_CAPTURE_RESPONSE_HEADERS
