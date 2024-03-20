@@ -44,8 +44,10 @@ spec:
         enabled: true
       config_map_name: istio
     tracing:
-      enabled: false
-      in_cluster_url: http://tempo-query-frontend.observability:3100/jaeger
+      enabled: true
+      url: http://tempo-query-frontend.observability:3100
+      in_cluster_url: http://tempo-query-frontend.observability:3100
+      provider: tempo
       use_grpc: false
     prometheus:
       url: http://mimir-nginx.observability/prometheus  
