@@ -41,7 +41,7 @@ spec:
           value: local
         - key: X-SampleRatio
           action: upsert
-          value: 0.1
+          value: 1
       resource/traces:
         attributes:
         - key: service.name
