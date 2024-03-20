@@ -25,9 +25,9 @@ spec:
       metrics:
       - prometheus
     extensionProviders: 
-    - name: tempo
+    - name: opentelemetry
       zipkin:
         service: opentelemetry-collector.observability
-        port: 9411
+        port: 4317
     enableTracing: true
     trustDomain: cluster.local

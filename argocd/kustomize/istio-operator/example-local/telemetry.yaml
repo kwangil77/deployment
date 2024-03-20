@@ -8,7 +8,7 @@ spec:
     - name: envoy
   tracing:
   - providers:
-    - name: tempo
+    - name: opentelemetry
     customTags:
       environment:
         literal:
