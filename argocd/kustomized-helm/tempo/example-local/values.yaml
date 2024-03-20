@@ -1,7 +1,7 @@
 tempo-distributed:
   fullnameOverride: tempo
   reportingEnabled: false
-  multitenancyEnabled: false
+  multitenancyEnabled: true
   ingester:
     replicas: 1
     extraArgs:

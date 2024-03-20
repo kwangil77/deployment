@@ -63,6 +63,8 @@ spec:
       logging: {}
       otlp:
         endpoint: tempo-distributor.observability:4317
+        headers:
+          X-Scope-OrgID: ""
         tls:
           insecure: true
       prometheus:
