@@ -21,13 +21,10 @@ spec:
         url: https://mimir-nginx.observability/prometheus   
         custom_headers:
           X-Scope-OrgID: example
-        auth:
-          insecure_skip_verify: true
         query_scope:
           environment: local
     grafana:
       auth:
-        insecure_skip_verify: true
         type: basic
         username: admin
         password: <path:kv/data/grafana/admin#password>
@@ -51,11 +48,9 @@ spec:
       in_cluster_url: http://tempo-query-frontend.observability:3100/jaeger
       use_grpc: false
     prometheus:
-      url: https://mimir-nginx.observability/prometheus  
+      url: http://mimir-nginx.observability/prometheus  
       custom_headers:
         X-Scope-OrgID: example
-      auth:
-        insecure_skip_verify: true
       query_scope:
         environment: local
   istio_namespace: istio-system
