@@ -43,6 +43,7 @@ spec:
       in_cluster_url: http://tempo-query-frontend.observability:3100
       provider: tempo
       use_grpc: false
+      namespaceSelector: false
     prometheus:
       url: http://mimir-nginx.observability/prometheus
       custom_headers:

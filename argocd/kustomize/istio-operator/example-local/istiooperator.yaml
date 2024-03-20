@@ -31,3 +31,5 @@ spec:
         port: 4317
     enableTracing: true
     trustDomain: cluster.local
+    defaultConfig:
+      holdApplicationUntilProxyStarts: true
