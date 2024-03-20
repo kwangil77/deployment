@@ -62,7 +62,7 @@ spec:
     exporters:
       logging: {}
       otlphttp:
-        endpoint: tempo-distributor.observability:4318
+        endpoint: http://tempo-distributor.observability:4318
         headers:
           X-Scope-OrgID: ""
         tls:
