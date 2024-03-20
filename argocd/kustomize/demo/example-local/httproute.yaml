@@ -7,7 +7,7 @@ metadata:
     istio: ingressgateway
 spec:
   parentRefs:
-  - name: istio-ingressgateway
+  - name: kubernetes-gateway
     namespace: istio-system
   rules:
   - matches:

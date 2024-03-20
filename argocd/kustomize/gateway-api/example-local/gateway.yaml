@@ -1,9 +1,9 @@
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: Gateway
 metadata:
-  name: istio-ingressgateway
+  name: kubernetes-gateway
   labels:
-    app: istio-ingressgateway
+    app: kubernetes-gateway
     istio: ingressgateway
 spec:
   addresses:
@@ -11,7 +11,7 @@ spec:
     value: istio-ingressgateway.istio-system
   gatewayClassName: istio
   listeners:
-  - name: istio-ingressgateway
+  - name: kubernetes-gateway
     port: 80
     protocol: HTTP
     allowedRoutes:
