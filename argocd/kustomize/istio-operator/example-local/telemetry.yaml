@@ -1,0 +1,16 @@
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: telemetry
+spec:
+  accessLogging:
+  - providers:
+    - name: envoy
+  tracing:
+  - providers:
+    - name: tempo
+    customTags:
+      environment:
+        literal:
+          value: local
+    randomSamplingPercentage: 10

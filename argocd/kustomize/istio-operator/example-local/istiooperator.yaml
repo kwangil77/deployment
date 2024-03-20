@@ -1,0 +1,23 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: istio
+spec:
+  profile: minimal
+  meshConfig:
+    accessLogFile: "/dev/stdout"
+    accessLogEncoding: JSON
+    defaultProviders:
+      accessLogging:
+      - envoy
+      metrics:
+      - prometheus
+    extensionProviders: 
+    - name: tempo
+      zipkin:
+        service: opentelemetry-collector.observability
+        port: 9411
+    enableTracing: true
+    trustDomain: cluster.local
+    defaultConfig:
+      holdApplicationUntilProxyStarts: true
