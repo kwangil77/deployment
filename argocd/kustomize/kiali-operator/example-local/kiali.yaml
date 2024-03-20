@@ -5,9 +5,9 @@ metadata:
 spec:
   auth:
     strategy: anonymous
-  api:
-    namespaces:
-      label_selector_include: "environment=local"
+  # api:
+  #   namespaces:
+  #     label_selector_include: "environment=local"
   deployment:
     accessible_namespaces:
     - '**'
@@ -21,8 +21,8 @@ spec:
         url: http://mimir-nginx.observability/prometheus
         custom_headers:
           X-Scope-OrgID: example
-        query_scope:
-          environment: local
+        # query_scope:
+        #   environment: local
     grafana:
       auth:
         type: basic
@@ -53,6 +53,6 @@ spec:
       url: http://mimir-nginx.observability/prometheus
       custom_headers:
         X-Scope-OrgID: example
-      query_scope:
-        environment: local
+      # query_scope:
+      #   environment: local
   istio_namespace: istio-system
