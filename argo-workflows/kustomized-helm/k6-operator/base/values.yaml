@@ -1,0 +1,7 @@
+k6-operator:
+  authProxy:
+    image:
+      registry: gcr.io
+  manager:
+    image:
+      registry: ghcr.io
