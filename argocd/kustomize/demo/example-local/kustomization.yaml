@@ -6,6 +6,7 @@ resources:
 - secret.yaml
 - instrumentation.yaml
 - servicemonitor.yaml
+- httproute.yaml
 labels:
 - includeSelectors: true
   pairs:
