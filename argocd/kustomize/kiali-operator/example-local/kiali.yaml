@@ -27,7 +27,7 @@ spec:
       auth:
         type: basic
         username: admin
-        password: <path:kv/data/grafana/admin#password>
+        password: secret:kiali:grafana-password
       url: http://grafana.observability
       in_cluster_url: http://grafana.observability
     istio:
