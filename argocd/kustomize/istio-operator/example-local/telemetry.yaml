@@ -13,4 +13,4 @@ spec:
       environment:
         literal:
           value: local
-    randomSamplingPercentage: 10
+    randomSamplingPercentage: 50

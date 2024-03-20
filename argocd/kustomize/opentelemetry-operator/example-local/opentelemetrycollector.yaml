@@ -25,15 +25,7 @@ spec:
       filter/traces:
         traces:
           span:
-          - 'attributes["user_agent"] == "ELB-HealthChecker/2.0"'
           - 'attributes["http.route"] == "/actuator/health"'
-          - 'attributes["db.operation"] == "PING"'
-          - 'attributes["upstream_cluster.name"] == "inbound|9464||"'
-          - 'name == "operationhandler.handle"'
-          - 'name == "info"'
-          - 'name == "hello"'
-          - 'name == "quit"'
-          - 'name == "readoperationhandler.handle"'
       attributes/traces:
         actions:
         - key: environment
@@ -41,7 +33,7 @@ spec:
           value: local
         - key: X-SampleRatio
           action: upsert
-          value: 1
+          value: 0.5
       resource/traces:
         attributes:
         - key: service.name
