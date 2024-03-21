@@ -13,11 +13,11 @@ spec:
       labels:
         app: demo
       annotations:
-        # nstrumentation.opentelemetry.io/inject-java: 'true'
-        instrumentation.opentelemetry.io/inject-nodejs: 'true'
         instrumentation.opentelemetry.io/container-names: app
-        # kiali.io/dashboards: springboot-jvm,springboot-jvm-pool,springboot-tomcat
-        kiali.io/dashboards: nodejs
+        nstrumentation.opentelemetry.io/inject-java: 'true'
+        kiali.io/dashboards: springboot-jvm,springboot-jvm-pool,springboot-tomcat
+        # instrumentation.opentelemetry.io/inject-nodejs: 'true'
+        # kiali.io/dashboards: nodejs
     spec:
       serviceAccountName: demo
       containers:
