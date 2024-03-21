@@ -14,5 +14,5 @@ labels:
 buildMetadata:
 - managedByLabel
 images:
-- name: dev
+- name: app
   newTag: latest
