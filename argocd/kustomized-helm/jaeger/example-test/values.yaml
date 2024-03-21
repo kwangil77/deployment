@@ -1,4 +1,18 @@
 clickhouse:
+  enabled: true
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: memory
+  tolerations:
+  - key: performance_type
+    operator: Equal
+    value: mem
+    effect: NoSchedule
+  global:
+    imageRegistry: docker.io
+  keeper:
+    enabled: true
   auth:
     password: <path:kv/data/jaeger/clickhouse#password>
   shards: 1
@@ -34,3 +48,9 @@ clickhouse:
     </clickhouse>
   persistence:
     size: 20Gi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  zookeeper:
+    enabled: false

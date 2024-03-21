@@ -8,3 +8,4 @@ dependencies:
 - name: clickhouse
   version: 5.3.1
   repository: https://charts.bitnami.com/bitnami
+  condition: clickhouse.enabled
