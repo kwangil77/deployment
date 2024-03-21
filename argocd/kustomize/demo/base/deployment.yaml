@@ -13,7 +13,8 @@ spec:
       labels:
         app: demo
       annotations:
-        instrumentation.opentelemetry.io/inject-java: 'true'
+        # nstrumentation.opentelemetry.io/inject-java: 'true'
+        instrumentation.opentelemetry.io/inject-nodejs: 'true'
         instrumentation.opentelemetry.io/container-names: app
         kiali.io/dashboards: springboot-jvm,springboot-jvm-pool,springboot-tomcat
     spec:
