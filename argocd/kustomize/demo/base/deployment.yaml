@@ -15,7 +15,6 @@ spec:
       annotations:
         instrumentation.opentelemetry.io/inject-java: 'true'
         instrumentation.opentelemetry.io/container-names: app
-        kiali.io/dashboards: springboot-jvm,springboot-jvm-pool,springboot-tomcat
     spec:
       serviceAccountName: demo
       containers:
