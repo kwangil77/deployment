@@ -13,7 +13,7 @@ mimir-distributed:
       alertmanager_storage:
         backend: s3
         s3:
-          bucket_name: example-dev-mimir-ruler-bucket
+          bucket_name: example-local-mimir-ruler-bucket
           endpoint: minio-hl.management:9000
           access_key_id: ${MINIO_ACCESS_KEY}
           secret_access_key: ${MINIO_SECRET_KEY}
@@ -22,7 +22,7 @@ mimir-distributed:
           # region: ap-northeast-2
       blocks_storage:
         s3:
-          bucket_name: example-dev-mimir-bucket
+          bucket_name: example-local-mimir-bucket
           endpoint: minio-hl.management:9000
           access_key_id: ${MINIO_ACCESS_KEY}
           secret_access_key: ${MINIO_SECRET_KEY}
@@ -32,7 +32,7 @@ mimir-distributed:
       ruler_storage:
         backend: s3
         s3:
-          bucket_name: example-dev-mimir-ruler-bucket
+          bucket_name: example-local-mimir-ruler-bucket
           endpoint: minio-hl.management:9000
           access_key_id: ${MINIO_ACCESS_KEY}
           secret_access_key: ${MINIO_SECRET_KEY}
