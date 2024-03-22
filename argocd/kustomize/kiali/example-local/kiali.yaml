@@ -47,6 +47,8 @@ spec:
       enabled: true
       url: http://tempo-query-frontend.observability:3100
       in_cluster_url: http://tempo-query-frontend.observability:3100
+      custom_headers:
+        X-Scope-OrgID: example
       provider: tempo
       use_grpc: false
       namespaceSelector: false
