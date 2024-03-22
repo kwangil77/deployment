@@ -16,7 +16,7 @@ parca:
       effect: NoSchedule
     image:
       repository: ghcr.io/parca-dev/parca
-      tag: "v0.20.0"
+      tag: "v0.21.0"
     config:
       object_storage:
         bucket:
