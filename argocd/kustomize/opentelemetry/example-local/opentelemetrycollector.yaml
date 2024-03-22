@@ -53,8 +53,10 @@ spec:
         size_in_percentage: 40
     exporters:
       logging: {}
-      otlp:
-        endpoint: tempo-distributor.observability:4317
+      otlphttp:
+        endpoint: http://tempo-distributor.observability:4318
+        # headers:
+        #   X-Scope-OrgID: example
         tls:
           insecure: true
       prometheus:
@@ -91,4 +93,4 @@ spec:
           - attributes/traces
           - batch
           exporters:
-          - otlp
+          - otlphttp
