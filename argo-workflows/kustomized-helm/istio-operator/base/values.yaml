@@ -1,3 +1,4 @@
 istio-operator:
   defaults:
-    hub: gcr.io/istio-testing
+    hub: docker.io
+    tag: "1.21.0"

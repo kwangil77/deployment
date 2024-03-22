@@ -4,6 +4,8 @@ metadata:
   name: istio
 spec:
   profile: minimal
+  hub: docker.io
+  tag: "1.21.0"
   components:
     pilot:
       enabled: true
