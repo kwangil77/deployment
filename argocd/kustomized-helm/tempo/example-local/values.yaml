@@ -2,6 +2,13 @@ tempo-distributed:
   fullnameOverride: tempo
   reportingEnabled: false
   multitenancyEnabled: true
+  gateway:
+    nginxConfig:
+      httpSnippet: |
+        map $http_x_scope_orgid $ensured_x_scope_orgid {
+          default $http_x_scope_orgid;
+          "" "example";
+        }
   ingester:
     replicas: 1
     extraArgs:

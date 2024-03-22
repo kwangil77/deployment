@@ -1,5 +1,12 @@
 loki-distributed:
   fullnameOverride: loki
+  gateway:
+    nginxConfig:
+      httpSnippet: |
+        map $http_x_scope_orgid $ensured_x_scope_orgid {
+          default $http_x_scope_orgid;
+          "" "example";
+        }
   loki:
     schemaConfig:
       configs:
