@@ -45,8 +45,8 @@ spec:
         enabled: true
     tracing:
       enabled: true
-      url: http://tempo-gateway.observability/v1/traces
-      in_cluster_url: http://tempo-gateway.observability/v1/traces
+      url: http://tempo-gateway.observability
+      in_cluster_url: http://tempo-gateway.observability
       provider: tempo
       use_grpc: false
       namespaceSelector: false
