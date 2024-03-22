@@ -16,7 +16,7 @@ spec:
     effect: NoSchedule
   replicas: 2
   shards: 2
-  image: quay.io/prometheus/prometheus:v2.50.1
+  image: quay.io/prometheus/prometheus:v2.51.0
   storage:
     volumeClaimTemplate:
       spec:
