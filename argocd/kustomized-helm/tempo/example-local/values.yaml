@@ -10,7 +10,7 @@ tempo-distributed:
           "" "example";
         }
       serverSnippet: |
-        location ~ /.* {
+        location = /status/services {
           proxy_pass       http://tempo-query-frontend.observability.svc.cluster.local:3100$request_uri;
         }
         proxy_set_header X-Scope-OrgID $ensured_x_scope_orgid;
