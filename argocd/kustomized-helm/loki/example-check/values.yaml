@@ -7,6 +7,8 @@ loki-distributed:
           default $http_x_scope_orgid;
           "" "example";
         }
+      serverSnippet: |
+        proxy_set_header X-Scope-OrgID $ensured_x_scope_orgid;
   loki:
     schemaConfig:
       configs:
