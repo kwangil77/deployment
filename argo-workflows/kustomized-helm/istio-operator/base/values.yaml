@@ -1,4 +1,4 @@
 istio-operator:
   defaults:
-    hub: docker.io
+    hub: docker.io/istio
     tag: "1.21.0"
