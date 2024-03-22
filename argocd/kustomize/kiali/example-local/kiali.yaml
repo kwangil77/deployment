@@ -21,6 +21,7 @@ spec:
         url: http://mimir-nginx.observability/prometheus
         custom_headers:
           X-Scope-OrgID: example
+        health_check_url: http://mimir-nginx.observability/api/v1/status/buildinfo
         # query_scope:
         #   environment: local
     grafana:
@@ -53,6 +54,7 @@ spec:
       url: http://mimir-nginx.observability/prometheus
       custom_headers:
         X-Scope-OrgID: example
+      health_check_url: http://mimir-nginx.observability/api/v1/status/buildinfo
       # query_scope:
       #   environment: local
   istio_namespace: istio-system
