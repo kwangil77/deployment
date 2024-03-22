@@ -1,6 +1,12 @@
 mimir-distributed:
   nameOverride: mimir
   fullnameOverride: mimir
+  nginx:
+    nginxConfig:
+      serverSnippet: |
+        location = /api/v1/status/config {
+          proxy_pass       http://mimir-query-frontend.observability.svc.cluster.local:8080$request_uri;
+        }
   mimir:
     structuredConfig:
       no_auth_tenant: example

@@ -18,10 +18,9 @@ spec:
       enabled: true
       discovery_enabled: auto
       prometheus:
-        url: http://mimir-query-frontend.observability:8080/prometheus
+        url: http://mimir-nginx.observability/prometheus
         custom_headers:
           X-Scope-OrgID: example
-        health_check_url: http://mimir-query-frontend.observability:8080/api/v1/status/config
         # query_scope:
         #   environment: local
     grafana:
@@ -51,10 +50,9 @@ spec:
       use_grpc: false
       namespaceSelector: false
     prometheus:
-      url: http://mimir-query-frontend.observability:8080/prometheus
+      url: http://mimir-nginx.observability/prometheus
       custom_headers:
         X-Scope-OrgID: example
-      health_check_url: http://mimir-query-frontend.observability:8080/api/v1/status/config
       # query_scope:
       #   environment: local
   istio_namespace: istio-system
