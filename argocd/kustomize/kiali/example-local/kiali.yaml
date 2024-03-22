@@ -21,6 +21,7 @@ spec:
         url: http://mimir-query-frontend.observability:8080/prometheus
         custom_headers:
           X-Scope-OrgID: example
+        health_check_url: http://mimir-query-frontend.observability:8080/api/v1/status/config
         # query_scope:
         #   environment: local
     grafana:
@@ -44,8 +45,8 @@ spec:
         enabled: true
     tracing:
       enabled: true
-      url: http://tempo-gateway.observability
-      in_cluster_url: http://tempo-gateway.observability
+      url: http://tempo-gateway.observability/v1/traces
+      in_cluster_url: http://tempo-gateway.observability/v1/traces
       provider: tempo
       use_grpc: false
       namespaceSelector: false
@@ -53,6 +54,7 @@ spec:
       url: http://mimir-query-frontend.observability:8080/prometheus
       custom_headers:
         X-Scope-OrgID: example
+      health_check_url: http://mimir-query-frontend.observability:8080/api/v1/status/config
       # query_scope:
       #   environment: local
   istio_namespace: istio-system
