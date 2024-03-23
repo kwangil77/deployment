@@ -10,8 +10,8 @@ spec:
   - name: http
     port: 8080
     targetPort: 8080
-  - name: metrics
-    port: 9464
-    targetPort: 9464
+  # - name: metrics
+  #   port: 9464
+  #   targetPort: 9464
   selector:
     app: demo
