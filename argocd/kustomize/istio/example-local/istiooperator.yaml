@@ -36,4 +36,5 @@ spec:
     enableTracing: true
     trustDomain: cluster.local
     defaultConfig:
+      tracing: {}
       holdApplicationUntilProxyStarts: true
