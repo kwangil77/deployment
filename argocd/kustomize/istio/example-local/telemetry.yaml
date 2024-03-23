@@ -3,6 +3,9 @@ kind: Telemetry
 metadata:
   name: telemetry
 spec:
+  metrics:
+  - providers:
+    - name: prometheus
   accessLogging:
   - providers:
     - name: envoy
