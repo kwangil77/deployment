@@ -26,6 +26,8 @@ spec:
     defaultProviders:
       metrics:
       - prometheus
+      accessLogging:
+      - envoy
     extensionProviders: 
     - name: opentelemetry
       opentelemetry:

@@ -3,6 +3,9 @@ kind: Telemetry
 metadata:
   name: telemetry
 spec:
+  accessLogging:
+  - providers:
+    - name: envoy
   tracing:
   - providers:
     - name: opentelemetry
