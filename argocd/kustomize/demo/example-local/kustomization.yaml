@@ -5,7 +5,7 @@ resources:
 # - externalsecret.yaml
 - secret.yaml
 - instrumentation.yaml
-- servicemonitor.yaml
+# - servicemonitor.yaml
 - httproute.yaml
 labels:
 - includeSelectors: true

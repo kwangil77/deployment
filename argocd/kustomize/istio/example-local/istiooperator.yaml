@@ -23,6 +23,11 @@ spec:
   meshConfig:
     accessLogFile: "/dev/stdout"
     accessLogEncoding: JSON
+    defaultProviders:
+      metrics:
+      - prometheus
+      accessLogging:
+      - envoy
     extensionProviders: 
     - name: opentelemetry
       opentelemetry:
