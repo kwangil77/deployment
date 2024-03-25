@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: empty-web
+  labels:
+    app: empty-web
+spec:
+  selector:
+    matchLabels:
+      app: empty-web
+  template:
+    metadata:
+      labels:
+        app: empty-web
+      annotations:
+        instrumentation.opentelemetry.io/container-names: app
+        instrumentation.opentelemetry.io/inject-nodejs: 'true'
+        kiali.io/dashboards: nodejs
+    spec:
+      serviceAccountName: empty-web
+      containers:
+      - name: app
+        image: empty-web
+        imagePullPolicy: Never
+        ports:
+        - name: http
+          containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1024Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
