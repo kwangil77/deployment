@@ -37,3 +37,9 @@ spec:
     trustDomain: cluster.local
     defaultConfig:
       holdApplicationUntilProxyStarts: true
+  values:
+    pilot:
+      autoscaleEnabled: false
+    gateways:
+      istio-ingressgateway:
+        autoscaleEnabled: false
