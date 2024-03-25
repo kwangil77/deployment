@@ -1,0 +1,7 @@
+cluster-autoscaler:
+  image:
+    repository: k8s.gcr.io/autoscaling/cluster-autoscaler
+  awsRegion: "ap-northeast-2"
+  serviceMonitor:
+    enabled: true
+    namespace: ""

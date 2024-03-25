@@ -1,0 +1,7 @@
+aws-load-balancer-controller:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  clusterName: example-dev
+  vpcId: vpc-...

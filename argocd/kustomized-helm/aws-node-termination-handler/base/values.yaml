@@ -1,0 +1,6 @@
+aws-node-termination-handler:
+  image:
+    repository: public.ecr.aws/aws-ec2/aws-node-termination-handler
+  enablePrometheusServer: true
+  podMonitor:
+    create: true

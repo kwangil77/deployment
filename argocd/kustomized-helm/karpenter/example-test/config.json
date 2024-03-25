@@ -1,0 +1,4 @@
+{
+  "release_name": "karpenter",
+  "release_namespace": "kube-system"
+}

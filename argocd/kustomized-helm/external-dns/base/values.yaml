@@ -1,0 +1,5 @@
+external-dns:
+  image:
+    repository: k8s.gcr.io/external-dns/external-dns
+  serviceMonitor:
+    enabled: true

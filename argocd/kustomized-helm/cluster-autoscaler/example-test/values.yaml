@@ -1,0 +1,8 @@
+cluster-autoscaler:
+  fullnameOverride: cluster-autoscaler
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  autoDiscovery:
+    clusterName: example-dev

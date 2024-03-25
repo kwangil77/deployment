@@ -1,0 +1,6 @@
+aws-vpc-cni:
+  init:
+    image:
+      region: "ap-northeast-2"
+  image:
+    region: "ap-northeast-2"

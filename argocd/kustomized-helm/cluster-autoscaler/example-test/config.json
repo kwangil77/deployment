@@ -1,0 +1,4 @@
+{
+  "release_name": "cluster-autoscaler",
+  "release_namespace": "kube-system"
+}

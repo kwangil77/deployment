@@ -1,0 +1,11 @@
+secrets-store-csi-driver:
+  linux:
+    image:
+      repository: registry.k8s.io/csi-secrets-store/driver
+    crds:
+      image:
+        repository: registry.k8s.io/csi-secrets-store/driver-crds
+    registrarImage:
+      repository: registry.k8s.io/sig-storage/csi-node-driver-registrar
+    livenessProbeImage:
+      repository: registry.k8s.io/sig-storage/livenessprobe

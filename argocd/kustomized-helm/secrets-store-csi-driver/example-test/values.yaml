@@ -1,0 +1,6 @@
+secrets-store-csi-driver:
+  linux:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard

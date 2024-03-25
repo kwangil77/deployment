@@ -1,0 +1,4 @@
+{
+  "release_name": "aws-node-termination-handler",
+  "release_namespace": "kube-system"
+}

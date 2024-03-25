@@ -1,0 +1,4 @@
+{
+  "release_name": "aws-vpc-cni",
+  "release_namespace": "kube-system"
+}

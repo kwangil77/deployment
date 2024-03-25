@@ -1,0 +1,12 @@
+karpenter:
+  nodeSelector:
+    team: devops
+    service: devops-infra
+    performance_type: standard
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:...
+  clusterName: example-dev
+  clusterEndpoint: https://...
+  aws:
+    defaultInstanceProfile: ...

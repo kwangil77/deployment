@@ -1,0 +1,10 @@
+apiVersion: v2
+name: cluster-proportional-autoscaler
+description: A Helm chart for Kubernetes
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+dependencies:
+- name: cluster-proportional-autoscaler
+  version: 1.1.0
+  repository: https://kubernetes-sigs.github.io/cluster-proportional-autoscaler

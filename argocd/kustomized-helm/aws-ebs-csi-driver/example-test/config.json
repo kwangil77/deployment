@@ -1,0 +1,4 @@
+{
+  "release_name": "aws-ebs-csi-driver",
+  "release_namespace": "kube-system"
+}

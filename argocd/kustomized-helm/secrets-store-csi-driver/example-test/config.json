@@ -1,0 +1,4 @@
+{
+  "release_name": "secrets-store-csi-driver",
+  "release_namespace": "kube-system"
+}

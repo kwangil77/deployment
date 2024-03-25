@@ -1,0 +1,4 @@
+{
+  "release_name": "external-dns",
+  "release_namespace": "kube-system"
+}

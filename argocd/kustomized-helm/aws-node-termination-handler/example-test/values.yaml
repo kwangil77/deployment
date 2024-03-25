@@ -1,0 +1,2 @@
+aws-node-termination-handler:
+  webhookURL: <path:kv/data/aws-node-termination-handler/slack#api-url>

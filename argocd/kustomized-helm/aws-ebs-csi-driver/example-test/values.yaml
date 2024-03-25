@@ -1,0 +1,6 @@
+aws-ebs-csi-driver:
+  controller:
+    nodeSelector:
+      team: devops
+      service: devops-infra
+      performance_type: standard
