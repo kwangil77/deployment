@@ -1,7 +1,7 @@
 apiVersion: opentelemetry.io/v1alpha1
 kind: Instrumentation
 metadata:
-  name: demo
+  name: empty-api
 spec:
   # propagators:
   # - b3

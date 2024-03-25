@@ -1,42 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: demo
+  name: empty-api
   labels:
-    app: demo
+    app: empty-api
 spec:
   selector:
     matchLabels:
-      app: demo
+      app: empty-api
   template:
     metadata:
       labels:
-        app: demo
+        app: empty-api
       annotations:
         instrumentation.opentelemetry.io/container-names: app
         instrumentation.opentelemetry.io/inject-java: 'true'
         kiali.io/dashboards: springboot-jvm,springboot-jvm-pool,springboot-tomcat
     spec:
-      serviceAccountName: demo
+      serviceAccountName: empty-api
       containers:
       - name: app
-        image: demo
+        image: empty-api
         imagePullPolicy: Never
         ports:
         - name: http
           containerPort: 8080
         env:
-        - name: AWS_REGION
-          value: ap-northeast-2
         - name: JAVA_TOOL_OPTIONS
           value: >
             -Xms4g -Xmx4g
             -Duser.timezone=Asia/Seoul
-        # - name: AWS_IAM_USER_ACCESSKEY_ELAPSEDHOURS
-        #   value: '15000'
-        envFrom:
-        - secretRef:
-            name: demo
         livenessProbe:
           httpGet:
             path: /actuator/health/liveness
