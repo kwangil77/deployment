@@ -27,13 +27,17 @@ spec:
         env:
         - name: OTEL_PHP_AUTOLOAD_ENABLED
           value: "true"
-        - name: OTEL_SERVICE_NAME
-          value: "empty-php"
+        - name: OTEL_METRICS_EXPORTER
+          value: "prometheus"
+        - name: OTEL_LOGS_EXPORTER
+          value: "none"
         - name: OTEL_TRACES_EXPORTER
           value: "otlp"
-        - name: OTEL_EXPORTER_OTLP_PROTOCOL
+        - name: OTEL_SERVICE_NAME
+          value: "empty-php"
+        - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
           value: "grpc"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
           value: "http://opentelemetry-collector.observability:4317"
         - name: OTEL_PROPAGATORS
           value: "baggage,tracecontext"
