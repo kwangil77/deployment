@@ -1,0 +1,25 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: empty-php
+spec:
+  nginx:
+    # image: autoinstrumentation-nginx:nginx
+    # configFile: /my/custom-dir/custom-nginx.conf
+    attrs:
+    - name: NginxModuleEnabled
+      value: "OFF"
+    # - name: NginxModuleOtelSpanExporter
+    #   value: "otlp"
+    # - name: NginxModuleOtelExporterEndpoint
+    #   value: "opentelemetry-collector.observability:4317"
+    # - name: NginxModuleServiceName
+    #   value: "empty-php"
+    # - name: NginxModuleServiceNamespace
+    #   value: "empty-php"
+    # - name: NginxModuleServiceInstanceId
+    #   value: "empty-php"
+    # - name: NginxModuleResolveBackends
+    #   value: "ON"
+    # - name: NginxModuleTraceAsError
+    #   value: "ON"

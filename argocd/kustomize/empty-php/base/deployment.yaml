@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: empty-php
+  labels:
+    app: empty-php
+spec:
+  selector:
+    matchLabels:
+      app: empty-php
+  template:
+    metadata:
+      labels:
+        app: empty-php
+      annotations:
+        instrumentation.opentelemetry.io/container-names: app
+        instrumentation.opentelemetry.io/inject-nginx: 'true'
+    spec:
+      serviceAccountName: empty-php
+      containers:
+      - name: app
+        image: empty-php
+        imagePullPolicy: Never
+        ports:
+        - name: php-fpm
+          containerPort: 9000
+        env:
+        - name: OTEL_PHP_AUTOLOAD_ENABLED
+          value: "true"
+        - name: OTEL_SERVICE_NAME
+          value: "empty-php"
+        - name: OTEL_TRACES_EXPORTER
+          value: "otlp"
+        - name: OTEL_EXPORTER_OTLP_PROTOCOL
+          value: "grpc"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://opentelemetry-collector.observability:4317"
+        - name: OTEL_PROPAGATORS
+          value: "baggage,tracecontext"
+        livenessProbe:
+          tcpSocket:
+            port: 9000
+        readinessProbe:
+          tcpSocket:
+            port: 9000
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1024Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
