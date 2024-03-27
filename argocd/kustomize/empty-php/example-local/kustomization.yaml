@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
 - ../base
 - configmap.yaml
-- servicemonitor.yaml
+# - servicemonitor.yaml
 - httproute.yaml
 labels:
 - includeSelectors: true
