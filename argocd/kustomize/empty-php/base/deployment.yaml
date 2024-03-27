@@ -12,9 +12,6 @@ spec:
     metadata:
       labels:
         app: empty-php
-      annotations:
-        instrumentation.opentelemetry.io/container-names: app
-        instrumentation.opentelemetry.io/inject-nginx: 'true'
     spec:
       serviceAccountName: empty-php
       containers:
