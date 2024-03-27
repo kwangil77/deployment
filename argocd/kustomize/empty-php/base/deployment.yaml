@@ -50,3 +50,31 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
+      - name: proxy
+        image: docker.io/library/nginx:1.23.1-alpine
+        ports:
+        - name: http
+          containerPort: 80
+        volumeMounts:
+        - name: empty-php
+          mountPath: /etc/nginx/conf.d/
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+        resources:
+          limits:
+            cpu: 20m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+      volumes:
+      - name: empty-php
+        configMap:
+          name: empty-php
