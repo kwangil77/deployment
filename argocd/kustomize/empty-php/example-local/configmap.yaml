@@ -24,4 +24,4 @@ data:
             fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
             include        fastcgi_params;
         }
-  }
+    }
