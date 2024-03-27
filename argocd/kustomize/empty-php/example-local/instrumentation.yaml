@@ -7,8 +7,8 @@ spec:
     image: autoinstrumentation-nginx
     # configFile: /my/custom-dir/custom-nginx.conf
     attrs:
-    # - name: NginxModuleEnabled
-    #   value: "ON"
+    - name: NginxModuleEnabled
+      value: "ON"
     # - name: NginxModuleOtelSpanExporter
     #   value: "otlp"
     # - name: NginxModuleOtelExporterEndpoint
