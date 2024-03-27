@@ -28,7 +28,7 @@ spec:
         env:
         - name: JAVA_TOOL_OPTIONS
           value: >
-            -Xms4g -Xmx4g
+            -Xms2g -Xmx2g
             -Duser.timezone=Asia/Seoul
         livenessProbe:
           httpGet:
@@ -40,8 +40,8 @@ spec:
             port: 8080
         resources:
           limits:
-            cpu: 200m
+            cpu: 500m
             memory: 2048Mi
           requests:
-            cpu: 100m
+            cpu: 200m
             memory: 1024Mi
