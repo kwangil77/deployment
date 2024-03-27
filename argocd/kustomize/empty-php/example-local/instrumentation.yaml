@@ -4,7 +4,7 @@ metadata:
   name: empty-php
 spec:
   nginx:
-    # image: autoinstrumentation-nginx:nginx
+    image: autoinstrumentation-nginx:nginx
     # configFile: /my/custom-dir/custom-nginx.conf
     attrs:
     # - name: NginxModuleEnabled
