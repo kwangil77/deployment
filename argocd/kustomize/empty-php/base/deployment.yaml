@@ -27,9 +27,9 @@ spec:
         - name: OTEL_METRICS_EXPORTER
           value: "console"
         - name: OTEL_LOGS_EXPORTER
-          value: "none"
+          value: "console"
         - name: OTEL_TRACES_EXPORTER
-          value: "otlp"
+          value: "console"
         - name: OTEL_SERVICE_NAME
           value: "empty-php"
         - name: OTEL_EXPORTER_OTLP_PROTOCOL
