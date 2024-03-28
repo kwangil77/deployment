@@ -62,11 +62,11 @@ spec:
           readOnly: true
         livenessProbe:
           httpGet:
-            path: /
+            path: /nginx_status
             port: 80
         readinessProbe:
           httpGet:
-            path: /
+            path: /nginx_status
             port: 80
         resources:
           limits:
