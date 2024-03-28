@@ -30,6 +30,8 @@ spec:
           value: "0.0.1"
         - name: DD_AGENT_HOST
           value: "opentelemetry-collector.observability"
+        - name: DD_TRACE_OTEL_ENABLED
+          value: "true"
         livenessProbe:
           tcpSocket:
             port: 9000
