@@ -13,7 +13,7 @@ data:
             access_log   off;
         }
         location / {
-            try_files $uri $uri/ /index.php?/$request_uri;
+            try_files $uri $uri/ /index.php$is_args$args;
         }
         error_page   500 502 503 504  /50x.html;
 
@@ -21,7 +21,7 @@ data:
             root   /usr/share/nginx/html;
         }
         location ~ \.php$ {
-            root   /var/www/html;
+            root   /var/www/html/public;
             fastcgi_pass   127.0.0.1:9000;
             include fastcgi.conf;
         }
