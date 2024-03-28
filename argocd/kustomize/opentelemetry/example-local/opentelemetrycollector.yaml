@@ -81,7 +81,6 @@ spec:
           - batch
           exporters:
           - prometheus
-          - prometheusremotewrite
         traces:
           receivers:
           - otlp
