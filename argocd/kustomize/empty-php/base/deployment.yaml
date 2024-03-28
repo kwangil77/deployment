@@ -25,7 +25,7 @@ spec:
         - name: OTEL_PHP_AUTOLOAD_ENABLED
           value: "true"
         - name: OTEL_METRICS_EXPORTER
-          value: "prometheus"
+          value: "none"
         - name: OTEL_LOGS_EXPORTER
           value: "none"
         - name: OTEL_TRACES_EXPORTER
@@ -33,9 +33,9 @@ spec:
         - name: OTEL_SERVICE_NAME
           value: "empty-php"
         - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
-          value: "http/protobuf"
+          value: "grpc"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://opentelemetry-collector.observability:4318"
+          value: "http://opentelemetry-collector.observability:4317"
         - name: OTEL_PROPAGATORS
           value: "baggage,tracecontext"
         livenessProbe:
