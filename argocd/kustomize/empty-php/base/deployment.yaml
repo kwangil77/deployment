@@ -25,7 +25,7 @@ spec:
         - name: OTEL_PHP_AUTOLOAD_ENABLED
           value: "true"
         - name: OTEL_METRICS_EXPORTER
-          value: "otlp"
+          value: "console"
         - name: OTEL_LOGS_EXPORTER
           value: "none"
         - name: OTEL_TRACES_EXPORTER

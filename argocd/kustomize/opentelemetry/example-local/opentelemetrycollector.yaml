@@ -65,12 +65,6 @@ spec:
         enable_open_metrics: true
         resource_to_telemetry_conversion:
           enabled: true
-      prometheusremotewrite:
-        endpoint: "http://mimir-distributor.observability:8080/api/v1/push"
-        headers:
-          X-Scope-OrgID: example
-        resource_to_telemetry_conversion:
-          enabled: true
     service:
       telemetry:
         metrics:
