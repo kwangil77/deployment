@@ -32,10 +32,10 @@ spec:
           value: "otlp"
         - name: OTEL_SERVICE_NAME
           value: "empty-php"
-        - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+        - name: OTEL_EXPORTER_OTLP_PROTOCOL
           value: "http/protobuf"
-        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://localhost:4318"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://opentelemetry-collector.observability:4318"
         - name: OTEL_PROPAGATORS
           value: "baggage,tracecontext"
         livenessProbe:
