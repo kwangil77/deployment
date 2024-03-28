@@ -16,6 +16,8 @@ spec:
             endpoint: 0.0.0.0:4318
       zipkin:
         endpoint: 0.0.0.0:9411
+      datadog:
+        endpoint: 0.0.0.0:8126
     processors:
       batch: {}
       memory_limiter:
@@ -85,6 +87,7 @@ spec:
           receivers:
           - otlp
           - zipkin
+          - datadog
           processors:
           - memory_limiter
           - filter/traces
