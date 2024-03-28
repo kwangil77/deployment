@@ -5,7 +5,7 @@ opentelemetry-operator:
       tag: v0.96.0
     collectorImage:
       repository: docker.io/otel/opentelemetry-collector-contrib
-      tag: "0.96.0"
+      tag: "0.97.0"
     serviceMonitor:
       enabled: true
   kubeRBACProxy:
